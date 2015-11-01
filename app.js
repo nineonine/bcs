@@ -1,4 +1,5 @@
 var express = require('express');
+var engine = require('ejs-mate')
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -15,6 +16,8 @@ var users = require('./routes/users');
 
 var app = express();
 
+// use ejs-locals for all ejs templates: 
+app.engine('ejs', engine);
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
