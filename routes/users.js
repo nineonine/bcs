@@ -168,63 +168,46 @@ router.route('/:id/edit')
       var email = req.body.email;
       var password = req.body.password;
 
-	    //find the document by ID
-	    mongoose.model('User').findById(req.id, function (err, user) {
-	        //update it
-	        user.update({
-	            name : name,
-	            role : role,
-	            email : email,
-	            password : password
-	        }, function (err, userID) {
-	          if (err) {
-	              res.send("There was a problem updating the information to the database: " + err);
-	          } 
-	          else {
-	                  //HTML responds by going back to the page or you can be fancy and create a new view that shows a success page.
-	                  res.format({
-	                      html: function(){
-	                           res.redirect("/users/" + user._id);
-	                     },
-	                     //JSON responds showing the updated values
-	                    json: function(){
-	                           res.json(user);
-	                     }
-	                  });
-	           }
-	        })
-	    });
+      mongoose.model('User').findOneAndUpdate({_id: req.id}, req.body, {'new': true}, function(err, user) {
+        if (err) {
+          res.send("There was a problem updating the information to the database: " + err);
+        } else {
+          //HTML responds by going back to the page or you can be fancy and create a new view that shows a success page.
+          res.format({
+              html: function(){
+                   res.redirect("/users/" + user._id);
+             },
+             //JSON responds showing the updated values
+            json: function(){
+                   res.json(user);
+             }
+          });
+        }
+      })
 	})
 	//DELETE a User by ID
 	.delete(function (req, res){
-	    //find user by ID
-	    mongoose.model('User').findById(req.id, function (err, user) {
-	        if (err) {
-	            return console.error(err);
-	        } else {
-	            //remove it from DB
-	            blob.remove(function (err, user) {
-	                if (err) {
-	                    return console.error(err);
-	                } else {
-	                    //Returning success messages saying it was deleted
-	                    console.log('DELETE removing ID: ' + user._id);
-	                    res.format({
-	                        //HTML returns us back to the main page, or you can create a success page
-	                          html: function(){
-	                               res.redirect("/users");
-	                         },
-	                         //JSON returns the item with the message that is has been deleted
-	                        json: function(){
-	                               res.json({message : 'deleted',
-	                                   item : user
-	                               });
-	                         }
-	                      });
-	                }
-	            });
-	        }
-	    });
+
+      mongoose.model('User').findOneAndRemove({_id: req.id}, function(err, user) {
+        if (err) {
+            return console.error(err);
+        } else {
+            //Returning success messages saying it was deleted
+            console.log('DELETE removing ID: ' + user._id);
+            res.format({
+              //HTML returns us back to the main page, or you can create a success page
+                html: function(){
+                     res.redirect("/users");
+               },
+               //JSON returns the item with the message that is has been deleted
+              json: function(){
+                     res.json({message : 'deleted',
+                         item : user
+                     });
+               }
+            });
+        }
+      })
 	});
 
 module.exports = router;
