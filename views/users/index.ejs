@@ -1,0 +1,7 @@
+<% layout('layout') -%>
+
+<ul>
+    <% users.forEach(function(user) { %>
+        <li><%= user.toString() %></li>
+    <% }); %>
+</ul>
