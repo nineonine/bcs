@@ -9,10 +9,12 @@ var db = require('./model/db');
 
 var db = require('./model/db'),
     user = require('./model/users');
+    customer = require('./model/customers')
 
 // -------- Routes ----------
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var customers = require('./routes/customers');
 
 var app = express();
 
@@ -32,6 +34,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
+app.use('/customers', customers);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
