@@ -162,11 +162,6 @@ router.route('/:id/edit')
 	})
 	//PUT to update a user by ID
 	.put(function(req, res) {
-	    // Get our REST or form values. These rely on the "name" attributes
-      var name = req.body.name;
-      var role = req.body.role;
-      var email = req.body.email;
-      var password = req.body.password;
 
       mongoose.model('User').findOneAndUpdate({_id: req.id}, req.body, {'new': true}, function(err, user) {
         if (err) {
