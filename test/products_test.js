@@ -2,29 +2,34 @@ var should = require('chai').should()
 expect = require('chai').expect
 supertest = require('supertest')
 api = supertest('http://localhost:3000')
+fs = require('fs')
 
 
 describe('Product' , function() {
 
-	//creating mock user
+	//creating mock product
 	before(function(done) {
 		api.post('/products')
-		.set('Accept', 'application/x-www-form-urlencoded')
-		.send({
-			name: "dummy_product",
-			sku: "test_sku",
-			price: 100,
-			qty: 100,
-			description: "123",
-			image: "image/url.jpg",
-			status: "inStock"
-		})
+		.field('Content-Type', 'multipart/form-data')
+		.field('name', 'dummy_product')
+		.field('sku', 'test_sku')
+		.field('price', '100')
+		.field('qty', '100')
+		.field('description', "ddd")
+		.field('status', 'in')
+		.attach('image', __dirname + '/cat.jpeg')
 		.set('Accept', 'application/json')
 		.expect('Content-Type', /json/)
 		.end(function(err, res) {
+			if(err) console.log(err)
 			product1 = res.body
 			done()
 		})
+	})
+
+	it('should upload an image', function(done) {
+		expect(product1.image).to.not.equal(null)
+		done()
 	})
 
 	it('should return a 200 response with all products', function(done) {
@@ -42,6 +47,8 @@ describe('Product' , function() {
 			done()
 		})
 	})
+
+
 
 	it('should be a Product object with keys and values', function(done) {
 		api.get('/products/' + product1._id)
@@ -92,10 +99,15 @@ describe('Product' , function() {
 		})
 	})
 
+
+	before(function(done) {
+		fs.unlinkSync(process.cwd() + '/uploads' + product1.image)
+		done()
+	})
+
 	it('should delete mocked product', function(done) {
 		api.del('/products/' + product1._id + '/edit')
 		.expect(302, done)
 	})
-
 
 })
