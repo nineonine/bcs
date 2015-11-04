@@ -5,7 +5,6 @@ var orderSchema  = new mongoose.Schema({
 	total: Number,
 	shipping: Number,
 	status: String,
-	customer: {type: mongoose.Schema.ObjectId, ref: "Customer"},
 	invoice: {type: mongoose.Schema.ObjectId, ref: "Invoice"},
 	slip: {type: mongoose.Schema.ObjectId, ref: "Slip"},
 	sales: {type: mongoose.Schema.ObjectId, ref: "User"},
