@@ -1,8 +1,22 @@
 var express = require('express'),
+    multer = require('multer'),
+    path = require('path'),
+    crypto = require('crypto'),
     router = express.Router(),
     mongoose = require('mongoose'), 
     bodyParser = require('body-parser'), 
-    methodOverride = require('method-override'); 
+    methodOverride = require('method-override');
+
+var storage = multer.diskStorage({
+  destination: './uploads/products',
+  filename: function (req, file, cb) {
+    crypto.pseudoRandomBytes(16, function (err, raw) {
+      if (err) return cb(err)
+
+      cb(null, raw.toString('hex') + path.extname(file.originalname))
+    })
+  }
+}) 
 
 router.use(bodyParser.urlencoded({ extended: true }))
 router.use(methodOverride(function(req, res){
@@ -14,66 +28,79 @@ router.use(methodOverride(function(req, res){
 }))
 
 //REST operations for products
+//GET all products
 router.route('/')
-    //GET all products
-    .get(function(req, res, next) {
+  .get(function(req, res, next) {
         //retrieve all products from DB
-        mongoose.model('Product').find({}, function (err, products) {
-              if (err) {
-                  return console.error(err);
-              } else {
-                  res.format({
-                    html: function(){
-                        res.render('products/index', {
-                              title: 'All products',
-                              "products" : products
-                          });
-                    },
-                    //JSON response will show all blobs in JSON format
-                    json: function(){
-                        res.json(products);
-                    }
-                });
-              }     
-        });
-    })
+      mongoose.model('Product').find({}, function (err, products) {
+            if (err) {
+                return console.error(err);
+            } else {
+                res.format({
+                  html: function(){
+                      res.render('products/index', {
+                            title: 'All products',
+                            "products" : products
+                        });
+                  },
+                  //JSON response will show all blobs in JSON format
+                  json: function(){
+                      res.json(products);
+                  }
+              });
+            }     
+      });
+})
     //POST a new Product
-    .post(function(req, res) {
-        // Get values from POST request. These can be done through forms or REST calls. These rely on the "name" attributes for forms
-        var name = req.body.name;
-        var sku = req.body.sku;
-        var price = req.body.price;
-        var qty = req.body.qty;
-        var description = req.body.description;
-        var image = req.body.image;
-        var status = req.body.status;
-        
-        mongoose.model('Product').create({
-            name : name,
-            sku : sku,
-            price : price,
-            qty : qty,
-            description: description,
-            image: image,
-            status: status
-        }, function (err, product) {
-              if (err) {
-                  res.send("There was a problem adding Product to the database.");
-              } else {
-                  //Product has been created
-                  console.log('POST creating new Product: ' + product);
-                  res.format({
-                    html: function(){
-                        res.location("products");
-                        res.redirect("/products");
-                    },
-                    json: function(){
-                        res.json(product);
-                    }
-                });
-              }
-        })
-    });
+.post( multer({ 
+  fileFilter: function(req, file, cb) {
+      if (path.extname(file.originalname) !== '.jpg' 
+        && path.extname(file.originalname) !== '.png'
+        && path.extname(file.originalname) !== '.jpeg') {
+        return cb(new Error('Only jpg, jpeg and png files are allowed'))
+      }
+      cb(null, true)
+  },
+  storage: storage
+  }).single('image'), function(req, res) {
+    // Get values from POST request. These can be done through forms or REST calls. These rely on the "name" attributes for forms
+    var name = req.body.name;
+    var sku = req.body.sku;
+    var price = req.body.price;
+    var qty = req.body.qty;
+    var description = req.body.description;
+    var image = "/products/" + req.file.filename 
+    var status = req.body.status;
+
+    //console.log(req.file)
+    
+    mongoose.model('Product').create({
+        name : name,
+        sku : sku,
+        price : price,
+        qty : qty,
+        description: description,
+        image: image,
+        status: status
+    }, function (err, product) {
+          if (err) {
+              res.send("There was a problem adding Product to the database.");
+          } else {
+              //Product has been created
+              console.log('POST creating new Product: ' + product);
+              res.format({
+                html: function(){
+                    res.location("products");
+                    res.redirect("/products");
+                },
+                json: function(){
+                    res.json(product);
+                }
+            });
+          }
+    })
+});    
+
 
 /* GET New Product page. */
 router.get('/new', function(req, res) {
