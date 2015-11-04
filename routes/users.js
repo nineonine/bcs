@@ -44,13 +44,13 @@ router.route('/')
     //POST a new user
     .post(function(req, res) {
         // Get values from POST request. These can be done through forms or REST calls. These rely on the "name" attributes for forms
-        var name = req.body.name;
+        var name = req.body.username;
         var role = req.body.role;
         var email = req.body.email;
         var password = req.body.password;
         //call the create function for our database
         mongoose.model('User').create({
-            name : name,
+            username : name,
             role : role,
             email : email,
             password : password

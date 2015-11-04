@@ -11,7 +11,7 @@ describe('User' , function() {
 		api.post('/users')
 		.set('Accept', 'application/x-www-form-urlencoded')
 		.send({
-			name: "dummy_tester",
+			username: "dummy_tester",
 			role: "tester",
 			email: "test@email.com",
 			password: "letmein"
@@ -35,7 +35,7 @@ describe('User' , function() {
 		.set('Accept', 'application/json')
 		.expect(200)
 		.end( function(err, res) {
-			expect(res.body.name).to.equal('dummy_tester')
+			expect(res.body.username).to.equal('dummy_tester')
 			done()
 		})
 	})
@@ -45,8 +45,8 @@ describe('User' , function() {
 		.set('Accept', 'application/json')
 		.expect(200)
 		.end(function(err, res) {
-			expect(res.body).to.have.property("name")
-			expect(res.body.name).to.not.equal(null)
+			expect(res.body).to.have.property("username")
+			expect(res.body.username).to.not.equal(null)
 			expect(res.body).to.have.property("role")
 			expect(res.body.role).to.not.equal(null)
 			expect(res.body).to.have.property("email")
@@ -61,7 +61,7 @@ describe('User' , function() {
 		api.put('/users/' + user1._id + '/edit')
 		.set('Accept', 'application/x-www-form-urlencoded')
 		.send({
-			name: "renamed_dummy_tester",
+			username: "renamed_dummy_tester",
 			role: "changed_tester",
 			email: "changed_test@email.com",
 			password: "changed_letmein"
@@ -69,7 +69,7 @@ describe('User' , function() {
 		.expect(200)
 		.set('Accept', 'application/json')
 		.end(function(err, res) {
-			expect(res.body.name).to.equal('renamed_dummy_tester')
+			expect(res.body.username).to.equal('renamed_dummy_tester')
 			expect(res.body.role).to.equal('changed_tester')
 			expect(res.body.email).to.equal('changed_test@email.com')
 			expect(res.body.password).to.equal('changed_letmein')
