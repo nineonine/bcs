@@ -6,6 +6,10 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'BCS' });
 });
 
+router.get('/login', function(req, res, next) {
+  res.render('login', { title: 'BCS' });
+})
+
 router.get('/about', function(req, res, next) {
   res.render('about', { title: 'BCS' });
 });
