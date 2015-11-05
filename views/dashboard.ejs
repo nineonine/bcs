@@ -1,0 +1,57 @@
+<% layout('layout') -%>
+<div class="menubar">
+	<div class="sidebar-toggler visible-xs">
+		<i class="ion-navicon"></i>
+	</div>
+
+	<div class="page-title">
+		Dashboard
+	</div>
+
+	<div class="period-select hidden-xs">
+		<form class="input-daterange">
+			<div class="input-group input-group-sm">
+			  	<span class="input-group-addon">
+			  		<i class="fa fa-calendar-o"></i>
+			  	</span>
+			  	<input name="start" type="text" class="form-control datepicker" placeholder="02/27/2014" />
+			</div>
+			
+			<p class="pull-left">to</p>
+
+			<div class="input-group input-group-sm">
+			  	<span class="input-group-addon">
+			  		<i class="fa fa-calendar-o"></i>
+			  	</span>
+			  	<input name="end" type="text" class="form-control datepicker" placeholder="02/27/2014" />
+			</div>
+		</form>
+	</div>
+</div>
+
+<div class="content-wrapper">
+	<div class="metrics clearfix">
+		<div class="metric">
+			<span class="field">Total users</span>
+			<span class="data">24,900</span>
+		</div>
+		<div class="metric">
+			<span class="field">New sign ups</span>
+			<span class="data">108</span>
+		</div>
+		<div class="metric">
+			<span class="field">Sales this month</span>
+			<span class="data">$674.00</span>
+		</div>
+		<div class="metric">
+			<span class="field">Total Sales</span>
+			<span class="data">$3,823.90</span>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$( document ).ready(function() {
+		$("body").attr('id', "dashboard");
+	})	  	
+</script>
