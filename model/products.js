@@ -10,4 +10,4 @@ var productSchema  = new mongoose.Schema({
 	status: String
 })
 
-mongoose.model("Product", productSchema);
+exports.Product = mongoose.model("Product", productSchema);
