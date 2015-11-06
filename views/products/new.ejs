@@ -1,0 +1,70 @@
+<% layout('layout') -%>
+<div class="menubar">
+	<div class="sidebar-toggler visible-xs">
+		<i class="ion-navicon"></i>
+	</div>
+
+	<div class="page-title">
+		Add new product 
+		<small class="hidden-xs">
+			<strong></strong>
+		</small>
+	</div>
+</div>
+
+<div class="content-wrapper">
+	<form id="new-product" class="form-horizontal" method="post" action="/products" role="form">
+	  	<div class="form-group">
+		    <label class="col-sm-2 col-md-2 control-label">Product name</label>
+		    <div class="col-sm-10 col-md-8">
+		      <input type="text" class="form-control" name="customer[first_name]" />
+		    </div>
+	  	</div>
+	  	<div class="form-group">
+	  		<label class="col-sm-2 col-md-2 control-label">SKU</label>
+		    <div class="col-sm-10 col-md-8">
+		      <input type="text" class="form-control" name="customer[last_name]" />
+		    </div>
+	  	</div>
+	  	<div class="form-group">
+		    <label class="col-sm-2 col-md-2 control-label">Product picture</label>
+		    <div class="col-sm-10 col-md-8">
+		    	<input type="file" name="customer[display]" />
+		    </div>
+	  	</div>
+	  	<div class="form-group">
+		    <label class="col-sm-2 col-md-2 control-label">Price</label>
+		    <div class="col-sm-10 col-md-8">
+		      	<input type="text" class="form-control" name="customer[email]" />
+		    </div>
+	  	</div>
+	  	<div class="form-group">
+		    <label class="col-sm-2 col-md-2 control-label">Quantity</label>
+		    <div class="col-sm-10 col-md-8">
+		    	<div class="has-feedback">
+					<input type="text" class="form-control mask-phone" name="customer[phone]" />
+			      	<i class="ion-information-circled form-control-feedback" data-toggle="tooltip" title="Tooltip helper example">
+			      	</i>
+				</div>
+		    </div>
+	  	</div>
+	  	<div class="form-group">
+		    <label for="inputPassword3" class="col-sm-2 col-md-2 control-label">Product Description</label>
+		    <div class="col-sm-10 col-md-8">
+		    	<textarea class="form-control" rows="4" name="customer[notes]"></textarea>
+		    </div>
+	  	</div>
+	  	<div class="form-group form-actions">
+	    	<div class="col-sm-offset-2 col-sm-10">
+	    		<a href="/products" class="btn btn-default">Cancel</a>
+	      		<button type="submit" class="btn btn-success">Save Product</button>
+    		</div>
+	  	</div>
+	</form>
+</div>
+
+<script type="text/javascript">
+	$( document ).ready(function() {
+		$("body").attr('id', "form");
+	})	  	
+</script>
