@@ -125,8 +125,9 @@ router.route('/:id')
         console.log('GET Retrieving ID: ' + customer._id);
         res.format({
           html: function(){
-              res.render('customers/show', {
-                "customer" : customer
+              res.render('customers/profile', {
+                "customer" : customer,
+                "title" : customer.name
               });
           },
           json: function(){

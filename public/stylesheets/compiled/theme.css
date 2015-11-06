@@ -5659,7 +5659,7 @@ body {
               position: relative;
               top: 5px; }
           #user-profile .content-wrapper .profile-content .tab-content .tab.notes .comments {
-            margin-top: 60px;
+            margin-top: 30px;
             width: 94%; }
             @media (max-width: 767px) {
               #user-profile .content-wrapper .profile-content .tab-content .tab.notes .comments {

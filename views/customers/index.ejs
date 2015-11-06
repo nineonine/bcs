@@ -81,50 +81,30 @@
 					<label class="text-right"><a href="#">Signed up</a></label>
 				</div>
 			</div>
-			<div class="row user">
-				<div class="col-sm-2 avatar">
-					<input type="checkbox" name="select-user" />
-					<img src="images/avatars/2.jpg" />
-				</div>
-				<div class="col-sm-3">
-					<a href="user-profile.html" class="name">John Smith Stewart</a>
-				</div>
-				<div class="col-sm-3">
-					<div class="email">john.39@gmail.com</div>
-				</div>
-				<div class="col-sm-2">
-					<div class="total-spent">
-						$9,400.00
+			<% customers.forEach(function(c) { %>
+        		<div class="row user">
+					<div class="col-sm-2 avatar">
+						<input type="checkbox" name="select-user" />
+						<img src="images/avatars/2.jpg" />
+					</div>
+					<div class="col-sm-3">
+						<a href="/customers/<%= c._id %>" class="name"><%= c.name %></a>
+					</div>
+					<div class="col-sm-3">
+						<div class="email"><%= c.email %></div>
+					</div>
+					<div class="col-sm-2">
+						<div class="total-spent">
+							$9,400.00
+						</div>
+					</div>
+					<div class="col-sm-2">
+						<div class="created-at">
+							Feb 27, 2014
+						</div>
 					</div>
 				</div>
-				<div class="col-sm-2">
-					<div class="created-at">
-						Feb 27, 2014
-					</div>
-				</div>
-			</div>
-			<div class="row user">
-				<div class="col-sm-2 avatar">
-					<input type="checkbox" name="select-user" />
-					<img src="images/avatars/3.jpg" />
-				</div>
-				<div class="col-sm-3">
-					<a href="user-profile.html" class="name">Richard Moore Stevens</a>
-				</div>
-				<div class="col-sm-3">
-					<div class="email">richard@hotmail.com</div>
-				</div>
-				<div class="col-sm-2">
-					<div class="total-spent">
-						$1,200.00
-					</div>
-				</div>
-				<div class="col-sm-2">
-					<div class="created-at">
-						Feb 25, 2014
-					</div>
-				</div>
-			</div>
+   			<% }); %>
 
 			<div class="row pager-wrapper">
 				<div class="col-sm-12">
