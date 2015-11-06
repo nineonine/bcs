@@ -1,0 +1,82 @@
+<% layout('layout') -%>
+
+<div id="sidebar">
+	<div class="sidebar-toggler visible-xs">
+		<i class="ion-navicon"></i>
+	</div>
+	
+	<h3>Order ###</h3>
+	<ul class="menu tabs">
+		<li>
+			<a href="/orders/<%= order._id %>" class="active">
+				<i class="ion-ios7-person-outline"></i>
+				Details
+			</a>
+		</li>
+		<li>
+			<a href="/orders/<%= order._id %>/invoice">
+				<i class="ion-card"></i>
+				Invoice
+			</a>
+		</li>
+		<li>
+			<a href="/orders/<%= order._id %>/slip">
+				<i class="ion-ios7-email-outline"></i>
+				Packing  Slip
+			</a>
+		</li>
+	</ul>
+</div>
+
+<div id="panel" class="details">
+	<h3>
+		Order Details
+	</h3>
+
+<!-- 	<p class="intro">
+		Change your account information, avatar, login credentials, etc.
+	</p> -->
+
+	<form>
+	  	<div class="form-group">
+			<label>Name</label>
+			<input type="email" class="form-control" placeholder="Enter email" value="John Smith Jr" />
+		</div>
+	  	<div class="form-group">
+			<label>Email address</label>
+			<input type="email" class="form-control" placeholder="Enter email" value="john@gmail.com" />
+		</div>
+		<div class="form-group">
+			<label>Street & Number</label>
+			<input type="text" class="form-control" placeholder="Enter email" value="5th Avenue 3053" />
+		</div>
+		<div class="form-group">
+			<label>City</label>
+			<input type="text" class="form-control" placeholder="Enter email" value="San Francisco" />
+		</div>
+		<div class="form-group">
+			<label>ZIP</label>
+			<input type="text" class="form-control" placeholder="Enter email" value="3352" />
+		</div>
+		<div class="form-group">
+			<label>New password</label>
+			<input type="password" class="form-control" />
+		</div>
+		<div class="form-group">
+			<label>Confirm new password</label>
+			<input type="password" class="form-control" />
+		</div>
+		<div class="form-group action">
+			<input type="submit" class="btn btn-success" value="Save changes" />
+		</div>
+	</form>
+
+</div>	
+
+<script type="text/javascript">
+	$( document ).ready(function() {
+
+		$("body").attr('id', "account")
+
+	})	  	
+</script>
