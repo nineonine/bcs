@@ -1,4 +1,5 @@
 <% layout('layout') -%>
+
 <div class="menubar">
     <div class="sidebar-toggler visible-xs">
         <i class="ion-navicon"></i>
@@ -37,15 +38,17 @@
             </tr>
         </tfoot>
         <tbody>
-            <tr>
-                <td>
-                	<a href="#">#1445</a>
-                </td>
-                <td>John Stewart</td>
-                <td>Mar 11, 11:50am</td>
-                <td class=""><span class="label label-success">Paid</span></td>
-                <td class="center">$399.99</td>
-            </tr>
+            <% orders.forEach(function(o) { %>
+                <tr>
+                    <td>
+                        <a href="/orders/<%= o._id %>">#<%= o.orderNumber %></a>
+                    </td>
+                    <td>John Stewart</td>
+                    <td>Mar 11, 11:50am</td>
+                    <td class=""><span class="label label-success"><%= o.status %></span></td>
+                    <td class="center">$<%= o.total %></td>
+                </tr>
+            <% }); %>
             <tr>
                 <td>
                 	<a href="#">#1897</a>

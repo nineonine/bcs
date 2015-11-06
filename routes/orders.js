@@ -16,7 +16,7 @@ router.use(methodOverride(function(req, res){
 //REST operations for orders
 router.route('/')
     //GET all orders
-    .get(function(req, res) {
+    .get(function(req, res, next) {
         //retrieve all orders from DB
         mongoose.model('Order').find({}, function (err, orders) {
               if (err) {
@@ -139,8 +139,30 @@ router.route('/:id')
         console.log('GET Retrieving ID: ' + order._id);
         res.format({
           html: function(){
-              res.render('orders/show', {
-                "order" : order
+              res.render('orders/order', {
+                "order" : order,
+                "title" : "Order #" + order.orderNumber
+              });
+          },
+          json: function(){
+              res.json(order);
+          }
+        });
+      }
+    });
+  });
+
+  router.get('/:id/invoice', function(req, res) {
+    mongoose.model('Order').findById(req.id, function (err, order) {
+      if (err) {
+        console.log('GET Error: There was a problem retrieving: ' + err);
+      } else {
+        console.log('GET Retrieving ID: ' + order._id);
+        res.format({
+          html: function(){
+              res.render('orders/invoice', {
+                "order" : order,
+                "title" : "Invoice #" + order.orderNumber
               });
           },
           json: function(){
