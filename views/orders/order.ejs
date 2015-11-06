@@ -9,27 +9,39 @@
 	<ul class="menu tabs">
 		<li>
 			<a href="/orders/<%= order._id %>" class="active">
-				<i class="ion-ios7-person-outline"></i>
+				<i class="fa fa-folder-open-o"></i>
 				Details
 			</a>
 		</li>
 		<li>
+			<a href="#">
+				<i class="fa fa-shopping-cart"></i>
+				Products
+			</a>
+		</li>
+		<li>
 			<a href="/orders/<%= order._id %>/invoice">
-				<i class="ion-card"></i>
+				<i class="fa fa-credit-card"></i>
 				Invoice
 			</a>
 		</li>
 		<li>
 			<a href="/orders/<%= order._id %>/slip">
-				<i class="ion-ios7-email-outline"></i>
+				<i class="fa fa-truck"></i>
 				Packing  Slip
+			</a>
+		</li>
+		<li>
+			<a href="/orders/<%= order._id %>/cancel">
+				<i class="fa fa-times"></i>
+				<span style="color: red">Cancel Order</span>
 			</a>
 		</li>
 	</ul>
 </div>
 
 <div id="panel" class="details">
-	<h3>
+	<h3 style="margin: 0 0 20px 0">
 		Order Details
 	</h3>
 
@@ -67,6 +79,7 @@
 			<input type="password" class="form-control" />
 		</div>
 		<div class="form-group action">
+			<a href="/orders" style="margin-right: 15px" class="btn btn-default">Cancel</a>
 			<input type="submit" class="btn btn-success" value="Save changes" />
 		</div>
 	</form>
