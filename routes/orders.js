@@ -16,7 +16,7 @@ router.use(methodOverride(function(req, res){
 //REST operations for orders
 router.route('/')
     //GET all orders
-    .get(function(req, res, next) {
+    .get(function(req, res) {
         //retrieve all orders from DB
         mongoose.model('Order').find({}, function (err, orders) {
               if (err) {
@@ -76,6 +76,28 @@ router.route('/')
 router.get('/new', function(req, res) {
     res.render('orders/new', { title: 'Add New Order' });
 });
+
+router.get('/history', function(req, res) {
+    //retrieve all orders from DB
+    mongoose.model('Order').find({}, function (err, orders) {
+          if (err) {
+              return console.error(err);
+          } else {
+              res.format({
+                html: function(){
+                    res.render('orders/history', {
+                          title: 'Orders History',
+                          "orders" : orders
+                      });
+                },
+                //JSON response will show all blobs in JSON format
+                json: function(){
+                    res.json(orders);
+                }
+            });
+          }     
+    });
+})
 
 // route middleware to validate :id
 router.param('id', function(req, res, next, id) {
