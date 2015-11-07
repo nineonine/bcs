@@ -77,8 +77,14 @@ router.route('/')
         })
     });
 
+router.get('/activity', function(req, res) {
+
+    res.render('users/activity', { title: 'Company Activity' });
+})
+
 /* GET New User page. */
 router.get('/new', function(req, res) {
+    
     res.render('users/new', { title: 'Add New User' });
 });
 
