@@ -1,0 +1,202 @@
+<% layout('layout') -%>
+
+<div id="sidebar">
+	<div class="sidebar-toggler visible-xs">
+		<i class="ion-navicon"></i>
+	</div>
+	
+	<h3><%= user.username %></h3>
+	<ul class="menu">
+		<li>
+			<a href="#profile" class="panel-switch active">
+				<i class="ion-ios7-person-outline"></i>
+				Profile
+			</a>
+		</li>
+		<li>
+			<a href="#notifications" class="panel-switch">
+				<i class="ion-ios7-email-outline"></i>
+				Notifications
+			</a>
+		</li>
+		<li>
+			<a href="account-support.html">
+				<i class="ion-ios7-help-outline"></i>
+				Support
+			</a>
+		</li>
+	</ul>
+</div>
+
+<a name="profile"></a>
+<div id="panel" class="panel profile">
+
+	<h3>
+		Profile settings
+	</h3>
+
+	<p class="intro">
+		Change your account information, avatar, login credentials, etc.
+	</p>
+
+	<form>
+		<div class="form-group avatar-field clearfix">
+		    <div class="col-sm-3">
+		    	<img src="../images/avatars/CROPPED-Oleksandr_photo.jpg" class="img-responsive img-circle" />
+		    </div>
+		    <div class="col-sm-9">
+		    	<label>Set up your avatar picture</label>
+		      	<input type="file" />
+		    </div>
+	  	</div>
+	  	<div class="form-group">
+			<label>Name</label>
+			<input type="email" class="form-control" placeholder="Enter email" value="John Smith Jr" />
+		</div>
+	  	<div class="form-group">
+			<label>Email address</label>
+			<input type="email" class="form-control" placeholder="Enter email" value="john@gmail.com" />
+		</div>
+		<div class="form-group">
+			<label>Street & Number</label>
+			<input type="text" class="form-control" placeholder="Enter email" value="5th Avenue 3053" />
+		</div>
+		<div class="form-group">
+			<label>City</label>
+			<input type="text" class="form-control" placeholder="Enter email" value="San Francisco" />
+		</div>
+		<div class="form-group">
+			<label>ZIP</label>
+			<input type="text" class="form-control" placeholder="Enter email" value="3352" />
+		</div>
+		<div class="form-group">
+			<label>New password</label>
+			<input type="password" class="form-control" />
+		</div>
+		<div class="form-group">
+			<label>Confirm new password</label>
+			<input type="password" class="form-control" />
+		</div>
+		<div class="form-group action">
+			<input type="submit" class="btn btn-success" value="Save changes" />
+		</div>
+	</form>
+</div>
+
+<a name="notifications"></a>
+<div id="panel" class="panel notifications" style="display:none">
+	<h3>
+		Email Notification Settings
+	</h3>
+
+	<div class="settings">
+		<form action="#">
+			<div class="digest">
+				<h4>Daily digest</h4>
+				<div class="row">
+					<div class="col-md-9">
+						<p>
+							An email with all your activities for today and a summary of what was done yesterday directly to your email's inbox.
+						</p>
+					</div>
+					<div class="col-md-3">
+						<select data-smart-select>
+							<option>Never receive</option>
+							<option>Every day</option>
+							<option>Every Week</option>
+						</select>
+					</div>
+				</div>
+			</div>
+
+			<div class="types">
+				<h4>
+					Types
+				</h4>
+				<section>
+					<div class="title">In-app</div>
+
+					<div class="row">
+						<div class="col-sm-8">
+							New comments on clients
+						</div>
+						<div class="col-sm-4">
+							<input type="checkbox" data-switch value="3" checked />
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-8">
+							Order updates
+						</div>
+						<div class="col-sm-4">
+							<input type="checkbox" data-switch value="3" checked />
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-8">
+							Product updates
+						</div>
+						<div class="col-sm-4">
+							<input type="checkbox" data-switch value="3" checked />
+						</div>
+					</div>
+				</section>
+				<section>
+					<div class="title">News</div>
+
+					<div class="row">
+						<div class="col-sm-8">
+							Company news
+						</div>
+						<div class="col-sm-4">
+							<input type="checkbox" data-switch value="3" checked />
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-8">
+							Recommendations & tips
+						</div>
+						<div class="col-sm-4">
+							<input type="checkbox" data-switch value="3" />
+						</div>
+					</div>
+				</section>
+			</div>
+
+			<div class="actions">
+				<input class="btn btn-primary" type="submit" value="Save changes" />
+			</div>
+		</form>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+	$( document ).ready(function() {
+		$("body").attr('id', "account");
+
+		if(window.location.hash.substring(1) === "notifications") {
+			$links.removeClass("active");
+			$links.eq(1).addClass("active");
+
+			$panels.hide();
+			$panels.eq(1).show();
+		}
+
+	})		
+
+	var $links = $(".menu .panel-switch");
+	var $panels = $(".panel");
+
+	$links.click(function (e) {
+		// e.preventDefault();
+		var index = $links.index(this);
+
+		$links.removeClass("active");
+		$links.eq(index).addClass("active");
+
+		$panels.hide();
+		$panels.eq(index).show();
+	})
+
+</script>

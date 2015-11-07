@@ -128,7 +128,8 @@ router.route('/:id')
         console.log('GET Retrieving ID: ' + user._id);
         res.format({
           html: function(){
-              res.render('users/show', {
+              res.render('users/profile', {
+                "title": user.username,
                 "user" : user
               });
           },
