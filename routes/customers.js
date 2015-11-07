@@ -1,8 +1,22 @@
 var express = require('express'),
+    multer = require('multer'),
+    path = require('path'),
+    crypto = require('crypto'),
     router = express.Router(),
     mongoose = require('mongoose'), 
     bodyParser = require('body-parser'), 
-    methodOverride = require('method-override'); 
+    methodOverride = require('method-override');
+
+var storage = multer.diskStorage({
+  destination: './uploads/customers',
+  filename: function (req, file, cb) {
+    crypto.pseudoRandomBytes(16, function (err, raw) {
+      if (err) return cb(err)
+
+      cb(null, raw.toString('hex') + path.extname(file.originalname))
+    })
+  }
+})  
 
 router.use(bodyParser.urlencoded({ extended: true }))
 router.use(methodOverride(function(req, res){
@@ -38,46 +52,58 @@ router.route('/')
         });
     })
     //POST a new Customer
-    .post(function(req, res) {
-        // Get values from POST request. These can be done through forms or REST calls. These rely on the "name" attributes for forms
-        var name = req.body.name;
-        var type = req.body.type;
-        var email = req.body.email;
-        var discount = req.body.discount;
-        var contactNumber = req.body.contactNumber;
-        var additionalInfo = req.body.additionalInfo;
-        var billingAddress = req.body.billingAddress;
-        var shippingAddress = req.body.shippingAddress;
-        
-        mongoose.model('Customer').create({
-            name : name,
-            type : type,
-            email : email,
-            discount : discount,
-            contactNumber: contactNumber,
-            additionalInfo: additionalInfo,
-            billingAddress: billingAddress,
-            shippingAddress: shippingAddress  
-        }, function (err, customer) {
-              if (err) {
-                  res.send("There was a problem adding Customer to the database.");
-              } else {
-                  //Customer has been created
-                  console.log('POST creating new Customer: ' + customer);
-                  res.format({
-                    html: function(){
-                        // If it worked, set the header so the address bar doesn't still say /addCustomer
-                        res.location("customers");
-                        // And forward to success page
-                        res.redirect("/customers");
-                    },
-                    //JSON response will show the newly created Customer
-                    json: function(){
-                        res.json(customer);
-                    }
-                });
-              }
-        })
+    .post(multer({ 
+        fileFilter: function(req, file, cb) {
+            if (path.extname(file.originalname) !== '.jpg' 
+              && path.extname(file.originalname) !== '.png'
+              && path.extname(file.originalname) !== '.jpeg') {
+              return cb(new Error('Only jpg, jpeg and png files are allowed'))
+            }
+            cb(null, true)
+        },
+        storage: storage
+        }).single('image'),function(req, res) {
+          // Get values from POST request. These can be done through forms or REST calls. These rely on the "name" attributes for forms
+          var name = req.body.name;
+          var type = req.body.type;
+          var email = req.body.email;
+          var image = "/customers/" + req.file.filename 
+          var discount = req.body.discount;
+          var contactNumber = req.body.contactNumber;
+          var additionalInfo = req.body.additionalInfo;
+          var billingAddress = req.body.billingAddress;
+          var shippingAddress = req.body.shippingAddress;
+          
+          mongoose.model('Customer').create({
+              name : name,
+              type : type,
+              image : image,
+              email : email,
+              discount : discount,
+              contactNumber: contactNumber,
+              additionalInfo: additionalInfo,
+              billingAddress: billingAddress,
+              shippingAddress: shippingAddress  
+          }, function (err, customer) {
+                if (err) {
+                    res.send("There was a problem adding Customer to the database.");
+                } else {
+                    //Customer has been created
+                    console.log('POST creating new Customer: ' + customer);
+                    res.format({
+                      html: function(){
+                          // If it worked, set the header so the address bar doesn't still say /addCustomer
+                          res.location("customers");
+                          // And forward to success page
+                          res.redirect("/customers");
+                      },
+                      //JSON response will show the newly created Customer
+                      json: function(){
+                          res.json(customer);
+                      }
+                  });
+                }
+          })
     });
 
 /* GET New Customer page. */

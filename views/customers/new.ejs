@@ -13,66 +13,117 @@
 </div>
 
 <div class="content-wrapper">
-	<form id="new-customer" class="form-horizontal" method="post" action="#" role="form">
+	<form id="new-customer" class="form-horizontal" method="post" action="/customers" role="form" data-toggle="validator" enctype="multipart/form-data">
 	  	<div class="form-group">
-		    <label class="col-sm-2 col-md-2 control-label">First name</label>
+		    <label class="col-sm-2 col-md-2 control-label">Name</label>
 		    <div class="col-sm-10 col-md-8">
-		      <input type="text" class="form-control" name="customer[first_name]" />
+		      <input type="text" class="form-control" data-minlength="5" name="name" data-fv-field="name"/>
 		    </div>
 	  	</div>
 	  	<div class="form-group">
-		    <label class="col-sm-2 col-md-2 control-label">Last name</label>
+		    <label class="col-sm-2 col-md-2 control-label">Type</label>
 		    <div class="col-sm-10 col-md-8">
-		      <input type="text" class="form-control" name="customer[last_name]" />
+		      <select class="form-control" name="type" />
+		      	<option value="endUser">End User</option>
+		      	<option value="homeUser">Home User </option>
+		      	<option value="company">Company</option>
+		      </select>
 		    </div>
 	  	</div>
 	  	<div class="form-group">
-		    <label class="col-sm-2 col-md-2 control-label">Display picture</label>
+		    <label class="col-sm-2 col-md-2 control-label">Photo</label>
 		    <div class="col-sm-10 col-md-8">
-		    	<input type="file" name="customer[display]" />
+		    	<input type="file" name="image" />
 		    </div>
 	  	</div>
 	  	<div class="form-group">
 		    <label class="col-sm-2 col-md-2 control-label">Email address</label>
 		    <div class="col-sm-10 col-md-8">
-		      	<input type="text" class="form-control" name="customer[email]" />
+		      	<input type="text" class="form-control" name="email" />
 		    </div>
 	  	</div>
 	  	<div class="form-group">
 		    <label class="col-sm-2 col-md-2 control-label">Phone number</label>
 		    <div class="col-sm-10 col-md-8">
 		    	<div class="has-feedback">
-					<input type="text" class="form-control mask-phone" name="customer[phone]" />
-			      	<i class="ion-information-circled form-control-feedback" data-toggle="tooltip" title="Tooltip helper example">
-			      	</i>
+					<input type="text" class="form-control mask-phone" name="contactNumber" />
 				</div>
 		    </div>
 	  	</div>
-	  	<div class="address">
+	  	<div class="form-group">
+		    <label class="col-sm-2 col-md-2 control-label">Discount</label>
+		    <div class="col-sm-10 col-md-8">
+		    	<div class="has-feedback">
+					<input type="text" class="form-control mask-phone" name="discount" />
+					<i class="ion-information-circled form-control-feedback" data-toggle="tooltip" title="" data-original-title="Enter in '%'"></i>
+				</div>
+		    </div>
+	  	</div>
+
+	  	<!-- Billing Address -->
+	  	<div class="address billing">
 	  		<div class="form-group">
-			    <label class="col-sm-2 col-md-2 control-label">Address</label>
+			    <label class="col-sm-2 col-md-2 control-label">Billing Address</label>
 			    <div class="col-sm-10 col-md-8">
-			      	<input type="text" class="form-control" placeholder="Address" name="customer[address]" />
+			      	<input type="text" class="form-control" id="billAddress" placeholder="Address" name="billAddress" />
+			      	<input type="hidden" id="billingAddress" name="billingAddress" value="" />
 			    </div>
 			</div>
 			<div class="form-group">
 			    <div class="col-sm-3 col-sm-offset-2">
-			      	<input type="text" class="form-control" placeholder="City" name="customer[city]" />
+			      	<input type="text" class="form-control" placeholder="City" name="billcity" />
 			    </div>
 			    <div class="col-sm-3">
-			      	<input type="text" class="form-control" placeholder="State" name="customer[state]" />
+			      	<input type="text" class="form-control" placeholder="State" name="billstate" />
 			    </div>
 			    <div class="col-sm-2 col-md-2">
-			      	<input type="text" class="form-control" placeholder="Zip code" name="customer[zip]" />
+			      	<input type="text" class="form-control" placeholder="Zip code" name="billzip" />
 			    </div>
 		  	</div>
+	  	</div>
+
+	    <!-- Shippping Address -->
+	  	<div class="address shipping" style="margin-bottom: -10px">
+	  	
+	  		<div class="form-group">
+			    <label class="col-sm-2 col-md-2 control-label">Shipping Address</label>
+			    <div class="col-sm-10 col-md-8">
+			      	<input type="text" class="form-control" id="shipAddress" placeholder="Address" name="shipAddress" />
+			      	<input type="hidden" id="shippingAddress" name="shippingAddress" value="" />
+			    </div>
+			</div>
+			<div class="form-group">
+			    <div class="col-sm-3 col-sm-offset-2">
+			      	<input type="text" class="form-control" placeholder="City" name="shipcity" />
+			    </div>
+			    <div class="col-sm-3">
+			      	<input type="text" class="form-control" placeholder="State" name="shipstate" />
+			    </div>
+			    <div class="col-sm-2 col-md-2">
+			      	<input type="text" class="form-control" placeholder="Zip code" name="shipzip" />
+			    </div>
+		  	</div>
+	  	</div>
+		<div class="form-group" style="margin-bottom: 28px">
+		    <div class="col-sm-offset-2 col-sm-10">
+		      	<div class="checkbox">
+		        	<label>
+		          		<input type="checkbox" id="addrChkbx" /> Same as Billing
+	        		</label>
+		      	</div>
+		    </div>
 	  	</div>
 	  	<div class="form-group">
 		    <label for="inputPassword3" class="col-sm-2 col-md-2 control-label">Extra notes</label>
 		    <div class="col-sm-10 col-md-8">
-		    	<textarea class="form-control" rows="4" name="customer[notes]"></textarea>
+		    	<textarea class="form-control" rows="4" name="additionalInfo"></textarea>
 		    </div>
 	  	</div>
+	  	<div class="form-group">
+        	<div class="col-sm-10 col-md-8">
+            	<div id="messages"></div>
+        	</div>
+    	</div>
 	  	<div class="form-group form-actions">
 	    	<div class="col-sm-offset-2 col-sm-10">
 	    		<a href="/customers" class="btn btn-default">Cancel</a>
@@ -85,5 +136,195 @@
 <script type="text/javascript">
 	$( document ).ready(function() {
 		$("body").attr('id', "form");
-	})	  	
+		
+	})	 
+
+	$("#addrChkbx").on("change", function(){
+    	if (this.checked) {
+	      $("[name='shipAddress']").val($("[name='billAddress']").val());
+	      $("[name='shipcity']").val($("[name='billcity']").val());
+	      $("[name='shipstate']").val($("[name='billstate']").val());
+	      $("[name='shipzip']").val($("[name='billzip']").val());
+	      $('#new-customer').formValidation('revalidateField', 'shipAddress');
+	      $('#new-customer').formValidation('revalidateField', 'shipcity');
+	      $('#new-customer').formValidation('revalidateField', 'shipstate');
+	      $('#new-customer').formValidation('revalidateField', 'shipzip');
+    	}
+  	});
+
+    $('#new-customer').bootstrapValidator({
+        err: {
+            container: 'tooltip'
+        },
+        fields: {
+            name: {
+                validators: {
+                    notEmpty: {
+                        message: 'The full name is required and cannot be empty'
+                    },
+                    stringLength: {
+                        min: 6,
+                        max: 30,
+                        message: 'The name must be more than 6 and less than 30 characters long'
+                    },
+                    regexp: {
+                        regexp: /^[a-zA-Z0-9_ ]+$/,
+                        message: 'The name can only consist of alphabetical, number and underscore'
+                    }
+                }
+            },
+            email: {
+                validators: {
+                    notEmpty: {
+                        message: 'The email address is required and cannot be empty'
+                    },
+                    emailAddress: {
+                        message: 'The email address is not valid'
+                    }
+                }
+            },
+            type: {
+                validators: {
+                    notEmpty: {
+                        message: 'The type is required and cannot be empty'
+                    },
+                }
+            },
+            image: {
+                validators: {
+                    file: {
+                    	extension: 'jpeg,png',
+                    	type: 'image/jpeg,image/png',
+                        message: 'The Image can only be .png , .jpg'
+                    },
+                }
+            },
+            discount: {
+                validators: {
+                    notEmpty: {
+                        message: 'The content is required and cannot be empty'
+                    },
+                    integer: {
+                    	message: 'Discount should be numeric'
+                    },
+                    between: {
+                    	min: 0,
+                    	max: 100,
+                    	message: 'Discount should be between 0 and 100'
+                    }
+                }
+            },
+            contactNumber: {
+                validators: {
+                    notEmpty: {
+                        message: 'The content is required and cannot be empty'
+                    },
+                    phone: {
+                    	country: 'US',
+                    	message: 'Not acceptable phone number format'
+                    }
+                }
+            },
+            additionalInfo: {
+                validators: {
+                    notEmpty: {
+                        message: 'The content is required and cannot be empty'
+                    },
+                    stringLength: {
+                        max: 500,
+                        message: 'The content must be less than 500 characters long'
+                    }
+                }
+            },
+            billAddress: {
+                validators: {
+                    notEmpty: {
+                        message: 'The content is required and cannot be empty'
+                    },
+                    stringLength: {
+                        max: 100,
+                        message: 'The content must be less than 100 characters long'
+                    }
+                }
+            },
+			shipAddress: {
+                validators: {
+                    notEmpty: {
+                        message: 'The content is required and cannot be empty'
+                    },
+                    stringLength: {
+                        max: 100,
+                        message: 'The content must be less than 100 characters long'
+                    }
+                }
+            },
+            billcity: {
+                validators: {
+                    notEmpty: {
+                        message: 'The content is required and cannot be empty'
+                    },
+                    stringLength: {
+                        max: 100,
+                        message: 'The content must be less than 100 characters long'
+                    }
+                }
+            },
+			shipcity: {
+                validators: {
+                    notEmpty: {
+                        message: 'The content is required and cannot be empty'
+                    },
+                    stringLength: {
+                        max: 100,
+                        message: 'The content must be less than 100 characters long'
+                    }
+                }
+            },
+            billstate: {
+                validators: {
+                    notEmpty: {
+                        message: 'The content is required and cannot be empty'
+                    },
+                    stringLength: {
+                        max: 100,
+                        message: 'The content must be less than 100 characters long'
+                    }
+                }
+            },
+			shipstate: {
+                validators: {
+                    notEmpty: {
+                        message: 'The content is required and cannot be empty'
+                    },
+                    stringLength: {
+                        max: 100,
+                        message: 'The content must be less than 100 characters long'
+                    }
+                }
+            },
+            billzip: {
+                validators: {
+                    notEmpty: {
+                        message: 'The content is required and cannot be empty'
+                    },
+                    stringLength: {
+                        max: 100,
+                        message: 'The content must be less than 100 characters long'
+                    }
+                }
+            },
+			shipzip: {
+                validators: {
+                    notEmpty: {
+                        message: 'The content is required and cannot be empty'
+                    },
+                    stringLength: {
+                        max: 100,
+                        message: 'The content must be less than 100 characters long'
+                    }
+                }
+            }
+        }
+    });
+
 </script>
