@@ -14,4 +14,8 @@ router.get('/about', function(req, res, next) {
   res.render('about', { title: 'BCS' });
 });
 
+router.get('/docs', function(req, res, next) {
+  res.render('docs', { title: 'BCS' });
+})
+
 module.exports = router;
