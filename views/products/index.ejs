@@ -7,8 +7,8 @@
 	<div class="page-title">
 		All Products
 	</div>
-	<a href="/customers/new" class="btn btn-success">
-		<span>New customer</span>
+	<a href="/products/new" class="btn btn-success" style="margin-left: 15px;margin-top: -5px;">
+		<span>New Product</span>
 	</a>
 	<div class="options pull-right">
 		<a href="#"><i class="fa fa-download"></i> Download CSV</a>
@@ -107,71 +107,21 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>
-                    	<input name="select-product" type="checkbox" />
-                    </td>
-                    <td>
-                    	<img class="img-responsive product-img" src="images/products/2.png" />
-                    </td>
-                    <td>Some product name</td>
-                    <td class=""><span class="label label-success">Available</span></td>
-                    <td class="center">$159.99</td>
-                </tr>
-                <tr>
-                    <td>
-                    	<input name="select-product" type="checkbox" />
-                    </td>
-                    <td><img class="img-responsive product-img" src="images/products/3.jpg" /></td>
-                    <td>Some product name</td>
-                    <td class=""><span class="label label-success">Available</span></td>
-                    <td class="center">$1,290.50</td> 
-				</tr>
+            <% products.forEach(function(p) { %>
 				<tr>
                     <td>
                     	<input name="select-product" type="checkbox" />
                     </td>
-                    <td><img class="img-responsive product-img" src="images/products/4.png" /></td>
-                    <td>Some product name</td>
-                    <td class=""><span class="label label-info">Out of stock</span></td>
-                    <td class="center">$400.00</td>
-                </tr>
-                <tr>
                     <td>
-                    	<input name="select-product" type="checkbox" />
+                    	<img class="img-responsive product-img" src="<%= p.image %>" />
                     </td>
-                    <td><img class="img-responsive product-img" src="images/products/5.png" /></td>
-                    <td>Some product name</td>
+                    <td><a href="/products/<%= p._id %>/edit" > <%= p.name %></a></td>
                     <td class=""><span class="label label-success">Available</span></td>
-                    <td class="center">$1,559.99</td>
+                    <td class="center">$159.99</td>
                 </tr>
-                <tr>
-                    <td>
-                    	<input name="select-product" type="checkbox" />
-                    </td>
-                    <td><img class="img-responsive product-img" src="images/products/6.png" /></td>
-                    <td>Some product name</td>
-                    <td class=""><span class="label label-success">Available</span></td>
-                    <td class="center">$195.99</td>
-                </tr>
-                <tr>
-                    <td>
-                    	<input name="select-product" type="checkbox" />
-                    </td>
-                    <td><img class="img-responsive product-img" src="images/products/7.jpg" /></td>
-                    <td>Some product name</td>
-                    <td class=""><span class="label label-success">Available</span></td>
-                    <td class="center">$782.00</td>
-                </tr>
-                <tr>
-                    <td>
-                    	<input name="select-product" type="checkbox" />
-                    </td>
-                    <td><img class="img-responsive product-img" src="images/products/8.png" /></td>
-                    <td>Some product name</td>
-                    <td class=""><span class="label label-success">Available</span></td>
-                    <td class="center">$2,890.00</td>
-                </tr>
+            <% }); %>
+                
+                
            	</tbody>
         </table>
 	</div>

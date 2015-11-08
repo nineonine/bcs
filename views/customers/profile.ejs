@@ -375,14 +375,6 @@
 			$("#prompt-modal").find("input:text").focus();
 		})
 
-		// Show message on submit
-		$("#form-modal").submit(function () {
-			$(this).modal('hide');
-			Messenger().post("Your task was created succesfully.");
-			return false;
-		});
-
-
     	// orders datatable 
         $('#datatable-example').dataTable({
             "sPaginationType": "full_numbers",

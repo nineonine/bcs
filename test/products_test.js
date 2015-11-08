@@ -82,8 +82,7 @@ describe('Product' , function() {
 			price: 200,
 			qty: 200,
 			description: "321",
-			image: "image/changed_url.jpg",
-			status: "outOfStock"
+			status: "Out Of Stock"
 		})
 		.expect(200)
 		.set('Accept', 'application/json')
@@ -93,17 +92,11 @@ describe('Product' , function() {
 			expect(res.body.price).to.equal(200)
 			expect(res.body.qty).to.equal(200)
 			expect(res.body.description).to.equal('321')
-			expect(res.body.image).to.equal('image/changed_url.jpg')
-			expect(res.body.status).to.equal('outOfStock')
+			expect(res.body.status).to.equal('Out Of Stock')
 			done()
 		})
 	})
 
-
-	before(function(done) {
-		fs.unlinkSync(process.cwd() + '/uploads' + product1.image)
-		done()
-	})
 
 	it('should delete mocked product', function(done) {
 		api.del('/products/' + product1._id + '/edit')

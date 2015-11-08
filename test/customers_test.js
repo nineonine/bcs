@@ -34,6 +34,11 @@ describe('Customer' , function() {
 		})
 	})
 
+	it('should upload an image', function(done) {
+		expect(customer1.image).to.not.equal(null)
+		done()
+	})
+
 	it('should return a 200 response with all customers', function(done) {
 		api.get('/customers')
 		.set('Accept', 'application/json')
@@ -86,10 +91,7 @@ describe('Customer' , function() {
 			email: "changed_test_customer@email.com",
 			discount: 10,
 			contactNumber: "321",
-			additionalInfo: "something new about dummy customer",
-			// billingAddress: "some new dummy billing address",
-			// shippingAddress: "some new dummy shipping address"
-
+			additionalInfo: "something new about dummy customer"
 		})
 		.expect(200)
 		.set('Accept', 'application/json')

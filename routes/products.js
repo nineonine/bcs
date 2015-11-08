@@ -5,7 +5,9 @@ var express = require('express'),
     router = express.Router(),
     mongoose = require('mongoose'), 
     bodyParser = require('body-parser'), 
-    methodOverride = require('method-override');
+    methodOverride = require('method-override'),
+    fs = require('fs'),
+    flash = require('connect-flash')
 
 var storage = multer.diskStorage({
   destination: './uploads/products',
@@ -104,7 +106,10 @@ router.route('/')
 
 /* GET New Product page. */
 router.get('/new', function(req, res) {
-    res.render('products/new', { title: 'Add New Product' });
+    res.render('products/new', { 
+      title: 'Add New Product',
+      action: 'new'
+      });
 });
 
 // route middleware to validate :id
@@ -172,9 +177,10 @@ router.route('/:id/edit')
 	            res.format({
 	                //HTML response will render the 'edit.ejs' template
 	                html: function(){
-	                       res.render('products/edit', {
+	                       res.render('products/product', {
 	                          title: 'product' + product._id,
-	                          "product" : product 
+	                          "product" : product,
+                            action: 'edit' 
 	                      });
 	                 },
 	                 //JSON response will return the JSON output
@@ -212,7 +218,10 @@ router.route('/:id/edit')
         if (err) {
             return console.error(err);
         } else {
+            //Removing image
+            fs.unlinkSync(process.cwd() + '/uploads' + product.image)
             //Returning success messages saying it was deleted
+            req.flash('action', 'Product deleted!')
             console.log('DELETE removing ID: ' + product._id);
             res.format({
               //HTML returns us back to the main page, or you can create a success page
