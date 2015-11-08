@@ -8,7 +8,8 @@ var express = require('express'),
     session = require('express-session'),
     cookieParser = require('cookie-parser'),
     methodOverride = require('method-override'),
-    flash = require('connect-flash');
+    flash = require('connect-flash'),
+    fs = require('fs')
 
 var storage = multer.diskStorage({
   destination: './uploads/customers',
@@ -242,12 +243,13 @@ router.route('/:id/edit')
 	//DELETE a Customer by ID
 	.delete(function (req, res){
 
-      console.log(res.body)
-
       mongoose.model('Customer').findOneAndRemove({_id: req.id}, function(err, customer) {
         if (err) {
             return console.error(err);
         } else {
+
+            // Delete Image
+            fs.unlinkSync(process.cwd() + '/uploads' + customer.image)
             //Returning success messages saying it was deleted
             console.log('DELETE removing ID: ' + customer._id);
 
