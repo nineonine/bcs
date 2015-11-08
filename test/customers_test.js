@@ -2,7 +2,7 @@ var should = require('chai').should()
 expect = require('chai').expect
 supertest = require('supertest')
 api = supertest('http://localhost:3000')
-
+fs = require('fs')
 
 describe('Customer' , function() {
 
@@ -100,16 +100,10 @@ describe('Customer' , function() {
 			expect(res.body.discount).to.equal(10)
 			expect(res.body.contactNumber).to.equal('321')
 			expect(res.body.additionalInfo).to.equal('something new about dummy customer')
-			// expect(res.body.billingAddress).to.equal('some new dummy billing address')
-			// expect(res.body.shippingAddress).to.equal('some new dummy shipping address')
 			done()
 		})
 	})
 	
-	before(function(done) {
-		fs.unlinkSync(process.cwd() + '/uploads' + customer1.image)
-		done()
-	})
 
 	it('should delete mocked customer', function(done) {
 		api.del('/customers/' + customer1._id + '/edit')

@@ -249,23 +249,22 @@ router.route('/:id/edit')
         } else {
 
             // Delete Image
-            fs.unlinkSync(process.cwd() + '/uploads' + customer.image)
+          fs.unlinkSync(process.cwd() + '/uploads' + customer.image) 
             //Returning success messages saying it was deleted
-            console.log('DELETE removing ID: ' + customer._id);
-
-            req.flash('action', 'Customer deleted!')
-            res.format({
-              //HTML returns us back to the main page, or you can create a success page
-                html: function(){
-                    res.redirect("/customers");
-                },
-               //JSON returns the item with the message that is has been deleted
-                json: function(){
-                    res.json({message : 'deleted',
-                        item : customer
-                    });
-                }
-            });
+          console.log('DELETE removing ID: ' + customer._id);
+          req.flash('action', 'Customer deleted!')
+          res.format({
+            //HTML returns us back to the main page, or you can create a success page
+              html: function(){
+                  res.redirect("/customers");
+              },
+             //JSON returns the item with the message that is has been deleted
+              json: function(){
+                  res.json({message : 'deleted',
+                      item : customer
+                  });
+              }
+          });
         }
       })
 	});
