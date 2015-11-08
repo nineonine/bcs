@@ -91,6 +91,8 @@ router.route('/')
                zip: req.body.billzip 
           }
 
+          console.log("BILL ADDRESS : " + req.body.billAddress)
+
           var shippingAddress = {
               address: req.body.shipAddress,
               city: req.body.shipcity,
@@ -98,7 +100,8 @@ router.route('/')
               zip: req.body.shipzip
           }
 
-          
+          console.log("SHIP ADDRESS : " + req.body.shipAddress)
+
           mongoose.model('Customer').create({
               name : name,
               type : type,
@@ -107,8 +110,8 @@ router.route('/')
               discount : discount,
               contactNumber: contactNumber,
               additionalInfo: additionalInfo,
-              billing: billingAddress,
-              shipping: shippingAddress  
+              billing: shippingAddress,
+              shipping: shippingAddress
           }, function (err, customer) {
                 if (err) {
                     res.send("There was a problem adding Customer to the database.");
@@ -159,7 +162,7 @@ router.param('id', function(req, res, next, id) {
         //if it is found we continue on
         } else {
             //uncomment this next line if you want to see every JSON document response for every GET/PUT/DELETE call
-            //console.log(customer);
+            console.log(customer);
             // once validation is done save the new item in the req
             req.id = id;
             // go to the next thing
@@ -218,7 +221,8 @@ router.route('/:id/edit')
 	})
 	//PUT to update a Customer by ID
 	.put(function(req, res) {
-      mongoose.model('Customer').findOneAndUpdate({_id: req.id}, req.body, {'new': true}, function(err, customer) {
+      mongoose.model('Customer').findOneAndUpdate({_id: req.id}, req.body
+      , {'new': true}, function(err, customer) {
         if (err) {
           res.send("There was a problem updating the information to the database: " + err);
         } else {
@@ -237,6 +241,8 @@ router.route('/:id/edit')
 	})
 	//DELETE a Customer by ID
 	.delete(function (req, res){
+
+      console.log(res.body)
 
       mongoose.model('Customer').findOneAndRemove({_id: req.id}, function(err, customer) {
         if (err) {

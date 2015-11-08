@@ -391,10 +391,7 @@
         });
 	})	 
 	
-
-	// $('#deleteCustomer').submit(function(e) {
-	// 	e.preventDefault();
-	// })
+	console.log($("#edit-customer input[name='name']").val())
 
 	// AJAX form update
 	$('#edit-customer').submit(function(e) {
@@ -403,32 +400,38 @@
 		e.stopImmediatePropagation();
 
 		console.log("form axaj update")
+		console.log($("#edit-customer input[name='billAddress']").val())
+
+		var formData = {
+			name : $("#edit-customer input[name='name']").val(),
+            type : $('#edit-customer').find('select').val(),
+            image : $("#edit-customer input[name='image']").val(),
+            email : $("#edit-customer input[name='email']").val(),
+            discount : $("#edit-customer input[name='discount']").val(),
+            contactNumber: $("#edit-customer input[name='contactNumber']").val(),
+            additionalInfo: $("#edit-customer #addInfo").val(),
+            billing: {
+            	address: $("#edit-customer input[name='billAddress']").val(),
+            	city: $("#edit-customer input[name='billcity']").val(),
+            	state: $("#edit-customer input[name='billstate']").val(),
+            	zip: $("#edit-customer input[name='billzip']").val()
+            },
+            shipping: {
+            	address: $("#edit-customer input[name='shipAddress']").val(),
+            	city: $("#edit-customer input[name='shipcity']").val(),
+            	state: $("#edit-customer input[name='shipstate']").val(),
+            	zip: $("#edit-customer input[name='shipzip']").val()
+            }
+	    }
+
+	    console.log(formData)
 
 		$.ajax({
 			url: '/customers/<%= customer._id %>/edit',
 			type: 'PUT',
+			contentType: 'application/json; charset=UTF-8',
 			dataType: 'json',
-			data: {
-				name : $("#edit-customer input[name='name']").val(),
-	            type : $("#edit-customer input[name='type']").val(),
-	            image : $("#edit-customer input[name='image']").val(),
-	            email : $("#edit-customer input[name='email']").val(),
-	            discount : $("#edit-customer input[name='discount']").val(),
-	            contactNumber: $("#edit-customer input[name='contactNumber']").val(),
-	            additionalInfo: $("#edit-customer #addInfo").val(),
-	            billing: {
-	            	address: $("#edit-customer input[name='billAddress']").val(),
-	            	city: $("#edit-customer input[name='billcity']").val(),
-	            	state: $("#edit-customer input[name='billstate']").val(),
-	            	zip: $("#edit-customer input[name='billzip']").val()
-	            },
-	            shipping: {
-	            	address: $("#edit-customer input[name='shipAddress']").val(),
-	            	city: $("#edit-customer input[name='shipcity']").val(),
-	            	state: $("#edit-customer input[name='shipstate']").val(),
-	            	zip: $("#edit-customer input[name='shipzip']").val()
-	            }
-	        },
+			data: JSON.stringify(formData),
 	        timeout: 5000,
 	        complete: () => console.log("complete !"),
 	        success: (data) => {
