@@ -13,45 +13,63 @@
 </div>
 
 <div class="content-wrapper">
-	<form id="new-product" class="form-horizontal" method="post" action="/products" role="form">
+	<form id="new-product" class="form-horizontal" method="post" action="/products" role="form" enctype="multipart/form-data" data-toggle="validator">
 	  	<div class="form-group">
 		    <label class="col-sm-2 col-md-2 control-label">Product name</label>
 		    <div class="col-sm-10 col-md-8">
-		      <input type="text" class="form-control" name="customer[first_name]" />
+		      <input type="text" class="form-control" name="name" />
 		    </div>
 	  	</div>
 	  	<div class="form-group">
 	  		<label class="col-sm-2 col-md-2 control-label">SKU</label>
 		    <div class="col-sm-10 col-md-8">
-		      <input type="text" class="form-control" name="customer[last_name]" />
+		      <input type="text" class="form-control" name="sku" />
 		    </div>
 	  	</div>
 	  	<div class="form-group">
 		    <label class="col-sm-2 col-md-2 control-label">Product picture</label>
 		    <div class="col-sm-10 col-md-8">
+		    <div class="well">
+	    		<div class="pic">
+	    			<img src="../../images/placeholder.png" class="img-responsive" />
+	    		</div>
+	            
+	            <div class="control-group">
+	                <label for="image">
+	                	Picture:
+	                </label>
+	                <input id="image" name="image" type="file">
+	            </div>
+	            <a href="#" class="remove-image">Update picture</a>
+	        </div>
 		    	<input type="file" name="customer[display]" />
 		    </div>
 	  	</div>
 	  	<div class="form-group">
 		    <label class="col-sm-2 col-md-2 control-label">Price</label>
 		    <div class="col-sm-10 col-md-8">
-		      	<input type="text" class="form-control" name="customer[email]" />
+		      	<input type="text" class="form-control" name="price" />
 		    </div>
 	  	</div>
 	  	<div class="form-group">
 		    <label class="col-sm-2 col-md-2 control-label">Quantity</label>
 		    <div class="col-sm-10 col-md-8">
-		    	<div class="has-feedback">
-					<input type="text" class="form-control mask-phone" name="customer[phone]" />
-			      	<i class="ion-information-circled form-control-feedback" data-toggle="tooltip" title="Tooltip helper example">
-			      	</i>
-				</div>
+				<input type="text" class="form-control mask-phone" name="qty" />
+		    </div>
+	  	</div>
+	  	<div class="form-group">
+		    <label class="col-sm-2 col-md-2 control-label">Quantity</label>
+		    <div class="col-sm-10 col-md-8">
+				<select class="form-control mask-phone" name="qty" />
+					<option value="inStock"> In stock</option>
+					<option value="outOfStock">Out of stock</option>
+				</select>
 		    </div>
 	  	</div>
 	  	<div class="form-group">
 		    <label for="inputPassword3" class="col-sm-2 col-md-2 control-label">Product Description</label>
 		    <div class="col-sm-10 col-md-8">
-		    	<textarea class="form-control" rows="4" name="customer[notes]"></textarea>
+		    	<textarea class="form-control" rows="4" name="description"></textarea>
 		    </div>
 	  	</div>
 	  	<div class="form-group form-actions">
@@ -66,5 +84,77 @@
 <script type="text/javascript">
 	$( document ).ready(function() {
 		$("body").attr('id', "form");
+
+		$('#new-product').bootstrapValidator({
+	        err: {
+	            container: 'tooltip'
+	        },
+	        fields: {
+	            name: {
+	                validators: {
+	                    notEmpty: {
+	                        message: 'The name is required and cannot be empty'
+	                    },
+	                    stringLength: {
+	                        min: 3,
+	                        max: 30,
+	                        message: 'The name must be more than 3 and less than 30 characters long'
+	                    },
+	                    regexp: {
+	                        regexp: /^[a-zA-Z0-9_ ]+$/,
+	                        message: 'The name can only consist of alphabetical, number, underscore and spaces'
+	                    }
+	                }
+	            },
+	            sku: {
+	                validators: {
+	                    notEmpty: {
+	                        message: 'The SKU is required and cannot be empty'
+	                    }
+	                }
+	            },
+	            image: {
+	                validators: {
+	                    file: {
+	                    	extension: 'jpeg,png',
+	                    	type: 'image/jpeg,image/png',
+	                    	maxSize: 2097152,
+	                        message: 'Invalid image format'
+	                    },
+	                }
+	            },
+	            price: {
+	                validators: {
+	                    notEmpty: {
+	                        message: 'The price is required and cannot be empty'
+	                    },
+	                    integer: {
+	                    	message: 'Price should be numeric'
+	                    }
+	                }
+	            },
+	            qty: {
+	                validators: {
+	                    notEmpty: {
+	                        message: 'The quantity is required and cannot be empty'
+	                    },
+	                    integer: {
+	                    	message: 'Quantity should be numeric'
+	                    }
+	                }
+	            },
+	            description: {
+	                validators: {
+	                    notEmpty: {
+	                        message: 'The content is required and cannot be empty'
+	                    },
+	                    stringLength: {
+	                        max: 500,
+	                        message: 'The content must be less than 500 characters long'
+	                    }
+	                }
+	            }
+	        }
+	    });
 	})	  	
 </script>
