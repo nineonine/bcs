@@ -4,6 +4,12 @@
     <% include partials/head %>
     <% include partials/styles %>
     <% include partials/scripts %>
+    <script type="text/javascript">
+      Messenger.options = {
+            extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-right',
+            theme: 'flat'
+      } 
+    </script>
   </head>
   <body>
     <div id="wrapper">
@@ -14,7 +20,8 @@
     </div>
   <script type="text/javascript">
     $(function () {
-    
+       
+        
     });
 
     function openInNewTab(url) {

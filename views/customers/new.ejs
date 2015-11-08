@@ -24,16 +24,16 @@
 		    <label class="col-sm-2 col-md-2 control-label">Type</label>
 		    <div class="col-sm-10 col-md-8">
 		      <select class="form-control" name="type" />
-		      	<option value="endUser">End User</option>
-		      	<option value="homeUser">Home User </option>
-		      	<option value="company">Company</option>
+		      	<option value="End User">End User</option>
+		      	<option value="Home User">Home User </option>
+		      	<option value="Company">Company</option>
 		      </select>
 		    </div>
 	  	</div>
 	  	<div class="form-group">
 		    <label class="col-sm-2 col-md-2 control-label">Photo</label>
 		    <div class="col-sm-10 col-md-8">
-		    	<input type="file" name="image" />
+		    	<input type="file" name="image" data-fv-file-extension='jpeg,png' data-fv-file-type='image/jpeg,image/png' />
 		    </div>
 	  	</div>
 	  	<div class="form-group">
@@ -66,7 +66,6 @@
 			    <label class="col-sm-2 col-md-2 control-label">Billing Address</label>
 			    <div class="col-sm-10 col-md-8">
 			      	<input type="text" class="form-control" id="billAddress" placeholder="Address" name="billAddress" />
-			      	<input type="hidden" id="billingAddress" name="billingAddress" value="" />
 			    </div>
 			</div>
 			<div class="form-group">
@@ -89,7 +88,6 @@
 			    <label class="col-sm-2 col-md-2 control-label">Shipping Address</label>
 			    <div class="col-sm-10 col-md-8">
 			      	<input type="text" class="form-control" id="shipAddress" placeholder="Address" name="shipAddress" />
-			      	<input type="hidden" id="shippingAddress" name="shippingAddress" value="" />
 			    </div>
 			</div>
 			<div class="form-group">
@@ -136,8 +134,9 @@
 <script type="text/javascript">
 	$( document ).ready(function() {
 		$("body").attr('id', "form");
+
 		
-	})	 
+	})	
 
 	$("#addrChkbx").on("change", function(){
     	if (this.checked) {
@@ -163,9 +162,9 @@
                         message: 'The full name is required and cannot be empty'
                     },
                     stringLength: {
-                        min: 6,
+                        min: 3,
                         max: 30,
-                        message: 'The name must be more than 6 and less than 30 characters long'
+                        message: 'The name must be more than 3 and less than 30 characters long'
                     },
                     regexp: {
                         regexp: /^[a-zA-Z0-9_ ]+$/,
@@ -195,7 +194,8 @@
                     file: {
                     	extension: 'jpeg,png',
                     	type: 'image/jpeg,image/png',
-                        message: 'The Image can only be .png , .jpg'
+                    	maxSize: 2097152,
+                        message: 'Invalid image format'
                     },
                 }
             },

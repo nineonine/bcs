@@ -6,23 +6,29 @@ api = supertest('http://localhost:3000')
 
 describe('Customer' , function() {
 
-	//creating mock user
 	before(function(done) {
 		api.post('/customers')
-		.set('Accept', 'application/x-www-form-urlencoded')
-		.send({
-			name: "dummy_customer",
-			type: "test_customer",
-			email: "test_customer@email.com",
-			discount: 100,
-			contactNumber: "123",
-			additionalInfo: "something about dummy customer",
-			billingAddress: "some dummy billing address",
-			shippingAddress: "some dummy shipping address"
-		})
+		.field('Content-Type', 'multipart/form-data')
+		.field('name', 'dummy_customer')
+		.field('type', 'test_customer@email.com')
+		.field('email', '100')
+		.field('discount', '100')
+		.field('contactNumber', "123")
+		.field('additionalInfo', "about dummy customer")
+		.field('status', 'in')
+		.field('billAddress', 'bill address 1')
+		.field('billcity', 'bill city')
+		.field('billstate', 'bill state')
+		.field('billzip', 'bill zip')
+		.field('shipAddress', 'ship address')
+		.field('shipcity', 'ship city')
+		.field('shipstate', 'ship state')
+		.field('shipzip', 'ship zip')
+		.attach('image', __dirname + '/cat.jpeg')
 		.set('Accept', 'application/json')
 		.expect('Content-Type', /json/)
 		.end(function(err, res) {
+			if(err) console.log(err)
 			customer1 = res.body
 			done()
 		})
@@ -61,10 +67,12 @@ describe('Customer' , function() {
 			expect(res.body.contactNumber).to.not.equal(null)
 			expect(res.body).to.have.property("additionalInfo")
 			expect(res.body.additionalInfo).to.not.equal(null)
-			expect(res.body).to.have.property("billingAddress")
-			expect(res.body.billingAddress).to.not.equal(null)
-			expect(res.body).to.have.property("shippingAddress")
-			expect(res.body.shippingAddress).to.not.equal(null)
+			expect(res.body).to.have.property("billing")
+			expect(res.body.billing).to.not.equal(null)
+			expect(res.body.billing).to.be.an('object')
+			expect(res.body).to.have.property("shipping")
+			expect(res.body.shipping).to.not.equal(null)
+			expect(res.body.shipping).to.be.an('object')
 			done()
 		})
 	})
@@ -79,8 +87,9 @@ describe('Customer' , function() {
 			discount: 10,
 			contactNumber: "321",
 			additionalInfo: "something new about dummy customer",
-			billingAddress: "some new dummy billing address",
-			shippingAddress: "some new dummy shipping address"
+			// billingAddress: "some new dummy billing address",
+			// shippingAddress: "some new dummy shipping address"
+
 		})
 		.expect(200)
 		.set('Accept', 'application/json')
@@ -91,10 +100,15 @@ describe('Customer' , function() {
 			expect(res.body.discount).to.equal(10)
 			expect(res.body.contactNumber).to.equal('321')
 			expect(res.body.additionalInfo).to.equal('something new about dummy customer')
-			expect(res.body.billingAddress).to.equal('some new dummy billing address')
-			expect(res.body.shippingAddress).to.equal('some new dummy shipping address')
+			// expect(res.body.billingAddress).to.equal('some new dummy billing address')
+			// expect(res.body.shippingAddress).to.equal('some new dummy shipping address')
 			done()
 		})
+	})
+	
+	before(function(done) {
+		fs.unlinkSync(process.cwd() + '/uploads' + customer1.image)
+		done()
 	})
 
 	it('should delete mocked customer', function(done) {

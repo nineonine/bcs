@@ -21,10 +21,10 @@
 	<div class="row page-controls">
 		<div class="col-md-12 filters">
 			<label>Filter Customers:</label>
-			<a href="#" class="active">All(243)</a>
-			<a href="#">Home-user (3)</a>
-			<a href="#">End-user (8)</a>
-			<a href="#">Corporation</a>
+			<a href="#" class="active">All (<%= customers.length %>)</a>
+			<a href="#">Home-user (<%=customers.filter( c => c.type === 'endUser').length %>)</a>
+			<a href="#">End-user (<%=customers.filter( c => c.type === 'homeUser').length %>)</a>
+			<a href="#">Corporation (<%=customers.filter( c => c.type === 'company').length %>)</a>
 
 			<div class="show-options">
 				<div class="dropdown">
@@ -61,10 +61,8 @@
 					  		<i class="fa fa-chevron-down"></i>
 					  	</a>
 					  	<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-					    	<li><a href="#">Add tags</a></li>
-							<li><a href="#">Delete users</a></li>
-							<li><a href="#">Edit customers</a></li>
-							<li><a href="#">Manage permissions</a></li>
+							<li><a href="#">Delete customers</a></li>
+							<li><a href="#">Edit customer</a></li>
 					  	</ul>
 					</div>
 				</div>
@@ -116,7 +114,6 @@
 			</div>
 		</div>
 	</div>
-
 </div>
 
 
@@ -124,8 +121,10 @@
 	$( document ).ready(function() {
 	  	$("body").attr('id', "users");
 
+	  	if('<%= message %>') { Messenger().post('<%= message %>') }
+
 		var $allUsers = $(".select-users input:checkbox");
-				var $checkboxes = $("[name='select-user']");
+		var $checkboxes = $("[name='select-user']");
 
 		$allUsers.change(function () {
 			var checked = $allUsers.is(":checked");
@@ -146,7 +145,7 @@
 		function toggleBulkActions(shouldShow, checkedCount) {
 			if (shouldShow) {
 				$(".users-list .header").hide();
-				$(".users-list .header.select-users").addClass("active").find(".total-checked").html("(" + checkedCount + " total users)");
+				$(".users-list .header.select-users").addClass("active").find(".total-checked").html("(" + checkedCount + " total customers)");
 
 			} else {
 				$(".users-list .header").show();

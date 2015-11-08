@@ -5,7 +5,10 @@ var express = require('express'),
     router = express.Router(),
     mongoose = require('mongoose'), 
     bodyParser = require('body-parser'), 
-    methodOverride = require('method-override');
+    session = require('express-session'),
+    cookieParser = require('cookie-parser'),
+    methodOverride = require('method-override'),
+    flash = require('connect-flash');
 
 var storage = multer.diskStorage({
   destination: './uploads/customers',
@@ -18,6 +21,14 @@ var storage = multer.diskStorage({
   }
 })  
 
+router.use(cookieParser('secret'));
+router.use(session({
+  cookie: { maxAge: 60000 },
+  secret: 'keyboard-cat',
+  resave: true,
+  saveUninitialized: true
+}));
+router.use(flash());
 router.use(bodyParser.urlencoded({ extended: true }))
 router.use(methodOverride(function(req, res){
       if (req.body && typeof req.body === 'object' && '_method' in req.body) {
@@ -40,7 +51,8 @@ router.route('/')
                     html: function(){
                         res.render('customers/index', {
                               title: 'All customers',
-                              "customers" : customers
+                              customers : customers,
+                              message : req.flash('action')
                           });
                     },
                     //JSON response will show all blobs in JSON format
@@ -67,12 +79,25 @@ router.route('/')
           var name = req.body.name;
           var type = req.body.type;
           var email = req.body.email;
-          var image = "/customers/" + req.file.filename 
+          var image = ("/customers/" + req.file.filename) || req.body.image
           var discount = req.body.discount;
           var contactNumber = req.body.contactNumber;
           var additionalInfo = req.body.additionalInfo;
-          var billingAddress = req.body.billingAddress;
-          var shippingAddress = req.body.shippingAddress;
+
+          var billingAddress = {
+               address: req.body.billAddress,
+               city: req.body.billcity,
+               state: req.body.billstate,
+               zip: req.body.billzip 
+          }
+
+          var shippingAddress = {
+              address: req.body.shipAddress,
+              city: req.body.shipcity,
+              state: req.body.shipstate,
+              zip: req.body.shipzip
+          }
+
           
           mongoose.model('Customer').create({
               name : name,
@@ -82,8 +107,8 @@ router.route('/')
               discount : discount,
               contactNumber: contactNumber,
               additionalInfo: additionalInfo,
-              billingAddress: billingAddress,
-              shippingAddress: shippingAddress  
+              billing: billingAddress,
+              shipping: shippingAddress  
           }, function (err, customer) {
                 if (err) {
                     res.send("There was a problem adding Customer to the database.");
@@ -95,6 +120,7 @@ router.route('/')
                           // If it worked, set the header so the address bar doesn't still say /addCustomer
                           res.location("customers");
                           // And forward to success page
+                          req.flash('action', 'Customer created!')
                           res.redirect("/customers");
                       },
                       //JSON response will show the newly created Customer
@@ -192,7 +218,6 @@ router.route('/:id/edit')
 	})
 	//PUT to update a Customer by ID
 	.put(function(req, res) {
-
       mongoose.model('Customer').findOneAndUpdate({_id: req.id}, req.body, {'new': true}, function(err, customer) {
         if (err) {
           res.send("There was a problem updating the information to the database: " + err);
@@ -219,17 +244,19 @@ router.route('/:id/edit')
         } else {
             //Returning success messages saying it was deleted
             console.log('DELETE removing ID: ' + customer._id);
+
+            req.flash('action', 'Customer deleted!')
             res.format({
               //HTML returns us back to the main page, or you can create a success page
                 html: function(){
-                     res.redirect("/customers");
-               },
+                    res.redirect("/customers");
+                },
                //JSON returns the item with the message that is has been deleted
-              json: function(){
-                     res.json({message : 'deleted',
-                         item : customer
-                     });
-               }
+                json: function(){
+                    res.json({message : 'deleted',
+                        item : customer
+                    });
+                }
             });
         }
       })

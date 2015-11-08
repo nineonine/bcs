@@ -8,8 +8,18 @@ var customerSchema  = new mongoose.Schema({
 	discount: Number,
 	contactNumber: String,
 	additionalInfo: String,
-	billingAddress: String,
-	shippingAddress: String
+	billing: {
+		address: String,
+		city: String,
+		state: String,
+		zip: String
+	},
+	shipping: {
+		address: String,
+		city: String,
+		state: String,
+		zip: String
+	}
 })
 
 mongoose.model("Customer", customerSchema);
