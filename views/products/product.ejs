@@ -13,7 +13,7 @@
 	<% if (action === 'edit') { %>
 	<a data-toggle="modal" data-target="#confirm-modal" id="deleteProduct" href="#" class="pull-right btn btn-primary" style="margin-left: 10px; background-color: #CA4242; border-color: #BD3131">Delete Product</a>
 	<% } %>
-	<a class="pull-right" style="margin: 0 15px 50px 0" href="javascript:history.go(-1)"><i class="fa fa-arrow-left"></i> Back</a>
+	<a class="pull-right" style="margin: 0 15px 50px 0" href="/products"><i class="fa fa-arrow-left"></i> Back</a>
 
 </div>
 
@@ -35,7 +35,7 @@
 		<div class="tab-content">
 
 			<div class="tab work active	">
-				<form id="new-product" class="form-horizontal" method="post" action="/products" role="form" enctype="multipart/form-data" data-toggle="validator">
+				<form id="edit-product" class="form-horizontal" method="post" action="/products" role="form" enctype="multipart/form-data" data-toggle="validator">
 				  	<div class="form-group">
 					    <label class="col-sm-2 col-md-2 control-label">Product name</label>
 					    <div class="col-sm-10 col-md-8">
@@ -78,7 +78,7 @@
 				  	<div class="form-group form-actions">
 				    	<div class="col-sm-offset-2 col-sm-10">
 				    		<a href="/products" class="btn btn-default">Cancel</a>
-				      		<button type="submit" class="btn btn-success">Save Product</button>
+				      		<button type="submit" id="save-product-button" class="btn btn-success">Save Product</button>
 			    		</div>
 				  	</div>
 				</form>	
@@ -160,42 +160,51 @@
         });
 	})	 
 	
-	console.log($("#edit-customer input[name='name']").val())
+	// console.log($("#edit-customer input[name='name']").val())
 
 	// AJAX form update
 	$('#edit-product').submit(function(e) {
 
+		console.log("form axaj update")
 		e.preventDefault();
 		e.stopImmediatePropagation();
 
-		console.log("form axaj update")
+		formData = {
+			name: $("#edit-product input[name='name']").val(),
+			sku: $("#edit-product input[name='sku']").val(),
+			price: $("#edit-product input[name='price']").val(),
+			qty: $("#edit-product input[name='qty']").val(),
+			status: $('#edit-product').find('select').val(),
+			description: $("#edit-product").find('textarea').val() 
+		}
 
-	    console.log(formData)
+		$.ajax({
+			url: '/products/<%= product._id %>/edit',
+			type: 'PUT',
+			contentType: 'application/json; charset=UTF-8',
+			dataType: 'json',
+			data: JSON.stringify(formData),
+	        timeout: 5000,
+	        complete: () => console.log("complete !"),
+	        success: (data) => {
+				Messenger().post("Product has been updated!");
+	        },
+	        error: () => {
+	        	console.log("ERROR") 
+	        	Messenger().post({
+				  	message: 'Sorry, there was problem with updating Product.',
+				  	type: 'error',
+				  	showCloseButton: true
+				});
+	        }
+		})		
+
 	})
+
 
 	// tabs
 	var $tabs = $(".tabs a");
 	var $tab_contents = $(".tab-content .tab");
-	var $editBtn = $("#editBtn");
-	var $submitEdit = $("#submitEdit");
-
-	$submitEdit.submit(function(e) {
-		console.log("working")
-
-	})
-
-
-	$editBtn.click(function(e) {
-		e.preventDefault();
-		var index = $tabs.index(this);
-
-		$tabs.removeClass("active");
-		// first is a tab with form 
-		$tabs.first().addClass("active")
-
-		$tab_contents.removeClass("active");
-		$tab_contents.first().addClass("active");
-	})
 
 	$tabs.click(function (e) {
 		e.preventDefault();
@@ -208,7 +217,7 @@
 		$tab_contents.eq(index).addClass("active");
 	});
 
-	$('#new-product').bootstrapValidator({
+	$('#edit-product').bootstrapValidator({
         err: {
             container: 'tooltip'
         },

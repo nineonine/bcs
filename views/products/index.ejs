@@ -108,7 +108,7 @@
             </thead>
             <tbody>
             <% products.forEach(function(p) { %>
-				<tr>
+				<tr class="product-block">
                     <td>
                     	<input name="select-product" type="checkbox" />
                     </td>
@@ -116,8 +116,8 @@
                     	<img class="img-responsive product-img" src="<%= p.image %>" />
                     </td>
                     <td><a href="/products/<%= p._id %>/edit" > <%= p.name %></a></td>
-                    <td class=""><span class="label label-success">Available</span></td>
-                    <td class="center">$159.99</td>
+                    <td class="product-status"><span class="label label-success"><%= p.status %></span></td>
+                    <td class="center">$<%= (+p.price).toFixed(2) %></td>
                 </tr>
             <% }); %>
                 
@@ -129,8 +129,18 @@
 
 <script type="text/javascript">
 	$( document ).ready(function() {
+
+		if('<%= message %>') { Messenger().post('<%= message %>') }
 		
 		$("body").attr('id', "search");
+
+		$('.product-block').each(function(el) {
+
+			 var status = $(this).find('span');
+			
+			status.html() === 'In Stock' ? status.addClass('label-success') : status.addClass('label-warning')
+
+		})
 
 		var $filters = $(".filters .filter input:checkbox");
 		

@@ -5,6 +5,8 @@ var express = require('express'),
     router = express.Router(),
     mongoose = require('mongoose'), 
     bodyParser = require('body-parser'), 
+    session = require('express-session'),
+    cookieParser = require('cookie-parser'),
     methodOverride = require('method-override'),
     fs = require('fs'),
     flash = require('connect-flash')
@@ -20,6 +22,14 @@ var storage = multer.diskStorage({
   }
 }) 
 
+router.use(cookieParser('secret'));
+router.use(session({
+  cookie: { maxAge: 60000 },
+  secret: 'keyboard-cat',
+  resave: true,
+  saveUninitialized: true
+}));
+router.use(flash());
 router.use(bodyParser.urlencoded({ extended: true }))
 router.use(methodOverride(function(req, res){
       if (req.body && typeof req.body === 'object' && '_method' in req.body) {
@@ -42,7 +52,8 @@ router.route('/')
                   html: function(){
                       res.render('products/index', {
                             title: 'All products',
-                            "products" : products
+                            "products" : products,
+                            message : req.flash('action')
                         });
                   },
                   //JSON response will show all blobs in JSON format
