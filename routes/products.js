@@ -250,4 +250,44 @@ router.route('/:id/edit')
       })
 	});
 
+router.route('/:id/picture').put(multer({ 
+  fileFilter: function(req, file, cb) {
+      if (path.extname(file.originalname) !== '.jpg' 
+        && path.extname(file.originalname) !== '.png'
+        && path.extname(file.originalname) !== '.jpeg') {
+        return cb(new Error('Only jpg, jpeg and png files are allowed'))
+      }
+      cb(null, true)
+  },
+  storage: storage
+  }).single('image') , function(req, res) {
+    
+    console.log("hit ??")
+
+    //
+
+    mongoose.model('Product').findOne({_id: req.id}, function(err, product) {
+      if (err) {
+        res.send("There was a problem updating the information to the database: " + err);
+      } else {
+
+        fs.unlinkSync(process.cwd() + '/uploads' + product.image)  
+        product.image = "/products/" + req.file.filename;
+
+        console.log(product.image)
+
+        product.save(function(err) {
+
+          res.format({
+           //JSON responds showing the updated values
+            json: function(){
+                 res.json(product);
+             }
+          });
+          
+        })  
+      }
+    })
+})
+
 module.exports = router;
