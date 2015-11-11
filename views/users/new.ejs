@@ -13,70 +13,51 @@
 </div>
 
 <div class="content-wrapper">
-	<form id="new-customer" class="form-horizontal" method="post" action="#" role="form">
+	<form id="new-user" class="form-horizontal" method="post" action="/users" role="form" data-toggle="validator" enctype="multipart/form-data">
 	  	<div class="form-group">
-		    <label class="col-sm-2 col-md-2 control-label">First name</label>
+		    <label class="col-sm-2 col-md-2 control-label">User name</label>
 		    <div class="col-sm-10 col-md-8">
-		      <input type="text" class="form-control" name="customer[first_name]" />
+		      <input type="text" class="form-control" name="username"/>
 		    </div>
 	  	</div>
 	  	<div class="form-group">
-		    <label class="col-sm-2 col-md-2 control-label">Last name</label>
+		    <label class="col-sm-2 col-md-2 control-label">Role</label>
 		    <div class="col-sm-10 col-md-8">
-		      <input type="text" class="form-control" name="customer[last_name]" />
+		      <select type="text" class="form-control" name="role" />
+		      	<option value="admin">admin</option>
+		      	<option value="sales">sales</option>
+		      	<option value="delivery">delivery</option>
+		      </select> 
 		    </div>
 	  	</div>
 	  	<div class="form-group">
-		    <label class="col-sm-2 col-md-2 control-label">Display picture</label>
+		    <label class="col-sm-2 col-md-2 control-label">Avatar</label>
 		    <div class="col-sm-10 col-md-8">
-		    	<input type="file" name="customer[display]" />
+		    	<input type="file" name="image" />
 		    </div>
 	  	</div>
 	  	<div class="form-group">
 		    <label class="col-sm-2 col-md-2 control-label">Email address</label>
 		    <div class="col-sm-10 col-md-8">
-		      	<input type="text" class="form-control" name="customer[email]" />
+		      	<input type="text" class="form-control" name="email" />
 		    </div>
 	  	</div>
 	  	<div class="form-group">
-		    <label class="col-sm-2 col-md-2 control-label">Phone number</label>
+		    <label class="col-sm-2 col-md-2 control-label">Password</label>
 		    <div class="col-sm-10 col-md-8">
-		    	<div class="has-feedback">
-					<input type="text" class="form-control mask-phone" name="customer[phone]" />
-			      	<i class="ion-information-circled form-control-feedback" data-toggle="tooltip" title="Tooltip helper example">
-			      	</i>
-				</div>
+		      	<input type="password" class="form-control" name="password" />
 		    </div>
 	  	</div>
-	  	<div class="address">
-	  		<div class="form-group">
-			    <label class="col-sm-2 col-md-2 control-label">Address</label>
-			    <div class="col-sm-10 col-md-8">
-			      	<input type="text" class="form-control" placeholder="Address" name="customer[address]" />
-			    </div>
-			</div>
-			<div class="form-group">
-			    <div class="col-sm-3 col-sm-offset-2">
-			      	<input type="text" class="form-control" placeholder="City" name="customer[city]" />
-			    </div>
-			    <div class="col-sm-3">
-			      	<input type="text" class="form-control" placeholder="State" name="customer[state]" />
-			    </div>
-			    <div class="col-sm-2 col-md-2">
-			      	<input type="text" class="form-control" placeholder="Zip code" name="customer[zip]" />
-			    </div>
-		  	</div>
-	  	</div>
 	  	<div class="form-group">
-		    <label for="inputPassword3" class="col-sm-2 col-md-2 control-label">Extra notes</label>
+		    <label class="col-sm-2 col-md-2 control-label">Confirm Password</label>
 		    <div class="col-sm-10 col-md-8">
-		    	<textarea class="form-control" rows="4" name="customer[notes]"></textarea>
+		      	<input type="password" class="form-control" name="confirmPassword" />
 		    </div>
 	  	</div>
 	  	<div class="form-group form-actions">
 	    	<div class="col-sm-offset-2 col-sm-10">
-	    		<a href="/users" class="btn btn-default">Cancel</a>
-	      		<button type="submit" class="btn btn-success">Save customer</button>
+	    		<a href="/users" class="btn btn-default" style="margin-right: 10px; margin-left: -10px">Cancel</a>
+	      		<button type="submit" class="btn btn-success">Save user</button>
     		</div>
 	  	</div>
 	</form>
@@ -84,6 +65,81 @@
 
 <script type="text/javascript">
 	$( document ).ready(function() {
+		
 		$("body").attr('id', "form");
+
+		
+		
+		$('#new-user').bootstrapValidator({
+			framework: 'bootstrap',
+	        err: {
+	            container: 'tooltip'
+	        },
+	        fields: {
+	            username: {
+	                validators: {
+	                    notEmpty: {
+	                        message: 'The full name is required and cannot be empty'
+	                    },
+	                    stringLength: {
+	                        min: 3,
+	                        max: 30,
+	                        message: 'The name must be more than 3 and less than 30 characters long'
+	                    },
+	                    regexp: {
+	                        regexp: /^[a-zA-Z0-9_ ]+$/,
+	                        message: 'The name can only consist of alphabetical, number and underscore'
+	                    }
+	                }
+	            },
+	            email: {
+	                validators: {
+	                    notEmpty: {
+	                        message: 'The email address is required and cannot be empty'
+	                    },
+	                    emailAddress: {
+	                        message: 'The email address is not valid'
+	                    }
+	                }
+	            },
+	            role: {
+	                validators: {
+	                    notEmpty: {
+	                        message: 'The role is required and cannot be empty'
+	                    }
+	                }
+	            },
+	            image: {
+	                validators: {
+	                    file: {
+	                    	extension: 'jpg,jpeg,png',
+	                    	type: 'image/jpeg,image/png',
+	                    	maxSize: 2097152,
+	                        message: 'Invalid image format'
+	                    },
+	                    notEmpty: {
+	                        message: 'The file is required and cannot be empty'
+	                    }
+	                }
+	            },
+	            password: {
+                    validators: {
+                    	notEmpty: {
+	                        message: 'The password is required and cannot be empty'
+	                    }
+            		}
+                },
+                confirmPassword: {
+                    validators: {
+                		identical: {
+                    		field: 'password',
+                    		message: 'The password and its confirm are not the same'
+                		}
+            		}
+                }
+	        }
+    	});
+
+
 	})	  	
 </script>

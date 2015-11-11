@@ -1,9 +1,36 @@
 var express = require('express'),
+    multer = require('multer'),
+    path = require('path'),
+    crypto = require('crypto'),
     router = express.Router(),
-    mongoose = require('mongoose'), //mongo connection
-    bodyParser = require('body-parser'), //parses information from POST
-    methodOverride = require('method-override'); //used to manipulate POST
+    mongoose = require('mongoose'), 
+    bodyParser = require('body-parser'), 
+    session = require('express-session'),
+    cookieParser = require('cookie-parser'),
+    methodOverride = require('method-override'),
+    flash = require('connect-flash'),
+    fs = require('fs')
 
+
+  var storage = multer.diskStorage({
+  destination: './uploads/users',
+  filename: function (req, file, cb) {
+    crypto.pseudoRandomBytes(16, function (err, raw) {
+      if (err) return cb(err)
+
+      cb(null, raw.toString('hex') + path.extname(file.originalname))
+    })
+  }
+})  
+
+router.use(cookieParser('secret'));
+router.use(session({
+  cookie: { maxAge: 60000 },
+  secret: 'keyboard-cat',
+  resave: true,
+  saveUninitialized: true
+}));
+router.use(flash());
 //Any requests to this controller must pass through this 'use' function
 router.use(bodyParser.urlencoded({ extended: true }))
 router.use(methodOverride(function(req, res){
@@ -30,7 +57,8 @@ router.route('/')
                     html: function(){
                         res.render('users/index', {
                               title: 'All Users',
-                              "users" : users
+                              users : users,
+                              message : req.flash('action')
                           });
                     },
                     //JSON response will show all blobs in JSON format
@@ -42,18 +70,30 @@ router.route('/')
         });
     })
     //POST a new user
-    .post(function(req, res) {
+    .post(multer({ 
+        fileFilter: function(req, file, cb) {
+            if (path.extname(file.originalname) !== '.jpg' 
+              && path.extname(file.originalname) !== '.png'
+              && path.extname(file.originalname) !== '.jpeg') {
+              return cb(new Error('Only jpg, jpeg and png files are allowed'))
+            }
+            cb(null, true)
+        },
+        storage: storage
+        }).single('image') ,function(req, res) {
         // Get values from POST request. These can be done through forms or REST calls. These rely on the "name" attributes for forms
         var name = req.body.username;
         var role = req.body.role;
         var email = req.body.email;
         var password = req.body.password;
+        var image = ("/users/" + req.file.filename) || req.body.image
         //call the create function for our database
         mongoose.model('User').create({
             username : name,
             role : role,
             email : email,
-            password : password
+            password : password,
+            image: image
         }, function (err, user) {
               if (err) {
                   res.send("There was a problem adding User to the database.");
@@ -65,6 +105,7 @@ router.route('/')
                     html: function(){
                         // If it worked, set the header so the address bar doesn't still say /adduser
                         res.location("users");
+                        req.flash('action', 'User created!')
                         // And forward to success page
                         res.redirect("/users");
                     },
@@ -194,13 +235,15 @@ router.route('/:id/edit')
         if (err) {
             return console.error(err);
         } else {
+            fs.unlinkSync(process.cwd() + '/uploads' + user.image)
             //Returning success messages saying it was deleted
             console.log('DELETE removing ID: ' + user._id);
+            req.flash('action', 'User deleted!')
             res.format({
               //HTML returns us back to the main page, or you can create a success page
-                html: function(){
-                     res.redirect("/users");
-               },
+              html: function(){
+                    res.redirect("/users");
+              },
                //JSON returns the item with the message that is has been deleted
               json: function(){
                      res.json({message : 'deleted',

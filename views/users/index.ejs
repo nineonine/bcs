@@ -22,10 +22,10 @@
 	<div class="row page-controls">
 		<div class="col-md-12 filters">
 			<label>Filter Users:</label>
-			<a href="#" class="active">All(<%= users.length %>)</a>
-			<a href="#">Admin (3)</a>
-			<a href="#">Sales (8)</a>
-			<a href="#">Delivery (2)</a>
+			<a href="#" class="active">All (<%= users.length %>)</a>
+			<a href="#">Admin (<%= users.filter( u => u.role === 'admin').length %>)</a>
+			<a href="#">Sales (<%= users.filter( u => u.role === 'sales').length %>)</a>
+			<a href="#">Delivery (<%= users.filter( u => u.role === 'delivery').length %>)</a>
 
 			<div class="show-options">
 				<div class="dropdown">
@@ -85,7 +85,7 @@
         		<div class="row user">
 					<div class="col-sm-2 avatar">
 						<input type="checkbox" name="select-user" />
-						<img src="images/avatars/2.jpg" />
+						<img src="<%= u.image %>" />
 					</div>
 					<div class="col-sm-3">
 						<a href="/users/<%= u._id %>" class="name"><%= u.username %></a>
@@ -123,6 +123,9 @@
 <script type="text/javascript">
 	$( document ).ready(function() {
 	  	$("body").attr('id', "users");
+
+	  	if('<%= message %>') { Messenger().post('<%= message %>') }
+
 
 		var $allUsers = $(".select-users input:checkbox");
 				var $checkboxes = $("[name='select-user']");

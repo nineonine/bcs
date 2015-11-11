@@ -9,16 +9,16 @@ describe('User' , function() {
 	//creating mock user
 	before(function(done) {
 		api.post('/users')
-		.set('Accept', 'application/x-www-form-urlencoded')
-		.send({
-			username: "dummy_tester",
-			role: "tester",
-			email: "test@email.com",
-			password: "letmein"
-		})
+		.field('Content-Type', 'multipart/form-data')
+		.field('username', 'dummy_tester')
+		.field('role', 'tester')
+		.field('email', 'test@email.com')
+		.field('password', 'letmein')
+		.attach('image', __dirname + '/cat.jpeg')
 		.set('Accept', 'application/json')
 		.expect('Content-Type', /json/)
 		.end(function(err, res) {
+			if(err) console.log(err)
 			user1 = res.body
 			done()
 		})
