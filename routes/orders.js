@@ -1,8 +1,24 @@
 var express = require('express'),
+    multer = require('multer'),
+    path = require('path'),
+    crypto = require('crypto'),
     router = express.Router(),
     mongoose = require('mongoose'), 
     bodyParser = require('body-parser'), 
-    methodOverride = require('method-override'); 
+    session = require('express-session'),
+    cookieParser = require('cookie-parser'),
+    methodOverride = require('method-override'),
+    flash = require('connect-flash'),
+    fs = require('fs')
+
+router.use(cookieParser('secret'));
+router.use(session({
+  cookie: { maxAge: 60000 },
+  secret: 'keyboard-cat',
+  resave: true,
+  saveUninitialized: true
+}));
+router.use(flash());
 
 router.use(bodyParser.urlencoded({ extended: true }))
 router.use(methodOverride(function(req, res){
@@ -26,7 +42,8 @@ router.route('/')
                     html: function(){
                         res.render('orders/index', {
                               title: 'All orders',
-                              "orders" : orders
+                              orders : orders,
+                              message : req.flash('action')
                           });
                     },
                     //JSON response will show all blobs in JSON format
@@ -41,17 +58,18 @@ router.route('/')
     .post(function(req, res) {
         // Get values from POST request. These can be done through forms or REST calls. These rely on the "name" attributes for forms
         var orderNumber = req.body.orderNumber;
-        var total = req.body.total;
-        var shipping = req.body.shipping;
-        var status = req.body.status;
-        var cart = req.body.cart 
+        // var total = req.body.total;
+        // var shipping = req.body.shipping;
 
         mongoose.model('Order').create({
             orderNumber : orderNumber,
-            total : total,
-            shipping : shipping,
-            status : status,
-            cart: cart
+            total : 0,
+            shipping : 0,
+            status : 'processing',
+            cart: [],
+            statusHistory: {
+                processing: new Date()
+            }
         }, function (err, order) {
               if (err) {
                   res.send("There was a problem adding Order to the database.");
@@ -226,6 +244,7 @@ router.route('/:id/edit')
         if (err) {
             return console.error(err);
         } else {
+            req.flash('action', 'Order deleted!')
             //Returning success messages saying it was deleted
             console.log('DELETE removing ID: ' + order._id);
             res.format({

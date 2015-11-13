@@ -1,89 +1,167 @@
 <% layout('layout') -%>
-<div class="menubar">
+<div id="sidebar">
 	<div class="sidebar-toggler visible-xs">
 		<i class="ion-navicon"></i>
 	</div>
-
-	<div class="page-title">
-		Add new order 
-		<small class="hidden-xs">
-			<strong></strong>
-		</small>
-	</div>
+	
+	<h3>Create Order</h3>
+	<ul class="menu">
+		<li>
+			<a href="#" class="panel-switch active">
+				<i class="ion-clipboard"></i>
+				Details
+			</a>
+		</li>
+		<li>
+			<a href="#" class="panel-switch">
+				<i class="ion-ios7-cart-outline"></i>
+				Cart
+			</a>
+		</li>
+	</ul>
 </div>
 
-<div class="content-wrapper">
-	<form id="new-customer" class="form-horizontal" method="post" action="#" role="form">
+<div id="panel" class="panel profile" style="display:none">
+
+	<h3>
+		Order Details
+	</h3>
+
+	<form id="create-order" class="form-horizontal" method="post" action="#" role="form" data-toggle="validator">
 	  	<div class="form-group">
-		    <label class="col-sm-2 col-md-2 control-label">First name</label>
-		    <div class="col-sm-10 col-md-8">
-		      <input type="text" class="form-control" name="customer[first_name]" />
-		    </div>
+			<label>Order Number</label>
+			<input type="name" class="form-control" name="orderNumber" />
+		</div>
+		<div class="form-group">
+			<label>Customer</label>
+			<input type="name" class="form-control" name="customer" />
+		</div>
+		<div class="form-group">
+		    <label>Extra notes</label>
+		    	<textarea class="form-control" rows="4" name="notes"></textarea>
 	  	</div>
-	  	<div class="form-group">
-		    <label class="col-sm-2 col-md-2 control-label">Last name</label>
-		    <div class="col-sm-10 col-md-8">
-		      <input type="text" class="form-control" name="customer[last_name]" />
-		    </div>
-	  	</div>
-	  	<div class="form-group">
-		    <label class="col-sm-2 col-md-2 control-label">Display picture</label>
-		    <div class="col-sm-10 col-md-8">
-		    	<input type="file" name="customer[display]" />
-		    </div>
-	  	</div>
-	  	<div class="form-group">
-		    <label class="col-sm-2 col-md-2 control-label">Email address</label>
-		    <div class="col-sm-10 col-md-8">
-		      	<input type="text" class="form-control" name="customer[email]" />
-		    </div>
-	  	</div>
-	  	<div class="form-group">
-		    <label class="col-sm-2 col-md-2 control-label">Phone number</label>
-		    <div class="col-sm-10 col-md-8">
-		    	<div class="has-feedback">
-					<input type="text" class="form-control mask-phone" name="customer[phone]" />
-			      	<i class="ion-information-circled form-control-feedback" data-toggle="tooltip" title="Tooltip helper example">
-			      	</i>
-				</div>
-		    </div>
-	  	</div>
-	  	<div class="address">
-	  		<div class="form-group">
-			    <label class="col-sm-2 col-md-2 control-label">Address</label>
-			    <div class="col-sm-10 col-md-8">
-			      	<input type="text" class="form-control" placeholder="Address" name="customer[address]" />
-			    </div>
-			</div>
+		<div class="form-group action">
+			<input type="submit" class="btn btn-success" value="Place Order" />
+		</div>
+	</form>
+
+</div>
+
+<a name="cart"></a>
+<div id="panel" class="panel cart" style="padding-bottom: 150px">
+	<h3 style="margin: 0 0 20px 0; font-size: 18px">Cart</h3>
+	<div id="cart-container" >
+
+		<div class="row cart-item" style="margin-bottom: 20px" id="cart-item">
 			<div class="form-group">
-			    <div class="col-sm-3 col-sm-offset-2">
-			      	<input type="text" class="form-control" placeholder="City" name="customer[city]" />
-			    </div>
-			    <div class="col-sm-3">
-			      	<input type="text" class="form-control" placeholder="State" name="customer[state]" />
+			    <div class="col-sm-6">
+			      	<input type="text" class="form-control" placeholder="Product name" name="name" />
 			    </div>
 			    <div class="col-sm-2 col-md-2">
-			      	<input type="text" class="form-control" placeholder="Zip code" name="customer[zip]" />
+			      	<input type="text" class="form-control" placeholder="Qty" name="qty" />
 			    </div>
 		  	</div>
-	  	</div>
-	  	<div class="form-group">
-		    <label for="inputPassword3" class="col-sm-2 col-md-2 control-label">Extra notes</label>
-		    <div class="col-sm-10 col-md-8">
-		    	<textarea class="form-control" rows="4" name="customer[notes]"></textarea>
-		    </div>
-	  	</div>
-	  	<div class="form-group form-actions">
-	    	<div class="col-sm-offset-2 col-sm-10">
-	    		<a href="/orders" class="btn btn-default">Cancel</a>
-	      		<button type="submit" class="btn btn-success">Save order</button>
-    		</div>
-	  	</div>
-	</form>
+		  	<div>
+				<div class='col-sm-2'  style="margin-top: -11px; padding-left: 2px;font-size: 20px">
+					<i class="ion-close-circled"  id="remove-item"></i>
+				</div>
+			</div>
+		</div>  	
+	
+
+		<div class="row" id="add-item-block" style="margin-bottom: 15px">
+			<div class="col-sm-6">
+				<i class="ion-plus-circled" id="add-item" style="font-size: 40px"></i>
+			</div>
+		</div>
+		
+
+		<div class="row col-sm-8 total text-right"  style="border-top: 2px solid #EBECEE; padding: 20px 0 20px 0; margin-left: 5px">
+			<div class="field">
+				Subtotal <span class="count-span" id='subtotal'>$379.00</span>
+			</div>
+			<div class="field">
+				Shipping <span class="count-span" id='shipping'>$0.00</span>
+			</div>
+			<div class="field">
+				Discount <span class="count-span" id='discount'>4.5%</span>
+			</div>
+			<div class="field grand-total">
+				Total <span class="count-span" id="total">$312.00</span>
+			</div>
+		</div>
+
+	</div>
+
+	
 </div>
 
+<style type="text/css">
+	.count-span {
+		display: inline-block;
+	    margin-left: 20px;
+	    min-width: 85px;
+	    color: #84868A;
+	    font-size: 15px;
+	}
+
+	#total {
+	    color: #20A720;
+	    font-size: 22px;
+	    font-weight: 600;
+	}
+
+</style>
+
+
 <script type="text/javascript">
-	$( document ).ready(function() {
-		$("body").attr('id', "form");
+
+
+	$(function() {
+		$("body").attr('id', "account");
+
+		
+		// Add new item to cart
+		$('#add-item').click( (e) => {
+			var item = $('div.row.cart-item').last().clone()
+			item.find(':input').val('')
+			item.insertAfter('div.row.cart-item:last')
+			$("input[name='name']:last").focus()
+		})
+
+		//remove the item from cart
+		$(document).on('click', '#remove-item', (e) => {
+
+			var item = $(event.target).closest('#cart-item')
+			//forbid removing single cart item 
+			if ( $('div.row.cart-item').length != 1) {
+			 item.remove();
+			}
+		})
+
+
+		if(window.location.hash.substring(1) === "cart") {
+			$links.removeClass("active");
+			$links.eq(1).addClass("active");
+
+			$panels.hide();
+			$panels.eq(1).show();
+		}
+
+		var $links = $(".menu .panel-switch");
+		var $panels = $(".panel");
+
+		$links.click(function (e) {
+		// e.preventDefault();
+			var index = $links.index(this);
+
+			$links.removeClass("active");
+			$links.eq(index).addClass("active");
+
+			$panels.hide();
+			$panels.eq(index).show();
+		})
+
+		
 	})	  	
 </script>

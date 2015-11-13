@@ -1,15 +1,14 @@
 var mongoose = require('mongoose')
 
 var orderSchema  = new mongoose.Schema({
-	orderNumber: Number,
+	orderNumber: String,
 	total: Number,
+	discount: Number,
 	shipping: Number,
 	status: String,
-	invoice: {type: mongoose.Schema.ObjectId, ref: "Invoice"},
-	slip: {type: mongoose.Schema.ObjectId, ref: "Slip"},
+	customer: {type: mongoose.Schema.ObjectId, ref: "Customer"},
 	sales: {type: mongoose.Schema.ObjectId, ref: "User"},
 	statusHistory: {
-		ordered: Date,
 		processing: Date,
 		shipped: Date,
 		completed: Date,
