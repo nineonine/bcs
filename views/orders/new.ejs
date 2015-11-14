@@ -21,26 +21,37 @@
 	</ul>
 </div>
 
-<div id="panel" class="panel profile" style="display:none">
+<div id="panel" class="panel profile">
 
 	<h3>
 		Order Details
 	</h3>
 
 	<form id="create-order" class="form-horizontal" method="post" action="#" role="form" data-toggle="validator">
-	  	<div class="form-group">
+	  	<div class="form-group orderform">
 			<label>Order Number</label>
-			<input type="name" class="form-control" name="orderNumber" />
+			<input type="text" class="form-control" name="orderNumber" />
 		</div>
-		<div class="form-group">
+		<div class="form-group orderform">
 			<label>Customer</label>
-			<input type="name" class="form-control" name="customer" />
+			<input type="text" class="form-control" name="customer"  style="width: 100% !important"/>
 		</div>
-		<div class="form-group">
-		    <label>Extra notes</label>
-		    	<textarea class="form-control" rows="4" name="notes"></textarea>
+		<div class="form-group orderform">
+		    <label class="control-label">Shipping</label>
+		    <select class="form-control" name="shipping" />
+		      	<option value="pickup">Pick-up</option>
+		      	<option value="delivery">Delivery</option>
+		    </select>
 	  	</div>
-		<div class="form-group action">
+	  	<div class="form-group orderform">
+			<label>Discount ( % )</label>
+			<input type="text" class="form-control" name="discount" />
+		</div>
+		<div class="form-group orderform">
+		    <label>Extra notes</label>
+		    	<textarea class="form-control" rows="4" name="notes" id='notes'></textarea>
+	  	</div>
+		<div class="form-group action orderform">
 			<input type="submit" class="btn btn-success" value="Place Order" />
 		</div>
 	</form>
@@ -48,46 +59,63 @@
 </div>
 
 <a name="cart"></a>
-<div id="panel" class="panel cart" style="padding-bottom: 150px">
+<div id="panel" class="panel cart" style="padding-bottom: 200px; display:none">
 	<h3 style="margin: 0 0 20px 0; font-size: 18px">Cart</h3>
 	<div id="cart-container" >
 
 		<div class="row cart-item" style="margin-bottom: 20px" id="cart-item">
 			<div class="form-group">
 			    <div class="col-sm-6">
-			      	<input type="text" class="form-control" placeholder="Product name" name="name" />
+			      	<input type="text" class="form-control" placeholder="Product name" name="productName" />
 			    </div>
 			    <div class="col-sm-2 col-md-2">
-			      	<input type="text" class="form-control" placeholder="Qty" name="qty" />
+			      	<input type="text" class="form-control" placeholder="Qty" name="productQty" />
 			    </div>
 		  	</div>
 		  	<div>
-				<div class='col-sm-2'  style="margin-top: -11px; padding-left: 2px;font-size: 20px">
-					<i class="ion-close-circled"  id="remove-item"></i>
+				<div class='col-sm-2'  style="margin-top: -18px; padding-left: 2px;font-size: 28px">
+					<i class="ion-plus-circled"  id="add-item"></i>
 				</div>
 			</div>
 		</div>  	
 	
 
-		<div class="row" id="add-item-block" style="margin-bottom: 15px">
-			<div class="col-sm-6">
-				<i class="ion-plus-circled" id="add-item" style="font-size: 40px"></i>
+		
+		<div class="headers clearfix">
+			<div class="row col-sm-8 ">
+				<div class="col-xs-7">Product</div>
+				<div class="col-xs-1">Quantity</div>
+				<div class="col-xs-1 pull-right text-right">Amount</div>
 			</div>
 		</div>
 		
+		<div class="row col-sm-8 total-item" style="display:none">
+			<div class="item">
+				<i class="ion-close-circled"  id="remove-item" style="float: left; margin: 3px 0 0 5px"></i>
+				<div class="col-xs-7 desc">
+					 
+				</div>
+				<div class="col-xs-1 qty">
+					0
+				</div>
+				<div class="col-xs-1 amount pull-right text-right">
+					0
+				</div>
+			</div>
+		</div>	
 
-		<div class="row col-sm-8 total text-right"  style="border-top: 2px solid #EBECEE; padding: 20px 0 20px 0; margin-left: 5px">
+		<div class="row col-sm-8 total text-right" id='totals' style="border-top: 2px solid #EBECEE; padding: 20px 0 20px 0; margin-left: 5px; margin-top: 20px">
 			<div class="field">
-				Subtotal <span class="count-span" id='subtotal'>$379.00</span>
+				Subtotal <span class="count-span" id='subtotal'>$0.00</span>
 			</div>
 			<div class="field">
 				Shipping <span class="count-span" id='shipping'>$0.00</span>
 			</div>
 			<div class="field">
-				Discount <span class="count-span" id='discount'>4.5%</span>
+				Discount <span class="count-span" id='discount'>0%</span>
 			</div>
 			<div class="field grand-total">
-				Total <span class="count-span" id="total">$312.00</span>
+				Total <span class="count-span" id="total">$0.00</span>
 			</div>
 		</div>
 
@@ -96,47 +124,137 @@
 	
 </div>
 
-<style type="text/css">
-	.count-span {
-		display: inline-block;
-	    margin-left: 20px;
-	    min-width: 85px;
-	    color: #84868A;
-	    font-size: 15px;
-	}
-
-	#total {
-	    color: #20A720;
-	    font-size: 22px;
-	    font-weight: 600;
-	}
-
-</style>
 
 
 <script type="text/javascript">
 
+	var products, opts1, opts2;
+	
+	function getPrice(prodName) {
+		return +products.filter( (p) => p.name === prodName)[0].price
+	}
+
+	function updateTotals() {
+		var subtotal = $(".item").map(function() { return +$(this).find('.amount').html().substring(1) }).get().reduce( (a, b) => a + b);
+		var discount = $('#discount').html()
+		var shipping = $('#shipping').html()
+		var total = subtotal - subtotal * (+discount.substring(0, discount.length-1)/100) + +shipping.substring(1)
+
+
+		$('#subtotal').html("$" + subtotal.toFixed(2))
+		$('#total').html("$" + total.toFixed(2))
+	}
 
 	$(function() {
 		$("body").attr('id', "account");
 
-		
-		// Add new item to cart
+		//get products for cart operations
+		$.ajax({
+			url: '/products',
+			contentType: 'application/json; charset=UTF-8',
+			dataType: 'json',
+	        timeout: 5000,
+	        success: (data) => {
+	        	products = data
+	        }
+		})
+		opts1 = {
+			url: '../customers',
+			getValue: 'name',
+			ajaxSettings: {
+				url: '/customers',
+				type: 'GET',
+				contentType: 'application/json; charset=UTF-8',
+				dataType: 'json',
+			},
+			list: {
+				match: {
+					enabled: true
+				}
+			}
+		}
+		opts2 = {
+			url: '../products',
+			getValue: 'name',
+			ajaxSettings: {
+				url: '/products',
+				type: 'GET',
+				contentType: 'application/json; charset=UTF-8',
+				dataType: 'json',
+			},
+			list: {
+				match: {
+					enabled: true
+				}
+			}
+		}
+
+		// ajax autocomplete for Customer and Product fields
+		$("input[name='customer']").easyAutocomplete(opts1);
+		$("input[name='productName']").easyAutocomplete(opts2);
+
+
+		// Add item to cart
 		$('#add-item').click( (e) => {
-			var item = $('div.row.cart-item').last().clone()
-			item.find(':input').val('')
-			item.insertAfter('div.row.cart-item:last')
-			$("input[name='name']:last").focus()
+
+			//get all inputs
+			var prodName = $("input[name='productName']").val()
+			var qty = $("input[name='productQty']").val()
+			var items = $('.item').filter( function() { return $(this).find('.desc').html() === prodName } )
+			var item;
+			
+			//check if this item is in subtotal already
+			if(items.length == 1) {
+
+				item = items[0]
+
+				$(item).find('.qty').html(+$(item).find('.qty').html() + (+qty))
+				$(item).find('.amount').html("$" + (getPrice(prodName)*(+$(item).find('.qty').html())).toFixed(2))
+			// this product is not in subtotal - add a new one	
+			} else {
+
+				//display and insert
+				item = $('.total-item').last().clone()
+				item.show()
+				item.insertAfter('.total-item:last')
+
+				// update cloned item div
+				item.find('div.desc').html(prodName)
+				item.find('div.qty').html(qty)
+				item.find('div.amount').html("$" + (getPrice(prodName)*(+qty)).toFixed(2))
+			}
+
+			//clear the inputs and focus 
+			$('#cart-item :input').val('')
+			$("input[name='productName']").focus()
+
+			//update totals
+			updateTotals()
 		})
 
 		//remove the item from cart
 		$(document).on('click', '#remove-item', (e) => {
+			var item = $(event.target).closest('.total-item')
+			item.remove();
+			updateTotals()
+		})
 
-			var item = $(event.target).closest('#cart-item')
-			//forbid removing single cart item 
-			if ( $('div.row.cart-item').length != 1) {
-			 item.remove();
-			}
+		//update shipping cost 
+		$("select[name='shipping']").change( (e) => {
+			var method = $("select[name='shipping']").val()
+			var cartField = $('#shipping')
+
+			method === 'delivery' ? cartField.html("$50.00") : cartField.html("$0.00")
+			updateTotals()
+		})
+
+		//update discount
+		$("input[name='discount']").change( (e) => {
+			var discount = $("input[name='discount']").val()
+
+			$('#discount').html(discount + '%')
+
+			updateTotals()
 		})
 
 
@@ -163,5 +281,84 @@
 		})
 
 		
-	})	  	
+		// place order
+		$('#create-order').submit(function(e) {
+
+			e.preventDefault();
+			e.stopImmediatePropagation();
+
+			console.log("form axaj update")
+			console.log($("#create-order input[name='orderNumber']").val())
+
+			updateTotals()
+			// get the cart (removing the firsm item because its an empty blueprint of cart item)
+			var cart = $('.item').map( function() { 
+				return {name: $(this).find('.desc').html() , quantity: +$(this).find('.qty').html()} 
+			}).get().splice(1)	
+
+			var formData = {
+				orderNumber : $("#create-order input[name='orderNumber']").val(),
+	            customer : $("#create-order input[name='customer']").val(),
+	            shipping: $('#create-order').find('select').val(),
+	            discount : +$("#create-order input[name='discount']").val(),
+	            notes: $("#create-order #notes").val(),
+	            cart: cart,
+	            total: +$('#total').html().substring(1)
+		    }
+
+		    console.log(formData)
+
+			$.ajax({
+				url: '/orders',
+				type: 'POST',
+				contentType: 'application/json; charset=UTF-8',
+				dataType: 'json',
+				data: JSON.stringify(formData),
+		        timeout: 5000,
+		        complete: () => console.log("complete !"),
+		        success: (data) => {
+					Messenger().post("Order has been placed!");
+					window.location.href = data.redirect
+		        },
+		        error: (XMLHttpRequest, textStatus, errorThrown) => {
+		        	console.log(XMLHttpRequest.responseText) 
+		        	Messenger().post({
+					  	message: 'Sorry, there was problem with placing Order.',
+					  	type: 'error',
+					  	showCloseButton: true
+					});
+		        }
+			})
+		})
+		
+	})	
+
 </script>
+
+<style type="text/css">
+	.count-span {
+		display: inline-block;
+	    margin-left: 20px;
+	    min-width: 85px;
+	    color: #84868A;
+	    font-size: 15px;
+	}
+
+	#total {
+	    color: #20A720;
+	    font-size: 22px;
+	    font-weight: 600;
+	}
+
+	.orderform {
+		margin-bottom: 7px !important
+	}
+
+	.clearfix {
+		color: #7C8594;
+	    font-size: 14px;
+	    letter-spacing: .3px;
+	    padding-top: 50px;
+	    padding-bottom: 14px;
+	}
+</style>

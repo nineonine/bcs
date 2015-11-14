@@ -47,75 +47,12 @@
                     <td>
                         <a href="/orders/<%= o._id %>">#<%= o.orderNumber %></a>
                     </td>
-                    <td>John Stewart</td>
-                    <td>Mar 11, 11:50am</td>
+                    <td><%= o.customer %></td>
+                    <td><%= o.statusHistory.processing %></td>
                     <td class=""><span class="label label-success"><%= o.status %></span></td>
                     <td class="center">$<%= o.total %></td>
                 </tr>
             <% }); %>
-            <tr>
-                <td>
-                	<a href="#">#1897</a>
-                </td>
-                <td>Andrea</td>
-                <td>Mar 10, 06:50am</td>
-                <td class=""><span class="label label-warning">Pending</span></td>
-                <td class="center">$699.99</td>
-            </tr>
-            <tr>
-                <td>
-                	<a href="#">#1089</a>
-                </td>
-                <td>John Stewart</td>
-                <td>Mar 08, 01:43pm</td>
-                <td class=""><span class="label label-success">Paid</span></td>
-                <td class="center">$1,879.99</td>
-            </tr>
-            <tr>
-                <td>
-                	<a href="#">#1883</a>
-                </td>
-                <td>Pete</td>
-                <td>Mar 07, 07:30pm</td>
-                <td class=""><span class="label label-success">Paid</span></td>
-                <td class="center">$279.99</td>
-            </tr>
-            <tr>
-                <td>
-                	<a href="#">#1383</a>
-                </td>
-                <td>John Stewart</td>
-                <td>Mar 07, 04:30pm</td>
-                <td class=""><span class="label label-danger">Canceled</span></td>
-                <td class="center">$599.99</td>
-            </tr>
-            <tr>
-                <td>
-                	<a href="#">#1266</a>
-                </td>
-                <td>Patrick Johnson</td>
-                <td>Mar 07, 02:30pm</td>
-                <td class=""><span class="label label-success">Paid</span></td>
-                <td class="center">$389.99</td>
-            </tr>
-            <tr>
-                <td>
-                	<a href="#">#1645</a>
-                </td>
-                <td>Karen Diaz</td>
-                <td>Mar 04, 04:30pm</td>
-                <td class=""><span class="label label-warning">Pending</span></td>
-                <td class="center">$199.99</td>
-            </tr>
-            <tr>
-                <td>
-                	<a href="#">#1864</a>
-                </td>
-                <td>Matthew Williams</td>
-                <td>Mar 02, 06:22pm</td>
-                <td class=""><span class="label label-success">Paid</span></td>
-                <td class="center">$399.99</td>
-            </tr>
        	</tbody>
     </table>
 </div>
@@ -132,3 +69,4 @@
         });
     });
 </script>
+

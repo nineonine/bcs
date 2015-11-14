@@ -5,16 +5,16 @@
 		<i class="ion-navicon"></i>
 	</div>
 	
-	<h3>Order ###</h3>
+	<h3>Order #<%= order.orderNumber %></h3>
 	<ul class="menu tabs">
 		<li>
-			<a href="/orders/<%= order._id %>" class="active">
+			<a href="#" class="panel-switch active">
 				<i class="fa fa-folder-open-o"></i>
 				Details
 			</a>
 		</li>
 		<li>
-			<a href="#">
+			<a href="#" class="panel-switch">
 				<i class="fa fa-shopping-cart"></i>
 				Products
 			</a>
@@ -40,56 +40,241 @@
 	</ul>
 </div>
 
-<div id="panel" class="details">
-	<h3 style="margin: 0 0 20px 0">
+<div id="panel" class="panel profile">
+
+	<h3>
 		Order Details
 	</h3>
 
-<!-- 	<p class="intro">
-		Change your account information, avatar, login credentials, etc.
-	</p> -->
-
-	<form>
-	  	<div class="form-group">
-			<label>Name</label>
-			<input type="email" class="form-control" placeholder="Enter email" value="John Smith Jr" />
+	<form id="create-order" class="form-horizontal" method="post" action="#" role="form" data-toggle="validator">
+	  	<div class="form-group orderform">
+			<label>Order Number</label>
+			<input type="text" class="form-control" name="orderNumber" value="<%= order.orderNumber %>"/>
 		</div>
-	  	<div class="form-group">
-			<label>Email address</label>
-			<input type="email" class="form-control" placeholder="Enter email" value="john@gmail.com" />
+		<div class="form-group orderform">
+			<label>Customer</label>
+			<input type="text" class="form-control" name="customer"  style="width: 100% !important" value="<%= order.customer %>"/>
 		</div>
-		<div class="form-group">
-			<label>Street & Number</label>
-			<input type="text" class="form-control" placeholder="Enter email" value="5th Avenue 3053" />
+		<div class="form-group orderform">
+		    <label class="control-label">Shipping</label>
+		    <select class="form-control" name="shipping" />
+		      	<option value="pickup">Pick-up</option>
+		      	<option value="delivery">Delivery</option>
+		    </select>
+	  	</div>
+	  	<div class="form-group orderform">
+			<label>Discount ( % )</label>
+			<input type="text" class="form-control" name="discount" value="<%= order.discount %>"/>
 		</div>
-		<div class="form-group">
-			<label>City</label>
-			<input type="text" class="form-control" placeholder="Enter email" value="San Francisco" />
-		</div>
-		<div class="form-group">
-			<label>ZIP</label>
-			<input type="text" class="form-control" placeholder="Enter email" value="3352" />
-		</div>
-		<div class="form-group">
-			<label>New password</label>
-			<input type="password" class="form-control" />
-		</div>
-		<div class="form-group">
-			<label>Confirm new password</label>
-			<input type="password" class="form-control" />
-		</div>
-		<div class="form-group action">
-			<a href="/orders" style="margin-right: 15px" class="btn btn-default">Cancel</a>
-			<input type="submit" class="btn btn-success" value="Save changes" />
+		<div class="form-group orderform">
+		    <label>Extra notes</label>
+		    	<textarea class="form-control" rows="4" name="notes" id='notes'><%= order.notes %></textarea>
+	  	</div>
+		<div class="form-group action orderform">
+			<input type="submit" class="btn btn-success" value="Update Order" />
 		</div>
 	</form>
 
-</div>	
+</div>
+
+<a name="cart"></a>
+<div id="panel" class="panel cart" style="padding-bottom: 200px; display:none">
+	<h3 style="margin: 0 0 20px 0; font-size: 18px">Cart</h3>
+	<div id="cart-container" >
+
+		<div class="row cart-item" style="margin-bottom: 20px" id="cart-item">
+			<div class="form-group">
+			    <div class="col-sm-6">
+			      	<input type="text" class="form-control" placeholder="Product name" name="productName" />
+			    </div>
+			    <div class="col-sm-2 col-md-2">
+			      	<input type="text" class="form-control" placeholder="Qty" name="productQty" />
+			    </div>
+		  	</div>
+		  	<div>
+				<div class='col-sm-2'  style="margin-top: -18px; padding-left: 2px;font-size: 28px">
+					<i class="ion-plus-circled"  id="add-item"></i>
+				</div>
+			</div>
+		</div>  	
+	
+
+		
+		<div class="headers clearfix">
+			<div class="row col-sm-8 ">
+				<div class="col-xs-7">Product</div>
+				<div class="col-xs-1">Quantity</div>
+				<div class="col-xs-1 pull-right text-right">Amount</div>
+			</div>
+		</div>
+		
+		<div class="row col-sm-8 total-item" style="display:none">
+			<div class="item">
+				<i class="ion-close-circled"  id="remove-item" style="float: left; margin: 3px 0 0 5px"></i>
+				<div class="col-xs-7 desc">
+					 
+				</div>
+				<div class="col-xs-1 qty">
+					0
+				</div>
+				<div class="col-xs-1 amount pull-right text-right">
+					0
+				</div>
+			</div>
+		</div>	
+
+		<% products.forEach(function(p) { %>
+		<div class="row col-sm-8 total-item" style="display">
+			<div class="item">
+				<i class="ion-close-circled"  id="remove-item" style="float: left; margin: 3px 0 0 5px"></i>
+				<div class="col-xs-7 desc">
+					 <%= p.name %>
+				</div>
+				<div class="col-xs-1 qty">
+					<%= order.cart.filter( (x) => x.name === p.name)[0].quantity %>	
+				</div>
+				<div class="col-xs-1 amount pull-right text-right">
+					0
+				</div>
+			</div>
+		</div>	
+        <% }); %>
+		
+
+		<div class="row col-sm-8 total text-right" id='totals' style="border-top: 2px solid #EBECEE; padding: 20px 0 20px 0; margin-left: 5px; margin-top: 20px">
+			<div class="field">
+				Subtotal <span class="count-span" id='subtotal'>$0.00</span>
+			</div>
+			<div class="field">
+				Shipping <span class="count-span" id='shipping'>$0.00</span>
+			</div>
+			<div class="field">
+				Discount <span class="count-span" id='discount'>0%</span>
+			</div>
+			<div class="field grand-total">
+				Total <span class="count-span" id="total">$0.00</span>
+			</div>
+		</div>
+
+	</div>
+
+	
+</div>
 
 <script type="text/javascript">
 	$( document ).ready(function() {
 
 		$("body").attr('id', "account")
 
+		$('select').val('<%= order.shipping %>')
+
+
+
+		// Add item to cart
+		$('#add-item').click( (e) => {
+
+			//get all inputs
+			var prodName = $("input[name='productName']").val()
+			var qty = $("input[name='productQty']").val()
+			var items = $('.item').filter( function() { return $(this).find('.desc').html() === prodName } )
+			var item;
+			
+			//check if this item is in subtotal already
+			if(items.length == 1) {
+
+				item = items[0]
+
+				$(item).find('.qty').html(+$(item).find('.qty').html() + (+qty))
+				$(item).find('.amount').html("$" + (getPrice(prodName)*(+$(item).find('.qty').html())).toFixed(2))
+			// this product is not in subtotal - add a new one	
+			} else {
+
+				//display and insert
+				item = $('.total-item').last().clone()
+				item.show()
+				item.insertAfter('.total-item:last')
+
+				// update cloned item div
+				item.find('div.desc').html(prodName)
+				item.find('div.qty').html(qty)
+				item.find('div.amount').html("$" + (getPrice(prodName)*(+qty)).toFixed(2))
+			}
+
+			//clear the inputs and focus 
+			$('#cart-item :input').val('')
+			$("input[name='productName']").focus()
+
+			//update totals
+			updateTotals()
+		})
+
+		//remove the item from cart
+		$(document).on('click', '#remove-item', (e) => {
+			var item = $(event.target).closest('.total-item')
+			item.remove();
+			updateTotals()
+		})
+
+		//update shipping cost 
+		$("select[name='shipping']").change( (e) => {
+			var method = $("select[name='shipping']").val()
+			var cartField = $('#shipping')
+
+			method === 'delivery' ? cartField.html("$50.00") : cartField.html("$0.00")
+			updateTotals()
+		})
+
+		//update discount
+		$("input[name='discount']").change( (e) => {
+			var discount = $("input[name='discount']").val()
+
+			$('#discount').html(discount + '%')
+
+			updateTotals()
+		})
+
+
+
+		var $links = $(".menu .panel-switch");
+		var $panels = $(".panel");
+
+		$links.click(function (e) {
+		// e.preventDefault();
+			var index = $links.index(this);
+
+			$links.removeClass("active");
+			$links.eq(index).addClass("active");
+
+			$panels.hide();
+			$panels.eq(index).show();
+		})
+
 	})	  	
 </script>
+<style type="text/css">
+    .count-span {
+        display: inline-block;
+        margin-left: 20px;
+        min-width: 85px;
+        color: #84868A;
+        font-size: 15px;
+    }
+
+    #total {
+        color: #20A720;
+        font-size: 22px;
+        font-weight: 600;
+    }
+
+    .orderform {
+        margin-bottom: 7px !important
+    }
+
+    .clearfix {
+        color: #7C8594;
+        font-size: 14px;
+        letter-spacing: .3px;
+        padding-top: 50px;
+        padding-bottom: 14px;
+    }
+</style>

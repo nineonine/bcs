@@ -4,9 +4,10 @@ var orderSchema  = new mongoose.Schema({
 	orderNumber: String,
 	total: Number,
 	discount: Number,
-	shipping: Number,
+	shipping: String,
 	status: String,
-	customer: {type: mongoose.Schema.ObjectId, ref: "Customer"},
+	notes: String,
+	customer: String,
 	sales: {type: mongoose.Schema.ObjectId, ref: "User"},
 	statusHistory: {
 		processing: Date,
@@ -15,7 +16,7 @@ var orderSchema  = new mongoose.Schema({
 		cancelled: Date
 	},
 	cart: [{
-      product: {type: mongoose.Schema.ObjectId, ref: "Product"},
+      name: String,
       quantity: Number
 	}]
 })

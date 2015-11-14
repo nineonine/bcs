@@ -9,7 +9,8 @@ var express = require('express'),
     cookieParser = require('cookie-parser'),
     methodOverride = require('method-override'),
     flash = require('connect-flash'),
-    fs = require('fs')
+    fs = require('fs'),
+    async = require('async')
 
 router.use(cookieParser('secret'));
 router.use(session({
@@ -58,20 +59,29 @@ router.route('/')
     .post(function(req, res) {
         // Get values from POST request. These can be done through forms or REST calls. These rely on the "name" attributes for forms
         var orderNumber = req.body.orderNumber;
-        // var total = req.body.total;
-        // var shipping = req.body.shipping;
+        var customer = req.body.customer;
+        var total = req.body.total;
+        var shipping = req.body.shipping;
+        var discount = req.body.discount;
+        var notes = req.body.notes;
+        var cart = req.body.cart;
+
 
         mongoose.model('Order').create({
             orderNumber : orderNumber,
-            total : 0,
-            shipping : 0,
+            customer: customer,
+            total : total,
+            shipping : shipping,
+            discount: discount,
+            notes: notes,
             status : 'processing',
-            cart: [],
+            cart: cart,
             statusHistory: {
                 processing: new Date()
             }
         }, function (err, order) {
               if (err) {
+                  console.log(err)
                   res.send("There was a problem adding Order to the database.");
               } else {
                   //Order has been created
@@ -83,7 +93,10 @@ router.route('/')
                     },
                     //JSON response will show the newly created Order
                     json: function(){
-                        res.json(order);
+                        res.json({
+                          order: order,
+                          redirect: '/orders'
+                        });
                     }
                 });
               }
@@ -154,20 +167,40 @@ router.route('/:id')
       if (err) {
         console.log('GET Error: There was a problem retrieving: ' + err);
       } else {
-        console.log('GET Retrieving ID: ' + order._id);
-        res.format({
-          html: function(){
-              res.render('orders/order', {
-                "order" : order,
-                "title" : "Order #" + order.orderNumber
+        
+        //get Orders products 
+        async.map(order.cart, function(p, done) {
+          mongoose.model('Product').find({'name': p.name}, function(err, prod) {
+            if(err) {
+                console.log('GET Error: There was a problem retrieving: ' + err);
+                return done(err)
+            } else {
+              done(null, prod[0])
+            }
+          });
+        }, function(err, products) {
+            if(err) {
+                console.log('GET Error: There was a problem retrieving: ' + err);
+            } else {
+              console.log(products)
+              res.format({
+                   //HTML response will render the 'edit.ejs' template
+                  html: function(){
+                         res.render('orders/order', {
+                            title: 'Order' + order.orderNumber,
+                            order : order,
+                            products: products 
+                        });
+                   },
+                   //JSON response will return the JSON output
+                  json: function(){
+                         res.json(order);
+                   }
               });
-          },
-          json: function(){
-              res.json(order);
-          }
-        });
-      }
-    });
+            }
+        })
+      }      
+    })
   });
 
   router.get('/:id/invoice', function(req, res) {
