@@ -46,9 +46,10 @@
 		Order Details
 	</h3>
 
-	<form id="create-order" class="form-horizontal" method="post" action="#" role="form" data-toggle="validator">
+	<form id="edit-order" class="form-horizontal" method="post" action="#" role="form" data-toggle="validator">
 	  	<div class="form-group orderform">
 			<label>Order Number</label>
+			<input type="hidden" name="_method" value="PUT"/>
 			<input type="text" class="form-control" name="orderNumber" value="<%= order.orderNumber %>"/>
 		</div>
 		<div class="form-group orderform">
@@ -124,20 +125,15 @@
 		</div>	
 
 		<% products.forEach(function(p) { %>
-		<div class="row col-sm-8 total-item" style="display">
-			<div class="item">
-				<i class="ion-close-circled"  id="remove-item" style="float: left; margin: 3px 0 0 5px"></i>
-				<div class="col-xs-7 desc">
-					 <%= p.name %>
+			<% var matchedProduct = order.cart.filter( (x) => x.name === p.name)[0] %>
+			<div class="row col-sm-8 total-item" style="display">
+				<div class="item">
+					<i class="ion-close-circled"  id="remove-item" style="float: left; margin: 3px 0 0 5px"></i>
+					<div class="col-xs-7 desc"><%= p.name %></div>
+					<div class="col-xs-1 qty"><%= matchedProduct.quantity %></div>
+					<div class="col-xs-1 amount pull-right text-right">$<%= (+products.filter( (x) => matchedProduct.name === x.name)[0].price * +matchedProduct.quantity).toFixed(2) %></div>
 				</div>
-				<div class="col-xs-1 qty">
-					<%= order.cart.filter( (x) => x.name === p.name)[0].quantity %>	
-				</div>
-				<div class="col-xs-1 amount pull-right text-right">
-					0
-				</div>
-			</div>
-		</div>	
+			</div>	
         <% }); %>
 		
 
@@ -146,10 +142,10 @@
 				Subtotal <span class="count-span" id='subtotal'>$0.00</span>
 			</div>
 			<div class="field">
-				Shipping <span class="count-span" id='shipping'>$0.00</span>
+				Shipping <span class="count-span" id='shipping'>$<%= order.shipping === 'pickup' ? '0.00' : '50.00' %></span>
 			</div>
 			<div class="field">
-				Discount <span class="count-span" id='discount'>0%</span>
+				Discount <span class="count-span" id='discount'><%= order.discount.toFixed(2)%>%</span>
 			</div>
 			<div class="field grand-total">
 				Total <span class="count-span" id="total">$0.00</span>
@@ -162,12 +158,78 @@
 </div>
 
 <script type="text/javascript">
+
+	var products, opts1, opts2;
+	
+	function getPrice(prodName) {
+		return +products.filter( (p) => p.name === prodName)[0].price
+	}
+
+	function updateTotals() {
+		var subtotal = $(".item").map(function() { return +$(this).find('.amount').html().substring(1) }).get().reduce( (a, b) => a + b);
+		var discount = $('#discount').html()
+		var shipping = $('#shipping').html()
+		var total = (subtotal - subtotal * (+discount.substring(0, discount.length-1)/100)) + +shipping.substring(1)
+
+		$('#subtotal').html("$" + subtotal.toFixed(2))
+		$('#total').html("$" + total.toFixed(2))
+	}
+
+
 	$( document ).ready(function() {
 
 		$("body").attr('id', "account")
-
 		$('select').val('<%= order.shipping %>')
 
+		//update cart totals on load	
+		updateTotals()
+		
+		//get products - need this for fetching prices - should be refactored later (order cart object should store prices as well)
+		$.ajax({
+			url: '/products',
+			contentType: 'application/json; charset=UTF-8',
+			dataType: 'json',
+	        timeout: 5000,
+	        success: (data) => {
+	        	products = data
+	        }
+		})
+
+		//options for autocomplete 
+		opts1 = {
+			url: '../customers',
+			getValue: 'name',
+			ajaxSettings: {
+				url: '/customers',
+				type: 'GET',
+				contentType: 'application/json; charset=UTF-8',
+				dataType: 'json',
+			},
+			list: {
+				match: {
+					enabled: true
+				}
+			}
+		}
+		opts2 = {
+			url: '../products',
+			getValue: 'name',
+			ajaxSettings: {
+				url: '/products',
+				type: 'GET',
+				contentType: 'application/json; charset=UTF-8',
+				dataType: 'json',
+			},
+			list: {
+				match: {
+					enabled: true
+				}
+			}
+		}
+
+		// ajax autocomplete for Customer and Product fields
+		$("input[name='customer']").easyAutocomplete(opts1);
+		$("input[name='productName']").easyAutocomplete(opts2);
 
 
 		// Add item to cart
@@ -233,8 +295,57 @@
 			updateTotals()
 		})
 
+		// place order
+		$('#edit-order').submit(function(e) {
+
+			e.preventDefault();
+			e.stopImmediatePropagation();
+
+			console.log("form axaj update")
+			console.log($("#create-order input[name='orderNumber']").val())
+
+			updateTotals()
+			// get the cart (removing the firsm item because its an empty blueprint of cart item)
+			var cart = $('.item').map( function() { 
+				return {name: $(this).find('.desc').html() , quantity: +$(this).find('.qty').html()} 
+			}).get().splice(1)	
+
+			var formData = {
+				orderNumber : $("#edit-order input[name='orderNumber']").val(),
+	            customer : $("#edit-order input[name='customer']").val(),
+	            shipping: $('#edit-order').find('select').val(),
+	            discount : +$("#edit-order input[name='discount']").val(),
+	            notes: $("#edit-order #notes").val(),
+	            cart: cart,
+	            total: +$('#total').html().substring(1)
+		    }
+
+		    console.log(formData)
+
+			$.ajax({
+				url: '/orders/<%= order._id %>/edit',
+				type: 'PUT',
+				contentType: 'application/json; charset=UTF-8',
+				dataType: 'json',
+				data: JSON.stringify(formData),
+		        timeout: 5000,
+		        complete: () => console.log("complete !"),
+		        success: (data) => {
+					Messenger().post("Order has been updated!");
+		        },
+		        error: (XMLHttpRequest, textStatus, errorThrown) => {
+		        	console.log(XMLHttpRequest.responseText) 
+		        	Messenger().post({
+					  	message: 'Sorry, there was problem with placing Order.',
+					  	type: 'error',
+					  	showCloseButton: true
+					});
+		        }
+			})
+		})
 
 
+		//tab switching
 		var $links = $(".menu .panel-switch");
 		var $panels = $(".panel");
 

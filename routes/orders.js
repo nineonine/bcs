@@ -253,7 +253,7 @@ router.route('/:id/edit')
 	//PUT to update a Order by ID
 	.put(function(req, res) {
 
-      mongoose.model('Order').findOneAndUpdate({_id: req.id}, req.body, {'new': true}, function(err, order) {
+      mongoose.model('Order').findOneAndUpdate({_id: req.id}, req.body, { 'new': true, 'upsert': true}, function(err, order) {
         if (err) {
           res.send("There was a problem updating the information to the database: " + err);
         } else {
@@ -263,7 +263,7 @@ router.route('/:id/edit')
                    res.redirect("/orders/" + order._id);
              },
              //JSON responds showing the updated values
-            json: function(){
+              json: function(){
                    res.json(order);
              }
           });
