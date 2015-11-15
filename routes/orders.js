@@ -334,6 +334,16 @@ router.get('/:id/slip', function(req, res) {
     // end of async call
 });  
 
+router.get('/:id/cancel', function(req, res) {
+    mongoose.model('Order').findOneAndUpdate({_id: req.id}, { $set: {'status': 'cancelled', 'statusHistory.cancelled': new Date() }}, { 'new': true, 'upsert': true}, function(err, order) {
+        if(err) {
+          console.log("error cancelling order")
+        } else {
+          req.flash('action', 'Order '+ order.orderNumber +' Cancelled!')
+          res.redirect('/orders')
+        }
+    })
+})
 
 
 router.route('/:id/edit')

@@ -62,6 +62,8 @@
 
     	$("body").attr('id', "datatables")
 
+        if('<%= message %>') { Messenger().post('<%= message %>') }
+
         $('#datatable-example').dataTable({
             "sPaginationType": "full_numbers",
             "iDisplayLength": 20,
