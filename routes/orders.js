@@ -163,6 +163,7 @@ router.param('id', function(req, res, next, id) {
 
 router.route('/:id')
   .get(function(req, res) {
+
     mongoose.model('Order').findById(req.id, function (err, order) {
       if (err) {
         console.log('GET Error: There was a problem retrieving: ' + err);
@@ -203,26 +204,70 @@ router.route('/:id')
     })
   });
 
-  router.get('/:id/invoice', function(req, res) {
-    mongoose.model('Order').findById(req.id, function (err, order) {
-      if (err) {
-        console.log('GET Error: There was a problem retrieving: ' + err);
-      } else {
-        console.log('GET Retrieving ID: ' + order._id);
-        res.format({
-          html: function(){
-              res.render('orders/invoice', {
-                "order" : order,
-                "title" : "Invoice #" + order.orderNumber
-              });
-          },
-          json: function(){
-              res.json(order);
-          }
-        });
-      }
-    });
-  });
+router.get('/:id/invoice', function(req, res) {
+
+  async.waterfall([
+    //get order
+    function(cb) {
+      mongoose.model('Order').findById(req.id, function (err, order) {
+        if (err) {
+          console.log('GET Error: There was a problem retrieving: ' + err);
+          return cb(err)
+        } else {
+          cb(null, order)
+        }
+      })
+    },
+    //get customer
+    function(order, cb) {
+      mongoose.model('Customer').find({'name': order.customer}, function (err, customers) {
+        if (err) {
+          console.log('GET Error: There was a problem retrieving: ' + err);
+          return cb(err)
+        } else {
+          cb(null, order, customers)
+        }
+      })
+    },
+    //get products
+    function(order, customers, cb) {
+      async.map(order.cart, function(p, done) {
+          mongoose.model('Product').find({'name': p.name}, function(err, prod) {
+            if(err) {
+                console.log('GET Error: There was a problem retrieving: ' + err);
+                return done(err)
+            } else {
+              done(null, prod[0])
+            }
+          });
+        }, function(err, products) {
+            if(err) {
+                console.log('GET Error: There was a problem retrieving: ' + err);
+                return cb(err)
+            } else {
+              res.format({
+                html: function(){
+                    res.render('orders/invoice', {
+                      order : order,
+                      customer: customers[0],
+                      products: products,
+                      title : "Invoice #" + order.orderNumber
+                    })
+                },
+                json: function(){
+                  res.json({
+                    order: order,
+                    customer: customers[0]
+                  })
+                }
+              })
+            }
+        }
+      )
+
+    }])
+    // end of async call
+});  
 
 router.route('/:id/edit')
 	//GET the individual Order by Mongo ID
