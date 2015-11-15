@@ -269,6 +269,73 @@ router.get('/:id/invoice', function(req, res) {
     // end of async call
 });  
 
+router.get('/:id/slip', function(req, res) {
+
+  async.waterfall([
+    //get order
+    function(cb) {
+      mongoose.model('Order').findById(req.id, function (err, order) {
+        if (err) {
+          console.log('GET Error: There was a problem retrieving: ' + err);
+          return cb(err)
+        } else {
+          cb(null, order)
+        }
+      })
+    },
+    //get customer
+    function(order, cb) {
+      mongoose.model('Customer').find({'name': order.customer}, function (err, customers) {
+        if (err) {
+          console.log('GET Error: There was a problem retrieving: ' + err);
+          return cb(err)
+        } else {
+          cb(null, order, customers)
+        }
+      })
+    },
+    //get products
+    function(order, customers, cb) {
+      async.map(order.cart, function(p, done) {
+          mongoose.model('Product').find({'name': p.name}, function(err, prod) {
+            if(err) {
+                console.log('GET Error: There was a problem retrieving: ' + err);
+                return done(err)
+            } else {
+              done(null, prod[0])
+            }
+          });
+        }, function(err, products) {
+            if(err) {
+                console.log('GET Error: There was a problem retrieving: ' + err);
+                return cb(err)
+            } else {
+              res.format({
+                html: function(){
+                    res.render('orders/slip', {
+                      order : order,
+                      customer: customers[0],
+                      products: products,
+                      title : "Packing slip #" + order.orderNumber
+                    })
+                },
+                json: function(){
+                  res.json({
+                    order: order,
+                    customer: customers[0]
+                  })
+                }
+              })
+            }
+        }
+      )
+
+    }])
+    // end of async call
+});  
+
+
+
 router.route('/:id/edit')
 	//GET the individual Order by Mongo ID
 	.get(function(req, res) {
