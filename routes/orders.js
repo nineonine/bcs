@@ -43,7 +43,7 @@ router.route('/')
                     html: function(){
                         res.render('orders/index', {
                               title: 'All orders',
-                              orders : orders,
+                              orders : orders.filter( (o) => o.status === 'processing' || o.status === 'shipped' ),
                               message : req.flash('action')
                           });
                     },
@@ -118,7 +118,7 @@ router.get('/history', function(req, res) {
                 html: function(){
                     res.render('orders/history', {
                           title: 'Orders History',
-                          "orders" : orders
+                          "orders" : orders.filter( (o) => o.status === 'completed' || o.status === 'cancelled' )
                       });
                 },
                 //JSON response will show all blobs in JSON format
@@ -345,6 +345,27 @@ router.get('/:id/cancel', function(req, res) {
     })
 })
 
+router.get('/:id/complete', function(req, res) {
+    mongoose.model('Order').findOneAndUpdate({_id: req.id}, { $set: {'status': 'completed', 'statusHistory.completed': new Date() }}, { 'new': true, 'upsert': true}, function(err, order) {
+        if(err) {
+          console.log("error completing order")
+        } else {
+          req.flash('action', 'Order '+ order.orderNumber +' Completed!')
+          res.redirect('/orders')
+        }
+    })
+})
+
+router.get('/:id/ship', function(req, res) {
+    mongoose.model('Order').findOneAndUpdate({_id: req.id}, { $set: {'status': 'shipped', 'statusHistory.shipped': new Date() }}, { 'new': true, 'upsert': true}, function(err, order) {
+        if(err) {
+          console.log("error shipping order")
+        } else {
+          req.flash('action', 'Order '+ order.orderNumber +' marked shipped!')
+          res.redirect('/orders')
+        }
+    })
+})
 
 router.route('/:id/edit')
 	//GET the individual Order by Mongo ID

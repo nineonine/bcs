@@ -27,8 +27,20 @@
 		</li>
 		<li>
 			<a href="/orders/<%= order._id %>/slip">
-				<i class="fa fa-truck"></i>
+				<i class="fa fa-file-text-o"></i>
 				Packing  Slip
+			</a>
+		</li>
+		<li style="margin-top: 50px">
+			<a href="/orders/<%= order._id %>/ship">
+				<i class="fa fa-truck"></i>
+				<span style="color: #337ab7">Ship Order</span>
+			</a>
+		</li>
+		<li>
+			<a href="/orders/<%= order._id %>/complete">
+				<i class="fa fa-check"></i>
+				<span style="color: green">Complete Order</span>
 			</a>
 		</li>
 		<li>
@@ -168,7 +180,7 @@
 		        	</h4>
 		      	</div>
 		      	<div class="modal-body">
-					If cancelled, order will go to reders history
+					If cancelled, order will go to order history
 		      	</div>
 		      	<div class="modal-footer">
 			        <button type="button" class="btn btn-default" data-dismiss="modal">Back</button>

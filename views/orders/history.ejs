@@ -37,78 +37,18 @@
             </tr>
         </tfoot>
         <tbody>
-            <tr>
+         <% orders.forEach(function(o) { %>
+            <tr class="order-item">
+                <input type="hidden" name="id" value="<%= o._id %>">
                 <td>
-                	<a href="#">#1445</a>
+                    <a href="/orders/<%= o._id %>">#<%= o.orderNumber %></a><i data-toggle="tooltip" data-placement="top" title="delete order" style="margin-left: 10px" class="fa fa-times delete-order"></i>
                 </td>
-                <td>John Stewart</td>
-                <td>Mar 11, 11:50am</td>
-                <td class=""><span class="label label-success">Paid</span></td>
-                <td class="center">$399.99</td>
+                <td class="customer-name"><%= o.customer %></td>
+                <td  class="order-date"><%= o.statusHistory.processing %></td>
+                <td class=""><span class="label"><%= o.status %></span></td>
+                <td class="center">$<%= o.total %></td>
             </tr>
-            <tr>
-                <td>
-                	<a href="#">#1897</a>
-                </td>
-                <td>Andrea</td>
-                <td>Mar 10, 06:50am</td>
-                <td class=""><span class="label label-warning">Pending</span></td>
-                <td class="center">$699.99</td>
-            </tr>
-            <tr>
-                <td>
-                	<a href="#">#1089</a>
-                </td>
-                <td>John Stewart</td>
-                <td>Mar 08, 01:43pm</td>
-                <td class=""><span class="label label-success">Paid</span></td>
-                <td class="center">$1,879.99</td>
-            </tr>
-            <tr>
-                <td>
-                	<a href="#">#1883</a>
-                </td>
-                <td>Pete</td>
-                <td>Mar 07, 07:30pm</td>
-                <td class=""><span class="label label-success">Paid</span></td>
-                <td class="center">$279.99</td>
-            </tr>
-            <tr>
-                <td>
-                	<a href="#">#1383</a>
-                </td>
-                <td>John Stewart</td>
-                <td>Mar 07, 04:30pm</td>
-                <td class=""><span class="label label-danger">Canceled</span></td>
-                <td class="center">$599.99</td>
-            </tr>
-            <tr>
-                <td>
-                	<a href="#">#1266</a>
-                </td>
-                <td>Patrick Johnson</td>
-                <td>Mar 07, 02:30pm</td>
-                <td class=""><span class="label label-success">Paid</span></td>
-                <td class="center">$389.99</td>
-            </tr>
-            <tr>
-                <td>
-                	<a href="#">#1645</a>
-                </td>
-                <td>Karen Diaz</td>
-                <td>Mar 04, 04:30pm</td>
-                <td class=""><span class="label label-warning">Pending</span></td>
-                <td class="center">$199.99</td>
-            </tr>
-            <tr>
-                <td>
-                	<a href="#">#1864</a>
-                </td>
-                <td>Matthew Williams</td>
-                <td>Mar 02, 06:22pm</td>
-                <td class=""><span class="label label-success">Paid</span></td>
-                <td class="center">$399.99</td>
-            </tr>
+        <% }) %>    
        	</tbody>
     </table>
 </div>
@@ -117,6 +57,56 @@
     $(function() {
 
     	$("body").attr('id', "datatables")
+
+        //format dates
+        $('.order-date').each( function(e) {
+            $(this).html( dateFormat($(this).html()))
+        })
+
+        $('.label').each(function(e) {
+            var status = $(this).html()
+
+            switch(status) {
+                case 'processing':
+                    $(this).addClass('label-warning')
+                    break;
+                case 'shipped':
+                    $(this).addClass('label-primary')
+                    break;                    
+                case 'completed':
+                    $(this).addClass('label-success')
+                    break;                        
+                default:
+                    $(this).addClass('label-danger')
+            }
+        })
+
+        $('.delete-order').click( function(e) {
+
+            var id = $(this).closest('tr').find('input').val()
+            var that = $(this)
+
+            console.log($(this).closest('tr').find('.customer-name').html() )
+
+            $.ajax({
+                method: 'DELETE',
+                url: '/orders/' + id + '/edit',
+                contentType: 'application/json; charset=UTF-8',
+                dataType: 'json',
+                timeout: 5000,
+                success: (data) => {
+                    Messenger().post("Order has been removed!");
+                    that.closest('tr').remove()
+                },
+                error: (XMLHttpRequest, textStatus, errorThrown) => {
+                    Messenger().post({
+                        message: 'Sorry, there was problem with removing Order.',
+                        type: 'error',
+                        showCloseButton: true
+                    });
+                }
+            })
+        })
 
         $('#datatable-example').dataTable({
             "sPaginationType": "full_numbers",

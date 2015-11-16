@@ -48,8 +48,8 @@
                         <a href="/orders/<%= o._id %>">#<%= o.orderNumber %></a>
                     </td>
                     <td><%= o.customer %></td>
-                    <td><%= o.statusHistory.processing %></td>
-                    <td class=""><span class="label label-success"><%= o.status %></span></td>
+                    <td  class="order-date"><%= o.statusHistory.processing %></td>
+                    <td class=""><span class="label"><%= o.status %></span></td>
                     <td class="center">$<%= o.total %></td>
                 </tr>
             <% }); %>
@@ -61,6 +61,30 @@
     $(function() {
 
     	$("body").attr('id', "datatables")
+
+        //format dates
+        $('.order-date').each( function(e) {
+            $(this).html( dateFormat($(this).html()))
+        })
+
+        $('.label').each(function(e) {
+            var status = $(this).html()
+
+            switch(status) {
+                case 'processing':
+                    $(this).addClass('label-warning')
+                    break;
+                case 'shipped':
+                    $(this).addClass('label-primary')
+                    break;                    
+                case 'completed':
+                    $(this).addClass('label-success')
+                    break;                        
+                default:
+                    $(this).addClass('label-danger')
+            }
+        })
+
 
         if('<%= message %>') { Messenger().post('<%= message %>') }
 

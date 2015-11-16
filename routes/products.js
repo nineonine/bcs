@@ -103,6 +103,7 @@ router.route('/')
               console.log('POST creating new Product: ' + product);
               res.format({
                 html: function(){
+                    req.flash('action', 'Product created!')
                     res.location("products");
                     res.redirect("/products");
                 },
