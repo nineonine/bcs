@@ -9,7 +9,8 @@ var express = require('express'),
     cookieParser = require('cookie-parser'),
     methodOverride = require('method-override'),
     flash = require('connect-flash'),
-    fs = require('fs')
+    fs = require('fs'),
+    async = require('async')
 
 var storage = multer.diskStorage({
   destination: './uploads/customers',
@@ -174,24 +175,61 @@ router.param('id', function(req, res, next, id) {
 
 router.route('/:id')
   .get(function(req, res) {
-    mongoose.model('Customer').findById(req.id, function (err, customer) {
-      if (err) {
-        console.log('GET Error: There was a problem retrieving: ' + err);
-      } else {
-        console.log('GET Retrieving ID: ' + customer._id);
-        res.format({
-          html: function(){
-              res.render('customers/profile', {
-                "customer" : customer,
-                "title" : customer.name
-              });
-          },
-          json: function(){
-              res.json(customer);
-          }
-        });
-      }
-    });
+
+    async.waterfall([
+      function(done) {
+          mongoose.model('Customer').findById(req.id, function (err, customer) {
+            if (err) {
+              console.log('GET Error: There was a problem retrieving: ' + err);
+              return done(err)
+            } else {
+              done(null, customer)
+            }
+          })
+      },
+      function(customer, done) {
+          mongoose.model('Order').find({'customer': customer.name}, function(err, orders) {
+            if(err) {
+              console.log('GET Error: There was a problem retrieving: ' + err);
+              return done(err)
+            } else {
+                res.format({
+                  html: function(){
+                      res.render('customers/profile', {
+                        "customer" : customer,
+                        "title" : customer.name,
+                        "orders": orders
+                      });
+                  },
+                  json: function(){
+                      res.json(customer);
+                  }
+                });
+            }
+          })
+      }   
+    ])
+
+
+    // mongoose.model('Customer').findById(req.id, function (err, customer) {
+    //   if (err) {
+    //     console.log('GET Error: There was a problem retrieving: ' + err);
+    //   } else {
+    //     mongoose.model
+    //     console.log('GET Retrieving ID: ' + customer._id);
+    //     res.format({
+    //       html: function(){
+    //           res.render('customers/profile', {
+    //             "customer" : customer,
+    //             "title" : customer.name
+    //           });
+    //       },
+    //       json: function(){
+    //           res.json(customer);
+    //       }
+    //     });
+    //   }
+    // });
   });
 
 router.route('/:id/edit')
