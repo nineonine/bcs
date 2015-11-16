@@ -1,0 +1,130 @@
+<% layout('layout') -%>
+<div class="menubar">
+	<div class="sidebar-toggler visible-xs">
+		<i class="ion-navicon"></i>
+	</div>
+	
+	<div class="page-title">
+		Packing slip #<strong><%= order.orderNumber %></strong>
+	</div>
+	<div class="options pull-right">
+		<a href="javascript:history.go(-1)"><i class="fa fa-arrow-left"></i> Back</a>
+		<a href="#"><i class="fa fa-print"></i> Print</a>
+		<a href="#"><i class="fa fa-download"></i> Download</a>
+	</div>
+</div>
+
+<div class="content-wrapper">
+	<div class="invoice-wrapper" id="section-to-print">
+
+		<div class="payment-info">
+			<div class="row">
+				<div class="col-sm-6">
+					<span>Packing Slip No.</span>
+					<strong><%= order.orderNumber %></strong>
+				</div>
+				<div class="col-sm-6 text-right">
+					<span>Delivery Date</span>
+					<strong><%= order.statusHistory.processing %></strong>
+				</div>
+			</div>
+		</div>
+
+		<div class="payment-details">
+			<div class="row">
+				<div class="col-sm-6">
+					<strong>
+						<%= order.customer %>
+					</strong>
+					<p>
+					    <%= customer.billing.address %> <br>
+			            <%= customer.billing.city %> <br>
+			            <%= customer.billing.zip %> 
+					</p>
+				</div>
+				<div class="total text-right" style="margin-right:20px">
+				<p class="extra-notes">
+					<strong>Extra Notes</strong><br/>
+					<%= order.notes %>
+				</p>
+			</div>
+			</div>
+		</div>
+
+		<div class="line-items">
+			<div class="headers clearfix">
+				<div class="row">
+					<div class="col-xs-4">Description</div>
+					<div class="col-xs-3">Quantity</div>
+					<div class="col-xs-5 text-right">Amount</div>
+				</div>
+			</div>
+			<div class="items">
+			<% products.forEach(function(p) { %>
+			<% var matchedProduct = order.cart.filter( (x) => x.name === p.name)[0] %>
+				<div class="row item">
+					<div class="col-xs-4 desc"> <%= p.name %></div>
+					<div class="col-xs-3 qty"><%= matchedProduct.quantity %></div>
+					<div class="col-xs-5 amount text-right">$<%= (+products.filter( (x) => matchedProduct.name === x.name)[0].price * +matchedProduct.quantity).toFixed(2) %></div>
+				</div>
+			<% }) %>	
+			</div>
+			
+
+			<div class="row print">
+				<a href="#" id="printBtn">
+					<i class="fa fa-print"></i>
+					Print this slip
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+	function printDiv(divName) {
+	     var printContents = document.getElementById(divName).innerHTML;
+	     var originalContents = document.body.innerHTML;
+
+	     document.body.innerHTML = printContents;
+
+	     window.print();
+
+	     document.body.innerHTML = originalContents;
+	}
+
+
+	$( document ).ready(function() {
+
+		$("body").attr('id', "invoice")
+
+		$('#subtotal').html(
+			$('.amount').map( function() { return +$(this).html().substring(1) }).get().reduce( (a,b) => a+b ).toFixed(2)
+		)
+
+		$('#section-to-print').click( function(e) {
+			e.preventDefault()
+			e.stopPropagation()
+			printDiv('section-to-print')
+		})
+
+
+	})	  	
+</script>
+
+<style type="text/css">
+	
+	@media print {
+	  body * {
+	    visibility: hidden;
+	  }
+	  #section-to-print, #section-to-print * {
+	    visibility: visible;
+	  }
+	  #section-to-print {
+	    position: absolute;
+	    left: 0;
+	    top: 0;
+	  }
+	}
+</style>
