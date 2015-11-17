@@ -12,6 +12,9 @@ var express = require('express'),
     fs = require('fs'),
     async = require('async')
 
+
+// module.exports = function(passport)
+
 router.use(cookieParser('secret'));
 router.use(session({
   cookie: { maxAge: 60000 },
@@ -20,6 +23,13 @@ router.use(session({
   saveUninitialized: true
 }));
 router.use(flash());
+
+router.use(function (req, res, next) {
+  if (req.isAuthenticated())
+    return next();
+  // if the user is not authenticated then redirect him to the login page
+  res.redirect('/login');
+})
 
 router.use(bodyParser.urlencoded({ extended: true }))
 router.use(methodOverride(function(req, res){

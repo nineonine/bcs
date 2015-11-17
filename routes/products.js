@@ -30,6 +30,14 @@ router.use(session({
   saveUninitialized: true
 }));
 router.use(flash());
+
+router.use(function (req, res, next) {
+  if (req.isAuthenticated())
+    return next();
+  // if the user is not authenticated then redirect him to the login page
+  res.redirect('/login');
+})
+
 router.use(bodyParser.urlencoded({ extended: true }))
 router.use(methodOverride(function(req, res){
       if (req.body && typeof req.body === 'object' && '_method' in req.body) {
