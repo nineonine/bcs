@@ -63,6 +63,10 @@
 
 	<script type="text/javascript">
 		$(function () {
+			Messenger.options = {
+ 			    extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-right',
+    		    theme: 'flat'
+			}
 			
 			if('<%= message %>') { Messenger().post('<%= message %>') } 
 
