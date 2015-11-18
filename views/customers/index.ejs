@@ -9,8 +9,7 @@
 	</div>
 	<form class="search hidden-xs">
 		<i class="fa fa-search"></i>
-		<input type="text" name="q" placeholder="Search customers, clients..." />
-		<input type="submit" />
+		<input type="text" name="q" id='search-input' placeholder="Search customers, clients by name..." autocomplete="off"/>
 	</form>
 	<a href="/customers/new" class="new-user btn btn-success pull-right">
 		<span>New customer</span>
@@ -21,27 +20,12 @@
 	<div class="row page-controls">
 		<div class="col-md-12 filters">
 			<label>Filter Customers:</label>
-			<a href="#" class="active">All (<%= customers.length %>)</a>
-			<a href="#">Home-user (<%=customers.filter( c => c.type === 'End User').length %>)</a>
-			<a href="#">End-user (<%=customers.filter( c => c.type === 'Home User').length %>)</a>
-			<a href="#">Company (<%=customers.filter( c => c.type === 'Company').length %>)</a>
+			<a href="#" id='show-all' class="active">All (<%= customers.length %>)</a>
+			<a href="#" id='show-home-user'>Home-user (<%=customers.filter( c => c.type === 'Home User').length %>)</a>
+			<a href="#" id='show-end-user'>End-user (<%=customers.filter( c => c.type === 'End User').length %>)</a>
+			<a href="#" id='show-company'>Company (<%=customers.filter( c => c.type === 'Company').length %>)</a>
 
 			<div class="show-options">
-				<div class="dropdown">
-				  	<a class="button" data-toggle="dropdown" href="#">
-				  		<span>
-				  			Sort by
-				  			<i class="fa fa-unsorted"></i>
-				  		</span>
-				  	</a>
-				  	<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-				    	<li><a href="#">Name</a></li>
-						<li><a href="#">Signed up</a></li>
-						<li><a href="#">Last seen</a></li>
-						<li><a href="#">Browser</a></li>
-						<li><a href="#">Country</a></li>
-				  	</ul>
-				</div>
 				<a href="#" data-grid=".users-list" class="grid-view active"><i class="fa fa-th-list"></i></a>
 				<a href="#" data-grid=".users-grid" class="grid-view"><i class="fa fa-th"></i></a>
 			</div>
@@ -81,6 +65,7 @@
 			</div>
 			<% customers.forEach(function(c) { %>
         		<div class="row user">
+        		<input type='hidden' value='<%= c.type %>' name="type">
 					<div class="col-sm-2 avatar">
 						<input type="checkbox" name="select-user" />
 						<img src="<%=c.image%>" />
@@ -125,6 +110,45 @@
 
 		var $allUsers = $(".select-users input:checkbox");
 		var $checkboxes = $("[name='select-user']");
+
+
+		// filtering by customer type
+		$('#show-all').click(function(e) {
+			$(".row.user").show()
+		})
+		$('#show-home-user').click(function(e) {
+			$(".row.user").show()
+			$(".row.user").filter(function(e) {
+				return $(this).find("input[name='type']").val() != 'Home User'
+			}).hide()
+		})
+		$('#show-end-user').click(function(e) {
+			$(".row.user").show()
+			$(".row.user").filter(function(e) {
+				return $(this).find("input[name='type']").val() != 'End User'
+			}).hide()
+		})
+		$('#show-company').click(function(e) {
+			$(".row.user").show()
+			$(".row.user").filter(function(e) {
+				return $(this).find("input[name='type']").val() != 'Company'
+			}).hide()
+		})
+
+
+		// search bar
+		$('#search-input').keyup(function(e) {
+			$(".row.user").show()
+			var searchTerm = $(this).val().toLocaleLowerCase()
+			if(!searchTerm) {
+				$(".row.user").show()
+			}
+			var customersToHide = $('.row.user').filter(function(e) {
+				var name = $(this).find('.name').html().toLocaleLowerCase()
+				return name.indexOf(searchTerm) == -1
+			})
+			$(customersToHide).hide()
+		})
 
 		$allUsers.change(function () {
 			var checked = $allUsers.is(":checked");
