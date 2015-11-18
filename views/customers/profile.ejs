@@ -21,11 +21,11 @@
 		</div>
 		<div class="main-details clearfix">
 			<div class="col">
-				<div class="value">118</div>
+				<div class="value"><%= orders.filter( function(o) {return o.status != 'cancelled'}).length %></div>
 				Orders
 			</div>
 			<div class="col">
-				<div class="value">$31,250.00</div>
+				<div class="value">$<%= orders.filter( function(o) {return o.status != 'cancelled'}).reduce( function(acc, o) { return acc + o.total}, 0).toFixed(2) %></div>
 				Lifetime spent
 			</div>
 		</div>
@@ -43,13 +43,14 @@
 			<div class="field">
 				<label>Address</label>
 				<div class="value">
-					<%= customer.billingAddress %>
+					<%= customer.billing.address %><br/>
+					<%= customer.billing.city + ', ' + customer.billing.state + ' ' + customer.billing.zip %>
 				</div>
 			</div>
 			<div class="field">
 				<label>Signed up</label>
 				<div class="value">
-					03 Feb, 2013 (6 months ago)
+					TBA
 				</div>
 			</div>
 		</div>
