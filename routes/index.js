@@ -20,7 +20,8 @@ module.exports = function(passport){
 	/* GET home page. */
 	router.get('/', isAuthenticated, function(req, res, next) {
 	  res.render('dashboard', { 
-	  	title: 'BCS' 
+	  	title: 'BCS',
+	  	"user" : req.user 
 	  });
 	});
 

@@ -72,7 +72,8 @@ module.exports = function(passport) {
                           res.render('users/index', {
                                 title: 'All Users',
                                 users : users,
-                                message : req.flash('action')
+                                message : req.flash('action'),
+                                user : req.user
                             });
                       },
                       //JSON response will show all blobs in JSON format
@@ -140,7 +141,7 @@ module.exports = function(passport) {
   /* GET New User page. */
   router.get('/new', function(req, res) {
       
-      res.render('users/new', { title: 'Add New User' });
+      res.render('users/new', { title: 'Add New User', user : req.user });
   });
 
   // route middleware to validate :id

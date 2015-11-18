@@ -63,7 +63,8 @@ module.exports = function(passport) {
                         res.render('products/index', {
                               title: 'All products',
                               "products" : products,
-                              message : req.flash('action')
+                              message : req.flash('action'),
+                              user : req.user
                           });
                     },
                     //JSON response will show all blobs in JSON format
@@ -130,7 +131,8 @@ module.exports = function(passport) {
   router.get('/new', function(req, res) {
       res.render('products/new', { 
         title: 'Add New Product',
-        action: 'new'
+        action: 'new',
+        user : req.user
         });
   });
 
@@ -175,7 +177,8 @@ module.exports = function(passport) {
           res.format({
             html: function(){
                 res.render('products/show', {
-                  "Product" : product
+                  "Product" : product,
+                  user : req.user
                 });
             },
             json: function(){
@@ -202,7 +205,8 @@ module.exports = function(passport) {
   	                       res.render('products/product', {
   	                          title: 'product' + product._id,
   	                          "product" : product,
-                              action: 'edit' 
+                              action: 'edit',
+                              user : req.user 
   	                      });
   	                 },
   	                 //JSON response will return the JSON output

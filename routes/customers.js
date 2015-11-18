@@ -64,7 +64,8 @@ module.exports = function(passport) {
                           res.render('customers/index', {
                                 title: 'All customers',
                                 customers : customers,
-                                message : req.flash('action')
+                                message : req.flash('action'),
+                                user: req.user
                             });
                       },
                       //JSON response will show all blobs in JSON format
@@ -149,7 +150,7 @@ module.exports = function(passport) {
 
   /* GET New Customer page. */
   router.get('/new', function(req, res) {
-      res.render('customers/new', { title: 'Add New Customer' });
+      res.render('customers/new', { title: 'Add New Customer', user: req.user });
   });
 
   // route middleware to validate :id
@@ -208,7 +209,8 @@ module.exports = function(passport) {
                         res.render('customers/profile', {
                           "customer" : customer,
                           "title" : customer.name,
-                          "orders": orders
+                          "orders": orders,
+                          "user": req.user
                         });
                     },
                     json: function(){
@@ -220,26 +222,6 @@ module.exports = function(passport) {
         }   
       ])
 
-
-      // mongoose.model('Customer').findById(req.id, function (err, customer) {
-      //   if (err) {
-      //     console.log('GET Error: There was a problem retrieving: ' + err);
-      //   } else {
-      //     mongoose.model
-      //     console.log('GET Retrieving ID: ' + customer._id);
-      //     res.format({
-      //       html: function(){
-      //           res.render('customers/profile', {
-      //             "customer" : customer,
-      //             "title" : customer.name
-      //           });
-      //       },
-      //       json: function(){
-      //           res.json(customer);
-      //       }
-      //     });
-      //   }
-      // });
     });
 
   router.route('/:id/edit')
@@ -257,7 +239,8 @@ module.exports = function(passport) {
   	                html: function(){
   	                       res.render('customers/edit', {
   	                          title: 'Customer' + customer._id,
-  	                          "customer" : customer 
+  	                          "customer" : customer,
+                              "user" : req.user
   	                      });
   	                 },
   	                 //JSON response will return the JSON output

@@ -54,7 +54,8 @@ module.exports = function(passport) {
                           res.render('orders/index', {
                                 title: 'All orders',
                                 orders : orders.filter( (o) => o.status === 'processing' || o.status === 'shipped' ),
-                                message : req.flash('action')
+                                message : req.flash('action'),
+                                user : req.user
                             });
                       },
                       //JSON response will show all blobs in JSON format
@@ -115,7 +116,7 @@ module.exports = function(passport) {
 
   /* GET New Order page. */
   router.get('/new', function(req, res) {
-      res.render('orders/new', { title: 'Add New Order' });
+      res.render('orders/new', { title: 'Add New Order', user : req.user });
   });
 
   router.get('/history', function(req, res) {
@@ -128,7 +129,8 @@ module.exports = function(passport) {
                   html: function(){
                       res.render('orders/history', {
                             title: 'Orders History',
-                            "orders" : orders.filter( (o) => o.status === 'completed' || o.status === 'cancelled' )
+                            "orders" : orders.filter( (o) => o.status === 'completed' || o.status === 'cancelled' ),
+                            user : req.user
                         });
                   },
                   //JSON response will show all blobs in JSON format
@@ -200,7 +202,8 @@ module.exports = function(passport) {
                            res.render('orders/order', {
                               title: 'Order' + order.orderNumber,
                               order : order,
-                              products: products 
+                              products: products,
+                              user : req.user 
                           });
                      },
                      //JSON response will return the JSON output
@@ -261,7 +264,8 @@ module.exports = function(passport) {
                         order : order,
                         customer: customers[0],
                         products: products,
-                        title : "Invoice #" + order.orderNumber
+                        title : "Invoice #" + order.orderNumber,
+                        user : req.user
                       })
                   },
                   json: function(){
@@ -326,7 +330,8 @@ module.exports = function(passport) {
                         order : order,
                         customer: customers[0],
                         products: products,
-                        title : "Packing slip #" + order.orderNumber
+                        title : "Packing slip #" + order.orderNumber,
+                        user : req.user
                       })
                   },
                   json: function(){
@@ -392,7 +397,8 @@ module.exports = function(passport) {
   	                html: function(){
   	                       res.render('orders/edit', {
   	                          title: 'Order' + order._id,
-  	                          "order" : order 
+  	                          "order" : order,
+                              user : req.user 
   	                      });
   	                 },
   	                 //JSON response will return the JSON output

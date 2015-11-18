@@ -1,24 +1,20 @@
 <div id="sidebar-default" class="main-sidebar">
 			<div class="current-user">
 				<a href="/" class="name">
-					<img class="avatar" src="../../images/avatars/CROPPED-Oleksandr_photo.jpg" />
-					<span>
-					Alex 909	
+					<img class="avatar" src="<%= user.image %>" />
+					<span><%= user.username %>
 						<i class="fa fa-chevron-down"></i>
 					</span>
 				</a>
 				<ul class="menu">
 					<li>
-						<a href="account-profile.html">Account settings</a>
+						<a href="users/<%=user._id %>">Account settings</a>
 					</li>
 					<li>
-						<a href="account-notifications.html">Notifications</a>
+						<a href="/docs">Help / Support</a>
 					</li>
 					<li>
-						<a href="account-support.html">Help / Support</a>
-					</li>
-					<li>
-						<a href="signup.html">Sign out</a>
+						<a href="/logout">Sign out</a>
 					</li>
 				</ul>
 			</div>
@@ -83,9 +79,8 @@
 							<i class="fa fa-chevron-down"></i>
 						</a>
 						<ul class="submenu">
-							<li><a href="account-profile.html">Settings</a></li>
-							<li><a href="account-notifications.html">Notifications</a></li>
-							<li><a href="account-support.html">Support</a></li>
+							<li><a href="users/<%=user._id %>">Settings</a></li>
+							<li><a href="/docs">Support</a></li>
 						</ul>
 					</li>
 					<li>
