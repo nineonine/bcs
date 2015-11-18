@@ -9,7 +9,8 @@ var express = require('express'),
     cookieParser = require('cookie-parser'),
     methodOverride = require('method-override'),
     fs = require('fs'),
-    flash = require('connect-flash')
+    flash = require('connect-flash'),
+    csv = require('express-csv')
 
 module.exports = function(passport) {
 
@@ -126,6 +127,15 @@ module.exports = function(passport) {
       })
   });    
 
+  router.get('/csv', function(req, res) {
+    mongoose.model('Product').find({}).lean().exec( function (err, products) {
+      if (err) {
+          return console.error(err);
+      } else {
+          res.csv(products)
+      }
+    })      
+  })
 
   /* GET New Product page. */
   router.get('/new', function(req, res) {
