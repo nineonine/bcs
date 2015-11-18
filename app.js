@@ -5,6 +5,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var helmet = require('helmet');
 
 
 var db = require('./model/db'),
@@ -24,6 +25,7 @@ app.set('view engine', 'ejs');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
+app.use(helmet());
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -36,7 +38,7 @@ var passport = require('passport');
 var expressSession = require('express-session');
 // TODO - Why Do we need this key ?
 app.use(expressSession({
-  cookie: { maxAge: 60000 },
+  cookie: { maxAge: 600000 },
   secret: 'keyboard-cat',
   resave: true,
   saveUninitialized: true
