@@ -117,7 +117,7 @@
 					<span class="flag"></span>
 				</a>
 				<ul class="menu">
-					<li><a href="#"><span id="activeOrders"></span>  Active Orders</a></li>
+					<li><a href="/orders"><span id="activeOrders"></span>  Active Orders</a></li>
 				</ul>
 			</li>
 			<li><a href="/logout"><i class="ion-log-out"></i></a></li>
@@ -131,7 +131,6 @@
 		$.ajax({
 			url: '/orders/active',
 			success: function(data) {
-				console.log(data)
 				$('#activeOrders').html(data)
 			},
 			dataType: 'json'

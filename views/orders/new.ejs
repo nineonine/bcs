@@ -45,7 +45,7 @@
 	  	</div>
 	  	<div class="form-group orderform">
 			<label>Discount ( % )</label>
-			<input type="text" class="form-control" name="discount" />
+			<input type="text" class="form-control" name="discount" value='0'/>
 		</div>
 		<div class="form-group orderform">
 		    <label>Extra notes</label>
@@ -128,7 +128,7 @@
 
 <script type="text/javascript">
 
-	var products, opts1, opts2;
+	var products, opts1, opts2, fv;
 	
 	function getPrice(prodName) {
 		return +products.filter( (p) => p.name === prodName)[0].price
@@ -147,6 +147,116 @@
 
 	$(function() {
 		$("body").attr('id', "account");
+
+		$('#create-order').formValidation({
+	        err: {
+	            container: 'tooltip'
+	        },
+	        fields: {
+	            orderNumber: {
+	                validators: {
+	                    notEmpty: {
+	                        message: 'Order number is required and cannot be empty'
+	                    },
+	                    numeric: {
+	                        message: 'Should contain only numerics'
+	                    }
+	                }
+	            },
+	            customer: {
+	                validators: {
+	                    notEmpty: {
+	                        message: 'Customer is required and cannot be empty'
+	                    }
+	                }
+	            },
+	            discount: {
+	                validators: {
+	                    notEmpty: {
+	                        message: 'Discount is required and cannot be empty'
+	                    },
+	                    numeric: {
+	                        message: 'Should contain only numerics'
+	                    },
+	                    between: {
+	                    	min: 0,
+	                    	max: 100,
+	                    	message: 'Should be between 0 and 100'
+	                    }
+	                }
+	            }
+	        }
+	    }).on('success.form.fv', function(e) {
+            // Prevent form submission
+            e.preventDefault();
+        }); 
+
+	    // place order
+		$('#create-order').submit(function(e) {
+
+			$(this).formValidation('validate')
+
+			var $form = $(e.target);
+			fv = $form.data('formValidation');
+			var cartIsEmpty = $('div.item:not(:first)').length == 0
+
+			e.preventDefault()
+			e.stopImmediatePropagation()
+
+
+
+			if( !fv.isValid() || cartIsEmpty) {
+				Messenger().post({
+				  	message: 'Either cart is empty or some data is invalid',
+				  	type: 'error',
+				  	showCloseButton: true
+				});
+
+				return false
+			}	
+
+			console.log($("#create-order input[name='orderNumber']").val())
+
+			updateTotals()
+			// get the cart (removing the first item because its an empty blueprint of cart item)
+			var cart = $('.item').map( function() { 
+				return {name: $(this).find('.desc').html() , quantity: +$(this).find('.qty').html()} 
+			}).get().splice(1)	
+
+			var formData = {
+				orderNumber : $("#create-order input[name='orderNumber']").val(),
+	            customer : $("#create-order input[name='customer']").val(),
+	            shipping: $('#create-order').find('select').val(),
+	            discount : +$("#create-order input[name='discount']").val(),
+	            notes: $("#create-order #notes").val(),
+	            cart: cart,
+	            total: +$('#total').html().substring(1)
+		    }
+
+		    console.log(formData)
+
+			$.ajax({
+				url: '/orders',
+				type: 'POST',
+				contentType: 'application/json; charset=UTF-8',
+				dataType: 'json',
+				data: JSON.stringify(formData),
+		        timeout: 5000,
+		        complete: () => console.log("complete !"),
+		        success: (data) => {
+					Messenger().post("Order has been placed!");
+					window.location.href = data.redirect
+		        },
+		        error: (XMLHttpRequest, textStatus, errorThrown) => {
+		        	console.log(XMLHttpRequest.responseText) 
+		        	Messenger().post({
+					  	message: 'Sorry, there was problem with placing Order.',
+					  	type: 'error',
+					  	showCloseButton: true
+					});
+		        }
+			})
+		})
 
 		//get products for cart operations
 		$.ajax({
@@ -196,6 +306,9 @@
 
 		// Add item to cart
 		$('#add-item').click( (e) => {
+
+			//destroy form validation from previous times
+			$('#create-order').formValidation('destroy')
 
 			//get all inputs
 			var prodName = $("input[name='productName']").val()
@@ -278,57 +391,6 @@
 
 			$panels.hide();
 			$panels.eq(index).show();
-		})
-
-		
-		// place order
-		$('#create-order').submit(function(e) {
-
-			e.preventDefault();
-			e.stopImmediatePropagation();
-
-			console.log("form axaj update")
-			console.log($("#create-order input[name='orderNumber']").val())
-
-			updateTotals()
-			// get the cart (removing the firsm item because its an empty blueprint of cart item)
-			var cart = $('.item').map( function() { 
-				return {name: $(this).find('.desc').html() , quantity: +$(this).find('.qty').html()} 
-			}).get().splice(1)	
-
-			var formData = {
-				orderNumber : $("#create-order input[name='orderNumber']").val(),
-	            customer : $("#create-order input[name='customer']").val(),
-	            shipping: $('#create-order').find('select').val(),
-	            discount : +$("#create-order input[name='discount']").val(),
-	            notes: $("#create-order #notes").val(),
-	            cart: cart,
-	            total: +$('#total').html().substring(1)
-		    }
-
-		    console.log(formData)
-
-			$.ajax({
-				url: '/orders',
-				type: 'POST',
-				contentType: 'application/json; charset=UTF-8',
-				dataType: 'json',
-				data: JSON.stringify(formData),
-		        timeout: 5000,
-		        complete: () => console.log("complete !"),
-		        success: (data) => {
-					Messenger().post("Order has been placed!");
-					window.location.href = data.redirect
-		        },
-		        error: (XMLHttpRequest, textStatus, errorThrown) => {
-		        	console.log(XMLHttpRequest.responseText) 
-		        	Messenger().post({
-					  	message: 'Sorry, there was problem with placing Order.',
-					  	type: 'error',
-					  	showCloseButton: true
-					});
-		        }
-			})
 		})
 		
 	})	

@@ -265,6 +265,117 @@
 		$("input[name='customer']").easyAutocomplete(opts1);
 		$("input[name='productName']").easyAutocomplete(opts2);
 
+		$('#edit-order').formValidation({
+	        err: {
+	            container: 'tooltip'
+	        },
+	        fields: {
+	            orderNumber: {
+	                validators: {
+	                    notEmpty: {
+	                        message: 'Order number is required and cannot be empty'
+	                    },
+	                    numeric: {
+	                        message: 'Should contain only numerics'
+	                    }
+	                }
+	            },
+	            customer: {
+	                validators: {
+	                    notEmpty: {
+	                        message: 'Customer is required and cannot be empty'
+	                    }
+	                }
+	            },
+	            discount: {
+	                validators: {
+	                    notEmpty: {
+	                        message: 'Discount is required and cannot be empty'
+	                    },
+	                    numeric: {
+	                        message: 'Should contain only numerics'
+	                    },
+	                    between: {
+	                    	min: 0,
+	                    	max: 100,
+	                    	message: 'Should be between 0 and 100'
+	                    }
+	                }
+	            }
+	        }
+	    }).on('success.form.fv', function(e) {
+            // Prevent form submission
+            e.preventDefault();
+        });
+
+        // place order
+		$('#edit-order').submit(function(e) {
+
+			$(this).formValidation('validate')
+
+			var $form = $(e.target);
+			fv = $form.data('formValidation');
+			var cartIsEmpty = $('div.item:not(:first)').length == 0
+
+			e.preventDefault()
+			e.stopImmediatePropagation()
+
+
+
+			if( !fv.isValid() || cartIsEmpty) {
+				Messenger().post({
+				  	message: 'Either cart is empty or some data is invalid',
+				  	type: 'error',
+				  	showCloseButton: true
+				});
+
+				return false
+			}	
+
+			console.log("form axaj update")
+			console.log($("#create-order input[name='orderNumber']").val())
+
+			updateTotals()
+			// get the cart (removing the firsm item because its an empty blueprint of cart item)
+			var cart = $('.item').map( function() { 
+				return {name: $(this).find('.desc').html() , quantity: +$(this).find('.qty').html()} 
+			}).get().splice(1)	
+
+			var formData = {
+				orderNumber : $("#edit-order input[name='orderNumber']").val(),
+	            customer : $("#edit-order input[name='customer']").val(),
+	            shipping: $('#edit-order').find('select').val(),
+	            discount : +$("#edit-order input[name='discount']").val(),
+	            notes: $("#edit-order #notes").val(),
+	            cart: cart,
+	            total: +$('#total').html().substring(1)
+		    }
+
+		    console.log(formData)
+
+			$.ajax({
+				url: '/orders/<%= order._id %>/edit',
+				type: 'PUT',
+				contentType: 'application/json; charset=UTF-8',
+				dataType: 'json',
+				data: JSON.stringify(formData),
+		        timeout: 5000,
+		        complete: () => console.log("complete !"),
+		        success: (data) => {
+					Messenger().post("Order has been updated!");
+					$(this).formValidation('destroy')
+		        },
+		        error: (XMLHttpRequest, textStatus, errorThrown) => {
+		        	console.log(XMLHttpRequest.responseText) 
+		        	Messenger().post({
+					  	message: 'Sorry, there was problem with placing Order.',
+					  	type: 'error',
+					  	showCloseButton: true
+					});
+		        }
+			})
+		}) 
+
 
 		// Add item to cart
 		$('#add-item').click( (e) => {
@@ -328,56 +439,6 @@
 
 			updateTotals()
 		})
-
-		// place order
-		$('#edit-order').submit(function(e) {
-
-			e.preventDefault();
-			e.stopImmediatePropagation();
-
-			console.log("form axaj update")
-			console.log($("#create-order input[name='orderNumber']").val())
-
-			updateTotals()
-			// get the cart (removing the firsm item because its an empty blueprint of cart item)
-			var cart = $('.item').map( function() { 
-				return {name: $(this).find('.desc').html() , quantity: +$(this).find('.qty').html()} 
-			}).get().splice(1)	
-
-			var formData = {
-				orderNumber : $("#edit-order input[name='orderNumber']").val(),
-	            customer : $("#edit-order input[name='customer']").val(),
-	            shipping: $('#edit-order').find('select').val(),
-	            discount : +$("#edit-order input[name='discount']").val(),
-	            notes: $("#edit-order #notes").val(),
-	            cart: cart,
-	            total: +$('#total').html().substring(1)
-		    }
-
-		    console.log(formData)
-
-			$.ajax({
-				url: '/orders/<%= order._id %>/edit',
-				type: 'PUT',
-				contentType: 'application/json; charset=UTF-8',
-				dataType: 'json',
-				data: JSON.stringify(formData),
-		        timeout: 5000,
-		        complete: () => console.log("complete !"),
-		        success: (data) => {
-					Messenger().post("Order has been updated!");
-		        },
-		        error: (XMLHttpRequest, textStatus, errorThrown) => {
-		        	console.log(XMLHttpRequest.responseText) 
-		        	Messenger().post({
-					  	message: 'Sorry, there was problem with placing Order.',
-					  	type: 'error',
-					  	showCloseButton: true
-					});
-		        }
-			})
-		})
-
 
 		//tab switching
 		var $links = $(".menu .panel-switch");
