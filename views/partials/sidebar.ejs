@@ -1,126 +1,141 @@
 <div id="sidebar-default" class="main-sidebar">
-			<div class="current-user">
-				<a href="/" class="name">
-					<img class="avatar" src="<%= user.image %>" />
-					<span><%= user.username %>
-						<i class="fa fa-chevron-down"></i>
-					</span>
+	<div class="current-user">
+		<a href="/" class="name">
+			<img class="avatar" src="<%= user.image %>" />
+			<span><%= user.username %>
+				<i class="fa fa-chevron-down"></i>
+			</span>
+		</a>
+		<ul class="menu">
+			<li>
+				<a href="users/<%=user._id %>">Account settings</a>
+			</li>
+			<li>
+				<a href="/docs">Help / Support</a>
+			</li>
+			<li>
+				<a href="/logout">Sign out</a>
+			</li>
+		</ul>
+	</div>
+	<div class="menu-section">
+		<h3>General</h3>
+		<ul>
+			<li>
+				<a href="/" class="active">
+					<i class="ion-android-earth"></i> 
+					<span>Dashboard</span>
+				</a>
+			</li>
+			<li>
+				<a href="/customers" data-toggle="sidebar">
+					<i class="ion-person-stalker"></i> <span>Customers</span>
+					<i class="fa fa-chevron-down"></i>
+				</a>
+				<ul class="submenu">
+				<% if (user.role === 'admin' || user.role === 'sales') { %>
+					<li><a href="/customers/new">New Customer</a></li>
+				<% } %>
+					<li><a href="/customers">Customer List</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="users.html" data-toggle="sidebar">
+					<i class="ion-bag"></i> <span>Products</span>
+					<i class="fa fa-chevron-down"></i>
+				</a>
+				<ul class="submenu">
+					<% if (user.role === 'admin' || user.role === 'sales') { %>
+						<li><a href="/products/new">Add Product</a></li>
+					<% } %>	
+					<li><a href="/products">Product List</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="/orders" data-toggle="sidebar">
+					<i class="ion-pricetags"></i> <span>Orders</span>
+					<i class="fa fa-chevron-down"></i>
+				</a>
+				<ul class="submenu">
+				<% if (user.role === 'admin' || user.role === 'sales') { %>
+					<li><a href="/orders/new">New Order</a></li>
+				<% } %>	
+					<li><a href="/orders">Active Orders</a></li>
+				<% if (user.role === 'admin' || user.role === 'sales') { %>	
+					<li><a href="/orders/history">Order History</a></li>
+				<% } %>	
+				</ul>
+			</li>
+		</ul>
+	</div>
+	<div class="menu-section">
+		<h3>Admin</h3>
+		<ul>
+			<% if (user.role === 'admin') { %>
+			<li>
+				<a href="account.html" data-toggle="sidebar">
+					<i class="ion-stats-bars"></i> <span>Metrics</span>
+					<i class="fa fa-chevron-down"></i>
+				</a>
+				<ul class="submenu">
+					<li><a href="account-profile.html">Orders</a></li>
+					<li><a href="account-notifications.html">Sales</a></li>
+				</ul>
+			</li>
+			<% } %>
+			<li>
+				<a href="account.html" data-toggle="sidebar">
+					<i class="ion-person"></i> <span>My account</span>
+					<i class="fa fa-chevron-down"></i>
+				</a>
+				<ul class="submenu">
+					<li><a href="users/<%=user._id %>">Settings</a></li>
+					<li><a href="/docs">Support</a></li>
+				</ul>
+			</li>
+			<% if (user.role === 'admin') { %>
+			<li>
+				<a href="" data-toggle="sidebar">
+					<i class="ion-man"></i> <span>Users</span>
+					<i class="fa fa-chevron-down"></i>
+				</a>
+				<ul class="submenu">
+					<li><a href="/users/new"> Add User</a></li>
+					<li><a href="/users">All Users</a></li>
+					<li><a href="/users/activity">Company Activity</a></li>
+				</ul>
+			</li>
+			<% } %>
+		</ul>
+	</div>
+	<div class="bottom-menu hidden-sm">
+		<ul>
+			<li><a href="" onclick="openInNewTab('/docs')"><i class="ion-help"></i></a></li>
+			<li>
+				<a href="#">
+					<i class="ion-archive"></i>
+					<span class="flag"></span>
 				</a>
 				<ul class="menu">
-					<li>
-						<a href="users/<%=user._id %>">Account settings</a>
-					</li>
-					<li>
-						<a href="/docs">Help / Support</a>
-					</li>
-					<li>
-						<a href="/logout">Sign out</a>
-					</li>
+					<li><a href="#"><span id="activeOrders"></span>  Active Orders</a></li>
 				</ul>
-			</div>
-			<div class="menu-section">
-				<h3>General</h3>
-				<ul>
-					<li>
-						<a href="/" class="active">
-							<i class="ion-android-earth"></i> 
-							<span>Dashboard</span>
-						</a>
-					</li>
-					<li>
-						<a href="/customers" data-toggle="sidebar">
-							<i class="ion-person-stalker"></i> <span>Customers</span>
-							<i class="fa fa-chevron-down"></i>
-						</a>
-						<ul class="submenu">
-						<% if (user.role === 'admin' || user.role === 'sales') { %>
-							<li><a href="/customers/new">New Customer</a></li>
-						<% } %>
-							<li><a href="/customers">Customer List</a></li>
-						</ul>
-					</li>
-					<li>
-						<a href="users.html" data-toggle="sidebar">
-							<i class="ion-bag"></i> <span>Products</span>
-							<i class="fa fa-chevron-down"></i>
-						</a>
-						<ul class="submenu">
-							<% if (user.role === 'admin' || user.role === 'sales') { %>
-								<li><a href="/products/new">Add Product</a></li>
-							<% } %>	
-							<li><a href="/products">Product List</a></li>
-						</ul>
-					</li>
-					<li>
-						<a href="/orders" data-toggle="sidebar">
-							<i class="ion-pricetags"></i> <span>Orders</span>
-							<i class="fa fa-chevron-down"></i>
-						</a>
-						<ul class="submenu">
-						<% if (user.role === 'admin' || user.role === 'sales') { %>
-							<li><a href="/orders/new">New Order</a></li>
-						<% } %>	
-							<li><a href="/orders">Active Orders</a></li>
-						<% if (user.role === 'admin' || user.role === 'sales') { %>	
-							<li><a href="/orders/history">Order History</a></li>
-						<% } %>	
-						</ul>
-					</li>
-				</ul>
-			</div>
-			<div class="menu-section">
-				<h3>Admin</h3>
-				<ul>
-					<% if (user.role === 'admin') { %>
-					<li>
-						<a href="account.html" data-toggle="sidebar">
-							<i class="ion-stats-bars"></i> <span>Metrics</span>
-							<i class="fa fa-chevron-down"></i>
-						</a>
-						<ul class="submenu">
-							<li><a href="account-profile.html">Orders</a></li>
-							<li><a href="account-notifications.html">Sales</a></li>
-						</ul>
-					</li>
-					<% } %>
-					<li>
-						<a href="account.html" data-toggle="sidebar">
-							<i class="ion-person"></i> <span>My account</span>
-							<i class="fa fa-chevron-down"></i>
-						</a>
-						<ul class="submenu">
-							<li><a href="users/<%=user._id %>">Settings</a></li>
-							<li><a href="/docs">Support</a></li>
-						</ul>
-					</li>
-					<% if (user.role === 'admin') { %>
-					<li>
-						<a href="" data-toggle="sidebar">
-							<i class="ion-man"></i> <span>Users</span>
-							<i class="fa fa-chevron-down"></i>
-						</a>
-						<ul class="submenu">
-							<li><a href="/users/new"> Add User</a></li>
-							<li><a href="/users">All Users</a></li>
-							<li><a href="/users/activity">Company Activity</a></li>
-						</ul>
-					</li>
-					<% } %>
-				</ul>
-			</div>
-			<div class="bottom-menu hidden-sm">
-				<ul>
-					<li><a href="" onclick="openInNewTab('/docs')"><i class="ion-help"></i></a></li>
-					<li>
-						<a href="#">
-							<i class="ion-archive"></i>
-							<span class="flag"></span>
-						</a>
-						<ul class="menu">
-							<li><a href="#">5 Active Orders</a></li>
-						</ul>
-					</li>
-					<li><a href="/logout"><i class="ion-log-out"></i></a></li>
-				</ul>
-			</div>
-		</div>
+			</li>
+			<li><a href="/logout"><i class="ion-log-out"></i></a></li>
+		</ul>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$( document ).ready(function() {
+
+		$.ajax({
+			url: '/orders/active',
+			success: function(data) {
+				console.log(data)
+				$('#activeOrders').html(data)
+			},
+			dataType: 'json'
+		});
+
+	})
+</script>

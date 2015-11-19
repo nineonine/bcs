@@ -114,6 +114,20 @@ module.exports = function(passport) {
           })
       });
 
+  //all active orders sidebar notification
+  router.get('/active', function(req, res) {
+    mongoose.model('Order').find({
+      $or: [
+        { status: 'shipped'},
+        { status: 'processing'}
+      ]
+    }, function(err, products) {
+
+        res.json(products.length)
+
+    })
+  })
+
   /* GET New Order page. */
   router.get('/new', function(req, res) {
       res.render('orders/new', { title: 'Add New Order', user : req.user });
