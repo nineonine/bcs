@@ -5,6 +5,7 @@ var customerSchema  = new mongoose.Schema({
 	type: String,
 	image: String,
 	email: String,
+	registered: Date,
 	discount: Number,
 	contactNumber: String,
 	additionalInfo: String,

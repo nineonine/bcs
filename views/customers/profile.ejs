@@ -49,8 +49,8 @@
 			</div>
 			<div class="field">
 				<label>Signed up</label>
-				<div class="value">
-					TBA
+				<div class="value" id="registeredAt">
+					<%= customer.registered %>
 				</div>
 			</div>
 		</div>
@@ -301,9 +301,9 @@
 			$("#prompt-modal").find("input:text").focus();
 		})
 
-		        //format dates
-        $('.order-date').each( function(e) {
-            $(this).html( dateFormat($(this).html()))
+		//format dates
+        $('#registeredAt').each( function(e) {
+            $(this).html( dateFormat($(this).html(), 'mmm d, yyyy'))
         })
 
         $('.label').each(function(e) {

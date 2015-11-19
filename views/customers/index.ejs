@@ -82,9 +82,7 @@
 						</div>
 					</div>
 					<div class="col-sm-2">
-						<div class="created-at">
-							Feb 27, 2014
-						</div>
+						<div class="created-at"><%= c.registered %></div>
 					</div>
 				</div>
    			<% }); %>
@@ -107,6 +105,11 @@
 	  	$("body").attr('id', "users");
 
 	  	if('<%= message %>') { Messenger().post('<%= message %>') }
+
+	  	//format dates
+        $('.created-at').each( function(e) {
+            $(this).html( dateFormat($(this).html(), 'mmm d, yyyy'))        		
+        })
 
 		var $allUsers = $(".select-users input:checkbox");
 		var $checkboxes = $("[name='select-user']");

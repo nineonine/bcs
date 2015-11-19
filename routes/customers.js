@@ -92,6 +92,7 @@ module.exports = function(passport) {
             var name = req.body.name;
             var type = req.body.type;
             var email = req.body.email;
+            var reg = new Date()
             var image = ("/customers/" + req.file.filename) || req.body.image
             var discount = req.body.discount;
             var contactNumber = req.body.contactNumber;
@@ -104,8 +105,6 @@ module.exports = function(passport) {
                  zip: req.body.billzip 
             }
 
-            console.log("BILL ADDRESS : " + req.body.billAddress)
-
             var shippingAddress = {
                 address: req.body.shipAddress,
                 city: req.body.shipcity,
@@ -113,13 +112,12 @@ module.exports = function(passport) {
                 zip: req.body.shipzip
             }
 
-            console.log("SHIP ADDRESS : " + req.body.shipAddress)
-
             mongoose.model('Customer').create({
                 name : name,
                 type : type,
                 image : image,
                 email : email,
+                registered : reg,
                 discount : discount,
                 contactNumber: contactNumber,
                 additionalInfo: additionalInfo,
