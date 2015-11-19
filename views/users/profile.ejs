@@ -5,7 +5,7 @@
 		<i class="ion-navicon"></i>
 	</div>
 	
-	<h3><%= user.username %></h3>
+	<h3><%= userEdit.username %></h3>
 	<ul class="menu">
 		<li>
 			<a href="#" class="panel-switch active">
@@ -39,7 +39,7 @@
 		Change your account information, login credentials, etc.
 	</p>
 
-	<form id="edit-user" class="form-horizontal" method="post" action="/users/<%= userEdit._id %>/edit" role="form" data-toggle="validator" enctype="multipart/form-data">
+	<form id="edit-user" class="form-horizontal" method="post" action="#" role="form" data-toggle="validator" enctype="multipart/form-data">
 		<div class="form-group avatar-field clearfix">
 		    <div class="col-sm-4" style=" float: none;margin-left: auto;margin-right: auto;">
 		    	<img src="<%= userEdit.image %>" class="img-responsive img-circle" id="user-image" />
@@ -65,11 +65,11 @@
 	  	</div>
 	  	<div class="form-group">
 			<label>Password</label>
-			<input type="password" class="form-control" value="<%= userEdit.password %>" name="password" />
+			<input type="password" class="form-control" name="password" />
 		</div>
 		<div class="form-group">
 			<label>Confirm Password</label>
-			<input type="password" class="form-control" value="<%= userEdit.password %>" name="confirmPassword" />
+			<input type="password" class="form-control" name="confirmPassword" />
 		</div>
 		<div class="form-group action">
 			<a data-toggle="modal" data-target="#confirm-modal" id="deleteUser" href="#" class=" btn btn-primary" style="margin-right: 10px; background-color: #CA4242; border-color: #BD3131">Delete user</a>
@@ -199,45 +199,7 @@
 			$(this).val("<%= userEdit.role %>")
 		})
 
-		$('#edit-user').submit(function(e) {
-
-			e.preventDefault();
-			e.stopImmediatePropagation();
-
-			console.log("form axaj update")
-
-			var formData = {
-				username : $("#edit-user input[name='username']").val(),
-	            role : $('#edit-user').find('select').val(),
-	            email : $("#edit-user input[name='email']").val(),
-	            password : $("#edit-user input[name='password']").val()
-		    }
-
-		    console.log(formData)
-
-			$.ajax({
-				url: '/users/<%= user._id %>/edit',
-				type: 'PUT',
-				contentType: 'application/json; charset=UTF-8',
-				dataType: 'json',
-				data: JSON.stringify(formData),
-		        timeout: 5000,
-		        complete: () => console.log("complete !"),
-		        success: (data) => {
-					Messenger().post("User has been updated!");
-		        },
-		        error: () => {
-		        	console.log("ERROR") 
-		        	Messenger().post({
-					  	message: 'Sorry, there was problem with updating User', 
-					  	type: 'error',
-					  	showCloseButton: true
-					});
-		        }
-			})
-		})
-
-		$('#edit-user').bootstrapValidator({
+		$('#edit-user').formValidation({
 	        err: {
 	            container: 'tooltip'
 	        },
@@ -291,7 +253,54 @@
             		}
                 }
 	        }
-    	});
+    	}).on('success.form.fv', function(e) {
+            // Prevent form submission
+            e.preventDefault();
+        });    
+
+		$('#edit-user').submit(function(e) {
+
+			var $form = $(e.target);
+
+			var fv = $form.data('formValidation');
+
+			if( !fv.isValid()) {
+				return false
+			}	
+
+			var formData = {
+				username : $("#edit-user input[name='username']").val(),
+	            role : $('#edit-user').find('select').val(),
+	            email : $("#edit-user input[name='email']").val(),
+	            password : $("#edit-user input[name='password']").val()
+		    }
+
+		    console.log(formData)
+
+			$.ajax({
+				url: '/users/<%= userEdit._id %>/edit',
+				type: 'PUT',
+				contentType: 'application/json; charset=UTF-8',
+				dataType: 'json',
+				data: JSON.stringify(formData),
+		        timeout: 5000,
+		        complete: () => console.log("complete !"),
+		        success: (data) => {
+					Messenger().post("User has been updated!");
+		        },
+		        error: () => {
+		        	console.log("ERROR") 
+		        	Messenger().post({
+					  	message: 'Sorry, there was problem with updating User', 
+					  	type: 'error',
+					  	showCloseButton: true
+					});
+		        }
+			})
+
+			return false
+		})
+	
 
 		if(window.location.hash.substring(1) === "notifications") {
 			$links.removeClass("active");

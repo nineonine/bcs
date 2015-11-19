@@ -230,7 +230,10 @@ module.exports = function(passport) {
   	//PUT to update a user by ID
   	.put(function(req, res) {
 
-        mongoose.model('User').findOneAndUpdate({_id: req.id}, req.body, {'new': true}, function(err, user) {
+        var newBody = req.body
+        newBody.password = createHash(req.body.password)
+
+        mongoose.model('User').findOneAndUpdate({_id: req.id}, newBody, {'new': true}, function(err, user) {
           if (err) {
             res.send("There was a problem updating the information to the database: " + err);
           } else {
