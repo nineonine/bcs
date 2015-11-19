@@ -98,8 +98,8 @@
 						</div>
 					</div>
 					<div class="col-sm-2">
-						<div class="created-at">
-							Feb 27, 2014
+						<div class="created-at pull-right">
+						<%= u.registered %>
 						</div>
 					</div>
 				</div>
@@ -124,6 +124,12 @@
 	  	$("body").attr('id', "users");
 
 	  	if('<%= message %>') { Messenger().post('<%= message %>') }
+
+	  	//format dates
+        $('.created-at').each( function(e) {
+            $(this).html( dateFormat($(this).html()))
+        })
+	
 
 	  	// filtering by customer type
 		$('#show-all').click(function(e) {

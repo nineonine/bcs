@@ -101,14 +101,16 @@ module.exports = function(passport) {
           var role = req.body.role;
           var email = req.body.email;
           var password = createHash(req.body.password);
-          var image = ("/users/" + req.file.filename) || req.body.image
+          var image = ("/users/" + req.file.filename) || req.body.image;
+          var reg = new Date()
           //call the create function for our database
           mongoose.model('User').create({
               username : name,
               role : role,
               email : email,
               password : password,
-              image: image
+              image: image,
+              registered: reg
           }, function (err, user) {
                 if (err) {
                     res.send("There was a problem adding User to the database.");
