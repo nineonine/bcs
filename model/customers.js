@@ -20,7 +20,14 @@ var customerSchema  = new mongoose.Schema({
 		city: String,
 		state: String,
 		zip: String
-	}
+	},
+	comments: [{
+		authorID: String,
+		authorAvatar: String,
+		authorName: String,
+		text: String,
+		posted: Date
+	}]
 })
 
 mongoose.model("Customer", customerSchema);

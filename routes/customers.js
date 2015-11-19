@@ -221,6 +221,34 @@ module.exports = function(passport) {
       ])
 
     });
+  
+  router.post('/:id/comment', function(req, res) {
+
+    var postedOn = new Date()
+
+    mongoose.model('Customer').findByIdAndUpdate(
+      req.id,
+      { $push: {'comments': {authorID: req.body.author, 
+        authorAvatar: req.user.image,
+        authorName: req.user.username, 
+        text: req.body.text, 
+        posted: postedOn} 
+      } },
+      {safe: true, upsert: true, 'new': true}, function(err, customer) {
+          if(err) {
+            console.log('GET Error: There was a problem adding comment to Customer: ' + err);
+          } else {
+
+            res.json({
+              authorID: req.body.author,
+              authorAvatar: req.user.image,
+              authorName: req.user.username,
+              text: req.body.text,
+              posted: postedOn
+            })
+          }
+      })
+  })
 
   router.route('/:id/edit')
   	//GET the individual customer by Mongo ID
