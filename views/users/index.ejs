@@ -10,8 +10,7 @@
 	</div>
 	<form class="search hidden-xs">
 		<i class="fa fa-search"></i>
-		<input type="text" name="q" placeholder="Search users..." />
-		<input type="submit" />
+		<input type="text" name="q" id="search-input" placeholder="Search users..." autocomplete='off'/>
 	</form>
 	<a href="/users/new" class="new-user btn btn-success pull-right">
 		<span>New user</span>
@@ -22,10 +21,10 @@
 	<div class="row page-controls">
 		<div class="col-md-12 filters">
 			<label>Filter Users:</label>
-			<a href="#" class="active">All (<%= users.length %>)</a>
-			<a href="#">Admin (<%= users.filter( u => u.role === 'admin').length %>)</a>
-			<a href="#">Sales (<%= users.filter( u => u.role === 'sales').length %>)</a>
-			<a href="#">Delivery (<%= users.filter( u => u.role === 'delivery').length %>)</a>
+			<a href="#" id='show-all' class="active">All (<%= users.length %>)</a>
+			<a href="#" id='show-admin' >Admin (<%= users.filter( u => u.role === 'admin').length %>)</a>
+			<a href="#" id='show-sales' >Sales (<%= users.filter( u => u.role === 'sales').length %>)</a>
+			<a href="#" id='show-delivery'>Delivery (<%= users.filter( u => u.role === 'delivery').length %>)</a>
 
 			<div class="show-options">
 				<div class="dropdown">
@@ -64,7 +63,6 @@
 					  	<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
 							<li><a href="#">Delete users</a></li>
 							<li><a href="#">Edit user</a></li>
-							<li><a href="#">Manage roles</a></li>
 					  	</ul>
 					</div>
 				</div>
@@ -83,6 +81,7 @@
 			</div>
 			<% users.forEach(function(u) { %>
         		<div class="row user">
+        		<input type='hidden' value='<%= u.role %>' name="role">
 					<div class="col-sm-2 avatar">
 						<input type="checkbox" name="select-user" />
 						<img src="<%= u.image %>" />
@@ -125,6 +124,44 @@
 	  	$("body").attr('id', "users");
 
 	  	if('<%= message %>') { Messenger().post('<%= message %>') }
+
+	  	// filtering by customer type
+		$('#show-all').click(function(e) {
+			$(".row.user").show()
+		})
+		$('#show-admin').click(function(e) {
+			$(".row.user").show()
+			$(".row.user").filter(function(e) {
+				return $(this).find("input[name='role']").val() != 'admin'
+			}).hide()
+		})
+		$('#show-sales').click(function(e) {
+			$(".row.user").show()
+			$(".row.user").filter(function(e) {
+				return $(this).find("input[name='role']").val() != 'sales'
+			}).hide()
+		})
+		$('#show-delivery').click(function(e) {
+			$(".row.user").show()
+			$(".row.user").filter(function(e) {
+				return $(this).find("input[name='role']").val() != 'delivery'
+			}).hide()
+		})
+
+
+		// search bar
+		$('#search-input').keyup(function(e) {
+			$(".row.user").show()
+			var searchTerm = $(this).val().toLocaleLowerCase()
+			if(!searchTerm) {
+				$(".row.user").show()
+			}
+			var customersToHide = $('.row.user').filter(function(e) {
+				var name = $(this).find('.name').html().toLocaleLowerCase()
+				return name.indexOf(searchTerm) == -1
+			})
+			$(customersToHide).hide()
+		})	
 
 
 		var $allUsers = $(".select-users input:checkbox");

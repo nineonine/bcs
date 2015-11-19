@@ -39,19 +39,19 @@
 		Change your account information, login credentials, etc.
 	</p>
 
-	<form id="edit-user" class="form-horizontal" method="post" action="/users/<%= user._id %>/edit" role="form" data-toggle="validator" enctype="multipart/form-data">
+	<form id="edit-user" class="form-horizontal" method="post" action="/users/<%= userEdit._id %>/edit" role="form" data-toggle="validator" enctype="multipart/form-data">
 		<div class="form-group avatar-field clearfix">
 		    <div class="col-sm-4" style=" float: none;margin-left: auto;margin-right: auto;">
-		    	<img src="<%= user.image %>" class="img-responsive img-circle" id="user-image" />
+		    	<img src="<%= userEdit.image %>" class="img-responsive img-circle" id="user-image" />
 		    </div>
 	  	</div>
 	  	<div class="form-group">
 			<label>Name</label>
-			<input type="name" class="form-control" value="<%= user.username %>" name="username" />
+			<input type="name" class="form-control" value="<%= userEdit.username %>" name="username" />
 		</div>
 	  	<div class="form-group">
 			<label>Email address</label>
-			<input type="email" class="form-control" value="<%= user.email %>" name="email"/>
+			<input type="email" class="form-control" value="<%= userEdit.email %>" name="email"/>
 		</div>
 		<div class="form-group">
 		    <label>Role</label>
@@ -65,11 +65,11 @@
 	  	</div>
 	  	<div class="form-group">
 			<label>Password</label>
-			<input type="password" class="form-control" value="<%= user.password %>" name="password" />
+			<input type="password" class="form-control" value="<%= userEdit.password %>" name="password" />
 		</div>
 		<div class="form-group">
 			<label>Confirm Password</label>
-			<input type="password" class="form-control" value="<%= user.password %>" name="confirmPassword" />
+			<input type="password" class="form-control" value="<%= userEdit.password %>" name="confirmPassword" />
 		</div>
 		<div class="form-group action">
 			<a data-toggle="modal" data-target="#confirm-modal" id="deleteUser" href="#" class=" btn btn-primary" style="margin-right: 10px; background-color: #CA4242; border-color: #BD3131">Delete user</a>
@@ -196,7 +196,7 @@
 		$("body").attr('id', "account");
 
 		$('#edit-user').find('select').each(function() {
-			$(this).val("<%= user.role %>")
+			$(this).val("<%= userEdit.role %>")
 		})
 
 		$('#edit-user').submit(function(e) {

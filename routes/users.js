@@ -185,8 +185,9 @@ module.exports = function(passport) {
           res.format({
             html: function(){
                 res.render('users/profile', {
-                  "title": user.username,
-                  "user" : user
+                  title : user.username,
+                  userEdit : user,
+                  user: req.user
                 });
             },
             json: function(){
@@ -212,7 +213,8 @@ module.exports = function(passport) {
   	                html: function(){
   	                       res.render('users/edit', {
   	                          title: 'User' + user._id,
-  	                          "user" : user 
+  	                          userEdit : user,
+                              user: req.user 
   	                      });
   	                 },
   	                 //JSON response will return the JSON output
