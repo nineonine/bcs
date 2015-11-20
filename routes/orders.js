@@ -10,10 +10,20 @@ var express = require('express'),
     methodOverride = require('method-override'),
     flash = require('connect-flash'),
     fs = require('fs'),
-    async = require('async')
+    async = require('async'),
+    nodemailer = require('nodemailer'),
+    ejs = require('ejs')
 
 
 module.exports = function(passport) {
+
+  var transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: 'best.communication.store.team@gmail.com',
+        pass: 'bcssupport'
+    }
+  });
 
   router.use(cookieParser('secret'));
   router.use(session({
@@ -230,6 +240,62 @@ module.exports = function(passport) {
         }      
       })
     });
+  
+  // Send invoice email
+  router.get('/:id/email/send', function(req, res) {
+
+    async.waterfall([
+      // get order
+      function(cb) {
+        mongoose.model('Order').findById(req.id, function(err, order) {
+          if(err) {
+            console.log('GET Error: There was a problem retrieving: ' + err);
+            return cb(err)
+          } else {
+            console.log(order)
+            cb(null, order)
+          }
+        })
+      },
+      //get customer ( for email and other useful info ) 
+      function(order, cb) {
+        mongoose.model('Customer').find({'name': order.customer}, function (err, customers) {
+          if (err) {
+            console.log('GET Error: There was a problem retrieving: ' + err);
+            return cb(err)
+          } else {
+            console.log(customers[0])
+            cb(null, order, customers[0])
+          }
+        })
+      },
+
+      // generate email and send to customer
+      function(order, customer, cb) {
+
+        var html = fs.readFileSync(process.cwd() + '/views/emails/invoice.ejs', 'utf-8');
+        var letter =  ejs.render(html, {order: order, customer: customer})   
+
+        var mailOptions = {
+            from: 'best.communication.store.team@gmail.com', 
+            to: customer.email, 
+            subject: '(BCS): Hey, '+ customer.name +'! Your invoice #' + order.orderNumber + ' is ready!', 
+            text: order.orderNumber, 
+            html: letter 
+        };
+
+        transporter.sendMail(mailOptions, function(error, info){
+            if(error) {
+                return console.log(error);
+            }
+            console.log('Message sent: ' + info.response);
+            res.send(200)
+        });  
+
+      }
+    ]);
+
+  })
 
   router.get('/:id/invoice', function(req, res) {
 
