@@ -9,8 +9,8 @@
 	</div>
 	<div class="options pull-right">
 		<a href="javascript:history.go(-1)"><i class="fa fa-arrow-left"></i> Back</a>
-		<a href="#"><i class="fa fa-print"></i> Print</a>
-		<a href="#"><i class="fa fa-download"></i> Download</a>
+		<a href=""><i class="fa fa-print"></i> Print</a>
+		<a href="" id="send-email"><i class="fa fa-share"></i>Send email</a>
 	</div>
 </div>
 
@@ -146,6 +146,21 @@
 			printDiv('section-to-print')
 		})
 
+		$('#send-email').click(function(e) {
+
+			e.preventDefault()
+			e.stopImmediatePropagation()
+
+			$.ajax({
+			url: 'email/send',
+			contentType: 'application/json; charset=UTF-8',
+	        timeout: 5000,
+	        success: (data) => {
+	        	Messenger().post("Email has been sent!");
+	        	}
+			})
+
+		})
 
 	})	  	
 </script>
