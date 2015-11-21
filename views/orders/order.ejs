@@ -210,6 +210,32 @@
 	}
 
 
+	//check if product in stock
+	function isInStock(name, qty) {
+
+		//fields should not be empty
+		if(!name || !qty) return
+
+		return new Promise(function(resolve, reject) {
+			$.ajax({
+				url: '/products/check',
+				type: 'POST',
+				contentType: 'application/json; charset=UTF-8',
+				data: JSON.stringify({name: name, qty: qty}),
+				dataType: 'json',
+		        timeout: 5000,
+		        success: (data) => {
+		        	resolve(data.stock)
+		        },
+		        error: function() {
+		        	console.log('error')
+		        	reject('errror !')
+		        }
+			})
+		})
+	}
+
+
 	$( document ).ready(function() {
 
 		$("body").attr('id', "account")
@@ -265,6 +291,7 @@
 		$("input[name='customer']").easyAutocomplete(opts1);
 		$("input[name='productName']").easyAutocomplete(opts2);
 
+		//validate form
 		$('#edit-order').formValidation({
 	        err: {
 	            container: 'tooltip'
@@ -385,74 +412,114 @@
 			var qty = $("input[name='productQty']").val()
 			var items = $('.item').filter( function() { return $(this).find('.desc').html() === prodName } )
 			var item;
+			var summedQty;
 			
-			//check if this item is in subtotal already
-			if(items.length == 1) {
+			//input qty + qty of the product which is in cart already
+			var potentialProdInStock = items[0]
 
-				item = items[0]
+			console.log(typeof prodName,typeof qty, potentialProdInStock)
 
-				$(item).find('.qty').html(+$(item).find('.qty').html() + (+qty))
-				$(item).find('.amount').html("$" + (getPrice(prodName)*(+$(item).find('.qty').html())).toFixed(2))
-			// this product is not in subtotal - add a new one	
-			} else {
+			//if we have same product in cart - get its price and sum with input
+			potentialProdInStock ? summedQty = +qty + (+$(potentialProdInStock).find('.qty').html()) : summedQty = +qty
 
-				//display and insert
-				item = $('.total-item').last().clone()
-				item.show()
-				item.insertAfter('.total-item:last')
+			var inStock = isInStock(prodName, summedQty)
 
-				// update cloned item div
-				item.find('div.desc').html(prodName)
-				item.find('div.qty').html(qty)
-				item.find('div.amount').html("$" + (getPrice(prodName)*(+qty)).toFixed(2))
+			//product and quantity should not be empty
+			if(!prodName || !qty ) {
+				Messenger().post({
+					  	message: 'Product and quantity field should not be empty!',
+					  	type: 'error',
+					  	showCloseButton: true
+					});
+				return;
 			}
 
-			//clear the inputs and focus 
-			$('#cart-item :input').val('')
-			$("input[name='productName']").focus()
+			inStock.then(function(stock) {
+			if(!stock) {
+				Messenger().post({
+				  	message: 'Not enough items in stock !',
+				  	type: 'error',
+				  	showCloseButton: true
+				});
+				e.preventDefault()
+				e.stopImmediatePropagation()
+				return
 
-			//update totals
-			updateTotals()
+			} else { 
+
+				//check if this item is in subtotal already
+				if(items.length == 1) {
+
+					item = items[0]
+
+					$(item).find('.qty').html(+$(item).find('.qty').html() + (+qty))
+					$(item).find('.amount').html("$" + (getPrice(prodName)*(+$(item).find('.qty').html())).toFixed(2))
+				// this product is not in subtotal - add a new one	
+				} else {
+
+					//display and insert
+					item = $('.total-item').last().clone()
+					item.show()
+					item.insertAfter('.total-item:last')
+
+					// update cloned item div
+					item.find('div.desc').html(prodName)
+					item.find('div.qty').html(qty)
+					item.find('div.amount').html("$" + (getPrice(prodName)*(+qty)).toFixed(2))
+				}
+
+			}
+		}, function(err) {
+				console.log(err)
 		})
 
-		//remove the item from cart
-		$(document).on('click', '#remove-item', (e) => {
-			var item = $(event.target).closest('.total-item')
-			item.remove();
-			updateTotals()
-		})
+		//clear the inputs and focus 
+		$('#cart-item :input').val('')
+		$("input[name='productName']").focus()
 
-		//update shipping cost 
-		$("select[name='shipping']").change( (e) => {
-			var method = $("select[name='shipping']").val()
-			var cartField = $('#shipping')
+		//update totals
+		updateTotals()
 
-			method === 'delivery' ? cartField.html("$50.00") : cartField.html("$0.00")
-			updateTotals()
-		})
+	})
 
-		//update discount
-		$("input[name='discount']").change( (e) => {
-			var discount = $("input[name='discount']").val()
+	//remove the item from cart
+	$(document).on('click', '#remove-item', (e) => {
+		var item = $(event.target).closest('.total-item')
+		item.remove();
+		updateTotals()
+	})
 
-			$('#discount').html(discount + '%')
+	//update shipping cost 
+	$("select[name='shipping']").change( (e) => {
+		var method = $("select[name='shipping']").val()
+		var cartField = $('#shipping')
 
-			updateTotals()
-		})
+		method === 'delivery' ? cartField.html("$50.00") : cartField.html("$0.00")
+		updateTotals()
+	})
 
-		//tab switching
-		var $links = $(".menu .panel-switch");
-		var $panels = $(".panel");
+	//update discount
+	$("input[name='discount']").change( (e) => {
+		var discount = $("input[name='discount']").val()
 
-		$links.click(function (e) {
-		// e.preventDefault();
-			var index = $links.index(this);
+		$('#discount').html(discount + '%')
 
-			$links.removeClass("active");
-			$links.eq(index).addClass("active");
+		updateTotals()
+	})
 
-			$panels.hide();
-			$panels.eq(index).show();
+	//tab switching
+	var $links = $(".menu .panel-switch");
+	var $panels = $(".panel");
+
+	$links.click(function (e) {
+	// e.preventDefault();
+		var index = $links.index(this);
+
+		$links.removeClass("active");
+		$links.eq(index).addClass("active");
+
+		$panels.hide();
+		$panels.eq(index).show();
 		})
 
 	})	  	

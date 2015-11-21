@@ -291,7 +291,7 @@ module.exports = function(passport) {
                 return console.log(error);
             }
             console.log('Message sent: ' + info.response);
-            res.send(200)
+            res.sendStatus(200)
         });  
 
       }
