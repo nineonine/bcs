@@ -8,7 +8,7 @@ var orderSchema  = new mongoose.Schema({
 	status: String,
 	notes: String,
 	customer: String,
-	sales: {type: mongoose.Schema.ObjectId, ref: "User"},
+	sales: String,
 	statusHistory: {
 		processing: Date,
 		shipped: Date,

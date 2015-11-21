@@ -86,7 +86,7 @@ module.exports = function(passport) {
           var discount = req.body.discount;
           var notes = req.body.notes;
           var cart = req.body.cart;
-
+          var sales = req.user.username;
 
           mongoose.model('Order').create({
               orderNumber : orderNumber,
@@ -95,6 +95,7 @@ module.exports = function(passport) {
               shipping : shipping,
               discount: discount,
               notes: notes,
+              sales: sales,
               status : 'processing',
               cart: cart,
               statusHistory: {
