@@ -17,66 +17,6 @@
 
 <div class="content-wrapper clearfix">
 
-	<div class="filters">
-		<h3 class="hidden-xs">Filters</h3>
-		<form>
-			<div class="filter">
-				<label>
-					<input type="checkbox" />
-					Created date
-				</label>
-				<div class="filter-option" style="display:none;">
-					<select class="field-switch">
-						<option data-field="days">is in the last</option>
-						<option data-field="calendar">is equal to</option>
-						<option data-field="calendar">is before</option>
-						<option data-field="calendar">is after</option>
-					</select>
-					<div class="field days">
-						<input type="text" class="form-control small" value="9" />
-						days
-					</div>
-					<div class="field calendar" style="display:none;">
-						<i class="fa fa-calendar"></i>
-						<input type="text" class="form-control datepicker" />
-					</div>
-				</div>
-			</div>
-			<div class="filter">
-				<label>
-					<input type="checkbox">
-					Stock status
-				</label>
-				<div class="filter-option">
-					<select>
-						<option>In stock</option>
-						<option>Out Of Stock</option>
-					</select>
-				</div>
-			</div>
-			<div class="filter">
-				<label>
-					<input type="checkbox">
-					Price
-				</label>
-				<div class="filter-option">
-					<select>
-						<option>equal to</option>
-						<option>not equal to</option>
-						<option>less than</option>
-						<option>greater than</option>
-					</select>
-					<div class="field">
-						<input type="text" class="form-control" />
-					</div>
-				</div>
-			</div>
-			<div>
-				<button style="margin-top: 20px" class="btn btn-success center-block">Filter Products</button>
-			</div>
-		</form>
-	</div>
-
 	<div class="results">
 
 		<!-- bulk actions -->
@@ -100,6 +40,8 @@
                     </th>
                     <th tabindex="0" rowspan="1" colspan="1">Product Name
                     </th>
+                    <th tabindex="0" rowspan="1" colspan="1">Qty in Stock
+                    </th>
                     <th tabindex="0" rowspan="1" colspan="1">Status
                     </th>
                     <th tabindex="0" rowspan="1" colspan="1">Price
@@ -116,6 +58,7 @@
                     	<img class="img-responsive product-img" src="<%= p.image %>" />
                     </td>
                     <td><a href="/products/<%= p._id %>/edit" > <%= p.name %></a></td>
+                    <td> <%= p.qty %></td>
                     <td class="product-status"><span class="label label-success"><%= p.status %></span></td>
                     <td class="center">$<%= (+p.price).toFixed(2) %></td>
                 </tr>

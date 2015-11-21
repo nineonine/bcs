@@ -31,12 +31,16 @@
 				Packing  Slip
 			</a>
 		</li>
-		<li style="margin-top: 50px">
+		<div style="margin-top: 50px"></div>
+		<% if(order.status === 'processing' || order.status === 'shipped') { %>
+		<% if(order.status != 'shipped') { %>	
+		<li>
 			<a href="/orders/<%= order._id %>/ship">
 				<i class="fa fa-truck"></i>
 				<span style="color: #337ab7">Ship Order</span>
 			</a>
 		</li>
+		<% }%>
 		<li>
 			<a href="/orders/<%= order._id %>/complete">
 				<i class="fa fa-check"></i>
@@ -49,6 +53,7 @@
 				<span style="color: red">Cancel Order</span>
 			</a>
 		</li>
+		<% } %>
 	</ul>
 </div>
 

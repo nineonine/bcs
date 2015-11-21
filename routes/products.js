@@ -318,6 +318,7 @@ module.exports = function(passport) {
           fs.unlinkSync(process.cwd() + '/uploads' + product.image)  
           product.image = "/products/" + req.file.filename;
 
+          console.log(req.file.filename)
           console.log(product.image)
 
           product.save(function(err) {
