@@ -127,6 +127,25 @@ module.exports = function(passport) {
       })
   });    
 
+  router.post('/check', function(req, res) {
+      mongoose.model('Product') .find({name: req.body.name}, function(err, prod) {
+        if(err) {
+          console.log('GET Error: There was a problem retrieving: ' + err);
+        } else {
+          console.log("instock : " + prod[0].qty)
+          console.log("adding to cart : " + req.body.qty)
+          //if available in stock minus amount in cart is not less than zero
+          if(prod[0].qty - (+req.body.qty) >= 0) {
+            //all good - there is enough products in stock - send true
+            res.send({stock: true})
+          } else {
+            res.send({stock: false})
+          }
+        }
+      })
+  })
+  
+
   router.get('/csv', function(req, res) {
     mongoose.model('Product').find({}).lean().exec( function (err, products) {
       if (err) {

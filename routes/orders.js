@@ -140,6 +140,7 @@ module.exports = function(passport) {
 
   /* GET New Order page. */
   router.get('/new', function(req, res) {
+
       res.render('orders/new', { title: 'Add New Order', user : req.user });
   });
 
@@ -197,6 +198,7 @@ module.exports = function(passport) {
       });
   });
 
+  // intercept resource id
   router.route('/:id')
     .get(function(req, res) {
 
@@ -294,7 +296,6 @@ module.exports = function(passport) {
 
       }
     ]);
-
   })
 
   router.get('/:id/invoice', function(req, res) {

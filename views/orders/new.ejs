@@ -145,6 +145,32 @@
 		$('#total').html("$" + total.toFixed(2))
 	}
 
+
+	//check if product in stock
+	function isInStock(name, qty) {
+
+		//fields should not be empty
+		if(!name || !qty) return
+
+		return new Promise(function(resolve, reject) {
+			$.ajax({
+				url: '/products/check',
+				type: 'POST',
+				contentType: 'application/json; charset=UTF-8',
+				data: JSON.stringify({name: name, qty: qty}),
+				dataType: 'json',
+		        timeout: 5000,
+		        success: (data) => {
+		        	resolve(data.stock)
+		        },
+		        error: function() {
+		        	console.log('error')
+		        	reject('errror !')
+		        }
+			})
+		})
+	}
+
 	$(function() {
 		$("body").attr('id', "account");
 
@@ -310,39 +336,82 @@
 			//destroy form validation from previous times
 			$('#create-order').formValidation('destroy')
 
+			//should be product from the DB
+
 			//get all inputs
 			var prodName = $("input[name='productName']").val()
-			var qty = $("input[name='productQty']").val()
-			var items = $('.item').filter( function() { return $(this).find('.desc').html() === prodName } )
-			var item;
+			var qty = +$("input[name='productQty']").val()
+			//summed qty for inStock check ( if we have some goods in cart)
+			var summedQty;
 			
-			//check if this item is in subtotal already
-			if(items.length == 1) {
+			//input qty + qty of the product which is in cart already
+			var potentialProdInStock = $('.item').filter( function(e) { 
+				return $(this).find('.desc').html() === prodName
+			})[0]
 
-				item = items[0]
+			potentialProdInStock ? summedQty = qty + (+$(potentialProdInStock).find('.qty').html()) : summedQty = qty
 
-				$(item).find('.qty').html(+$(item).find('.qty').html() + (+qty))
-				$(item).find('.amount').html("$" + (getPrice(prodName)*(+$(item).find('.qty').html())).toFixed(2))
-			// this product is not in subtotal - add a new one	
-			} else {
+			var inStock = isInStock(prodName, summedQty)
 
-				//display and insert
-				item = $('.total-item').last().clone()
-				item.show()
-				item.insertAfter('.total-item:last')
-
-				// update cloned item div
-				item.find('div.desc').html(prodName)
-				item.find('div.qty').html(qty)
-				item.find('div.amount').html("$" + (getPrice(prodName)*(+qty)).toFixed(2))
+			//product and quantity should not be empty
+			if(!prodName || !qty ) {
+				Messenger().post({
+					  	message: 'Product and quantity field should not be empty!',
+					  	type: 'error',
+					  	showCloseButton: true
+					});
+				return;
 			}
 
-			//clear the inputs and focus 
-			$('#cart-item :input').val('')
-			$("input[name='productName']").focus()
+			inStock.then(function(stock) {
+				if(!stock) {
+					Messenger().post({
+					  	message: 'Not enough items in stock !',
+					  	type: 'error',
+					  	showCloseButton: true
+					});
+					e.preventDefault()
+					e.stopImmediatePropagation()
+					return
+				} else {
 
-			//update totals
-			updateTotals()
+					var items = $('.item').filter( function() { return $(this).find('.desc').html() === prodName } )
+					var item;
+					
+					//check if this item is in subtotal already
+					if(items.length == 1) {
+
+						item = items[0]
+
+						$(item).find('.qty').html(+$(item).find('.qty').html() + (+qty))
+						$(item).find('.amount').html("$" + (getPrice(prodName)*(+$(item).find('.qty').html())).toFixed(2))
+					// this product is not in subtotal - add a new one	
+					} else {
+
+						//display and insert
+						item = $('.total-item').last().clone()
+						item.show()
+						item.insertAfter('.total-item:last')
+
+						// update cloned item div
+						item.find('div.desc').html(prodName)
+						item.find('div.qty').html(qty)
+						item.find('div.amount').html("$" + (getPrice(prodName)*(+qty)).toFixed(2))
+					}
+
+					//clear the inputs and focus 
+					$('#cart-item :input').val('')
+					$("input[name='productName']").focus()
+
+					//update totals
+					updateTotals()
+				}
+
+			}, function(err) {
+				console.log(err)
+			})
+
+			
 		})
 
 		//remove the item from cart
