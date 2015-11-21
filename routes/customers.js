@@ -10,20 +10,22 @@ var express = require('express'),
     methodOverride = require('method-override'),
     flash = require('connect-flash'),
     fs = require('fs'),
-    async = require('async')
+    async = require('async'),
+    s3 = require('multer-storage-s3')
 
 module.exports = function(passport) {
 
-  var storage = multer.diskStorage({
-    destination: './uploads/customers',
-    filename: function (req, file, cb) {
-      crypto.pseudoRandomBytes(16, function (err, raw) {
-        if (err) return cb(err)
+    var storage = s3({
+      destination : function( req, file, cb ) {  
+          cb( null, 'customers' );
+      },
+      filename : function( req, file, cb ) {
+          cb( null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+      },
+      bucket      : 'bcs-store-assets',
+      region      : 'us-west-2'
+    }); 
 
-        cb(null, raw.toString('hex') + path.extname(file.originalname))
-      })
-    }
-  })  
 
   router.use(cookieParser('secret'));
   router.use(session({
@@ -88,12 +90,12 @@ module.exports = function(passport) {
           },
           storage: storage
           }).single('image'),function(req, res) {
-            // Get values from POST request. These can be done through forms or REST calls. These rely on the "name" attributes for forms
+            
             var name = req.body.name;
             var type = req.body.type;
             var email = req.body.email;
             var reg = new Date()
-            var image = ("/customers/" + req.file.filename) || req.body.image
+            var image = req.file.s3.Location;
             var discount = req.body.discount;
             var contactNumber = req.body.contactNumber;
             var additionalInfo = req.body.additionalInfo;
@@ -305,9 +307,7 @@ module.exports = function(passport) {
               return console.error(err);
           } else {
 
-              // Delete Image
-            fs.unlinkSync(process.cwd() + '/uploads' + customer.image) 
-              //Returning success messages saying it was deleted
+            //Returning success messages saying it was deleted
             console.log('DELETE removing ID: ' + customer._id);
             req.flash('action', 'Customer deleted!')
             res.format({

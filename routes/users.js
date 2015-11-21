@@ -10,25 +10,31 @@ var express = require('express'),
     methodOverride = require('method-override'),
     flash = require('connect-flash'),
     bCrypt = require('bcrypt-nodejs'),
-    fs = require('fs')
+    fs = require('fs'),
+    s3 = require('multer-storage-s3')
 
 module.exports = function(passport) {
 
       // Generates hash using bCrypt
   var createHash = function(password){
       return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null);
-  }
+  } 
 
-  var storage = multer.diskStorage({
-    destination: './uploads/users',
-    filename: function (req, file, cb) {
-      crypto.pseudoRandomBytes(16, function (err, raw) {
-        if (err) return cb(err)
+  var storage = s3({
+    destination : function( req, file, cb ) {
+        
+        cb( null, 'users' );
+        
+    },
+    filename : function( req, file, cb ) {
+        
+        cb( null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+        
+    },
+    bucket      : 'bcs-store-assets',
+    region      : 'us-west-2'
+  });
 
-        cb(null, raw.toString('hex') + path.extname(file.originalname))
-      })
-    }
-  })  
 
   router.use(cookieParser('secret'));
   router.use(session({
@@ -97,11 +103,14 @@ module.exports = function(passport) {
           storage: storage
           }).single('image') ,function(req, res) {
           // Get values from POST request. These can be done through forms or REST calls. These rely on the "name" attributes for forms
+
+          console.log(req.file)
+
           var name = req.body.username;
           var role = req.body.role;
           var email = req.body.email;
           var password = createHash(req.body.password);
-          var image = ("/users/" + req.file.filename) || req.body.image;
+          var image = req.file.s3.Location;
           var reg = new Date()
           //call the create function for our database
           mongoose.model('User').create({
@@ -257,7 +266,6 @@ module.exports = function(passport) {
           if (err) {
               return console.error(err);
           } else {
-              fs.unlinkSync(process.cwd() + '/uploads' + user.image)
               //Returning success messages saying it was deleted
               console.log('DELETE removing ID: ' + user._id);
               req.flash('action', 'User deleted!')

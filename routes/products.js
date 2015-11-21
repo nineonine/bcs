@@ -10,19 +10,20 @@ var express = require('express'),
     methodOverride = require('method-override'),
     fs = require('fs'),
     flash = require('connect-flash'),
-    csv = require('express-csv')
+    csv = require('express-csv'),
+    s3 = require('multer-storage-s3')
 
 module.exports = function(passport) {
 
-  var storage = multer.diskStorage({
-    destination: './uploads/products',
-    filename: function (req, file, cb) {
-      crypto.pseudoRandomBytes(16, function (err, raw) {
-        if (err) return cb(err)
-
-        cb(null, raw.toString('hex') + path.extname(file.originalname))
-      })
-    }
+  var storage = s3({
+    destination : function( req, file, cb ) {
+        cb( null, 'products' );
+    },
+    filename : function( req, file, cb ) {
+        cb( null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    },
+    bucket      : 'bcs-store-assets',
+    region      : 'us-west-2'
   }) 
 
   router.use(cookieParser('secret'));
@@ -94,7 +95,7 @@ module.exports = function(passport) {
       var price = req.body.price;
       var qty = req.body.qty;
       var description = req.body.description;
-      var image = "/products/" + req.file.filename 
+      var image = req.file.s3.Location;
       var status = req.body.status;
 
       //console.log(req.file)
@@ -308,18 +309,12 @@ module.exports = function(passport) {
       
       console.log("hit ??")
 
-      //
-
       mongoose.model('Product').findOne({_id: req.id}, function(err, product) {
         if (err) {
           res.send("There was a problem updating the information to the database: " + err);
         } else {
 
-          fs.unlinkSync(process.cwd() + '/uploads' + product.image)  
-          product.image = "/products/" + req.file.filename;
-
-          console.log(req.file.filename)
-          console.log(product.image)
+          product.image = req.file.s3.Location;
 
           product.save(function(err) {
 
