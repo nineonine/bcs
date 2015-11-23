@@ -10,7 +10,7 @@
 
 	<div class="period-select hidden-xs">
 		<form class="input-daterange">
-			<div class="input-group input-group-sm">
+			<div class="input-group input-group-sm" id='startDate'>
 			  	<span class="input-group-addon">
 			  		<i class="fa fa-calendar-o"></i>
 			  	</span>
@@ -19,11 +19,11 @@
 			
 			<p class="pull-left">to</p>
 
-			<div class="input-group input-group-sm">
+			<div class="input-group input-group-sm" id="endDate">
 			  	<span class="input-group-addon">
 			  		<i class="fa fa-calendar-o"></i>
 			  	</span>
-			  	<input name="end" type="text" class="form-control datepicker" placeholder="02/27/2014" />
+			  	<input type="text" class="form-control datepicker" placeholder="02/27/2014" value="dateFormat(new Date(), 'dd/mm/yyyy')" />
 			</div>
 		</form>
 	</div>
@@ -32,26 +32,118 @@
 <div class="content-wrapper">
 	<div class="metrics clearfix">
 		<div class="metric">
-			<span class="field">Total users</span>
-			<span class="data">24,900</span>
+			<span class="field">Total Customers</span>
+			<span class="data" id="total-customers">24,900</span>
 		</div>
 		<div class="metric">
-			<span class="field">New sign ups</span>
-			<span class="data">108</span>
+			<span class="field">New Customers</span>
+			<span class="data" id="new-customers">108</span>
 		</div>
 		<div class="metric">
-			<span class="field">Sales this month</span>
-			<span class="data">$674.00</span>
+			<span class="field">Sales this period</span>
+			<span class="data" id="period-sales">$674.00</span>
 		</div>
 		<div class="metric">
-			<span class="field">Total Sales</span>
-			<span class="data">$3,823.90</span>
+			<span class="field">Total Sales (All time)</span>
+			<span class="data" id="total-sales">$3,823.90</span>
 		</div>
 	</div>
 </div>
 
 <script type="text/javascript">
+
+	function getStats(startDate, endDate) {
+
+		return new Promise(function(resolve, reject) {
+				$.ajax({
+				url: '/stats',
+				type: 'POST',
+				contentType: 'application/json; charset=UTF-8',
+				dataType: 'json',
+				data: JSON.stringify({startDate: startDate, endDate: endDate}),
+		        timeout: 5000,
+		        complete: () => console.log("stats fetch complete !"),
+		        success: (data) => {
+					Messenger().post("Stats updated!");
+
+					resolve(data);
+		        },
+		        error: (XMLHttpRequest, textStatus, errorThrown) => {
+		        	console.log(XMLHttpRequest.responseText) 
+		        	Messenger().post({
+					  	message: 'Sorry, there was problem with fetching stats.',
+					  	type: 'error',
+					  	showCloseButton: true
+					});
+					reject(errorThrown)
+		        }
+			})
+		})
+	}
+
+	function updateViews(s, e) {
+		var start = Date.parse( $('#startDate').find('input').val() )
+		var end = Date.parse( $('#endDate').find('input').val() )
+
+		var getStatsFromServer = getStats(start, end)
+
+		getStatsFromServer.then(function(stats) {
+			if(!stats) {
+				Messenger().post({
+				  	message: 'No data available for specified period',
+				  	type: 'error',
+				  	showCloseButton: true
+				});
+				e.preventDefault()
+				e.stopImmediatePropagation()
+				return
+			} else {
+				// update the view
+				$('#total-customers').html(stats.totalCustomers)
+				$('#new-customers').html(stats.newCustomers)
+				$('#period-sales').html('$' + stats.periodSales)
+				$('#total-sales').html('$' + stats.allTimeSales)
+			}	
+		})
+	}
+
 	$( document ).ready(function() {
+		var today = Date.parse(new Date())
 		$("body").attr('id', "dashboard");
+		$('#startDate').find('input').val(dateFormat(today - 1000 * 60 * 60 * 24 * 30, 'mm/dd/yyyy')) // - 30 days
+		$('#endDate').find('input').val(dateFormat(today, 'mm/dd/yyyy')) // today
+
+		//update stats on load ( for 30 days period )
+		updateViews(today - 1000 * 60 * 60 * 24 * 30, today)
+
+
+		//handling date pick - updating the stats on that
+		$(document).on('click', 'td.day', function(e) {
+
+			// get input values and parse them to UNIX time
+			var start = Date.parse( $('#startDate').find('input').val() )
+			var end = Date.parse( $('#endDate').find('input').val() )
+
+			// start > end == false
+			if( start > end ) {
+				Messenger().post({
+				  	message: 'Start date should be less than End date.',
+				  	type: 'error',
+				  	showCloseButton: true
+				});
+				e.preventDefault()
+				e.stopImmediatePropagation()
+				return
+			}
+
+			updateViews(start, end)
+
+		})
+
+		$('.input-daterange').datepicker({
+        	autoclose: true,
+        	orientation: 'right top',
+        	endDate: new Date()
+        });
 	})	  	
 </script>

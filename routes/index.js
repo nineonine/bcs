@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var flash = require('connect-flash')
+var async = require('async')
+var mongoose = require('mongoose')
 
 var isAuthenticated = function (req, res, next) {
 	// if user is authenticated in the session, call the next() to call the next request handler 
@@ -15,7 +17,6 @@ var isAuthenticated = function (req, res, next) {
 module.exports = function(passport){
 
 	router.use(flash());
-
 
 	/* GET home page. */
 	router.get('/', isAuthenticated, function(req, res, next) {
@@ -52,6 +53,71 @@ module.exports = function(passport){
 		req.logout();
 		res.redirect('/login');
 	});
+
+	// Total customers, New customers, sales this month , Total sales
+	router.post('/stats', isAuthenticated, function(req, res) {
+
+		var startDate = req.body.startDate
+		var endDate = req.body.endDate
+
+		//fetch customers and orders from DB
+		async.parallel({
+			customers: function(cb) {
+				mongoose.model('Customer').find({}, function(err, cs) {
+					if(err) return err
+
+					cb(null, cs)	
+				})
+			}, 
+			orders: function(cb) {
+				mongoose.model('Order').find({}, function(err, os) {
+					if(err) return err
+
+					cb(null, os)	
+				})
+			}
+		}, function(err, resultObj) {
+			if(err) {
+				console.log(err)
+			} else {
+				// prepare stats 
+
+				var totalCusts = resultObj.customers.length
+
+				var newCusts = resultObj.customers.filter( function(c) {
+						return Date.parse(c.registered) >= startDate && Date.parse(c.registered) < endDate
+					}).length
+
+				var periodSales = resultObj.orders
+					.filter( function(o) {
+						return o.status === 'completed' && 
+						Date.parse(o.statusHistory.completed) >= startDate &&
+						Date.parse(o.statusHistory.completed) < endDate
+					})
+					.reduce( function(acc, a) {
+						return acc + a.total
+					}, 0).toFixed(2)
+
+				var allTimeSales = resultObj.orders
+					.filter( function(e) {
+						return e.status === 'completed'
+					})
+					.reduce( function(acc, a) {
+						return acc + a.total
+					}, 0).toFixed(2)
+
+				//send response back
+				res.json({
+					totalCustomers: totalCusts,
+					newCustomers: newCusts,
+					periodSales: periodSales,
+					allTimeSales: allTimeSales
+				})
+
+			}
+		})
+
+	})
 
 
 	return router
