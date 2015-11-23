@@ -30,7 +30,7 @@
 </div>
 
 <div class="content-wrapper">
-	<div class="metrics clearfix">
+	<div class="metrics clearfix" style="margin-bottom: 20px">
 		<div class="metric">
 			<span class="field">Total Customers</span>
 			<span class="data" id="total-customers">24,900</span>
@@ -48,6 +48,17 @@
 			<span class="data" id="total-sales">$3,823.90</span>
 		</div>
 	</div>
+	<div class="charts">
+		<div style="width: 60%; float: left">
+		<h3 class='text-center' style="margin-bottom: 30px">Sales for the last year</h3>
+			<canvas id="sales-line-chart"></canvas>
+		</div>
+		<div style="width: 38%; float: left">
+		<h3 class='text-center'  style='margin-bottom: 60px'>Customers by type</h3>
+			<canvas id="customers-pie-chart"></canvas>
+		</div>
+		
+	</div>
 </div>
 
 <script type="text/javascript">
@@ -61,11 +72,9 @@
 				contentType: 'application/json; charset=UTF-8',
 				dataType: 'json',
 				data: JSON.stringify({startDate: startDate, endDate: endDate}),
-		        timeout: 5000,
+		        timeout: 10000,
 		        complete: () => console.log("stats fetch complete !"),
 		        success: (data) => {
-					Messenger().post("Stats updated!");
-
 					resolve(data);
 		        },
 		        error: (XMLHttpRequest, textStatus, errorThrown) => {
@@ -87,7 +96,7 @@
 
 		var getStatsFromServer = getStats(start, end)
 
-		getStatsFromServer.then(function(stats) {
+		return getStatsFromServer.then(function(stats) {
 			if(!stats) {
 				Messenger().post({
 				  	message: 'No data available for specified period',
@@ -103,6 +112,69 @@
 				$('#new-customers').html(stats.newCustomers)
 				$('#period-sales').html('$' + stats.periodSales)
 				$('#total-sales').html('$' + stats.allTimeSales)
+
+				var ctx1 = document.getElementById("sales-line-chart").getContext("2d");
+				var ctx2 = document.getElementById("customers-pie-chart").getContext("2d");
+
+				var linesData = {
+				    labels: [1,2,3,4,5,6,7,8,9,10,11,12],
+				    datasets: [
+				        {
+				            label: "End Users",
+				            fillColor: "rgba(220,220,220,0.2)",
+				            strokeColor: "rgba(220,220,220,1)",
+				            pointColor: "rgba(220,220,220,1)",
+				            pointStrokeColor: "#fff",
+				            pointHighlightFill: "#fff",
+				            pointHighlightStroke: "rgba(220,220,220,1)",
+				            data: stats.salesChartData.endUserData
+				        },
+				        {
+				            label: "Home Users",
+				            fillColor: "rgba(151,187,205,0.2)",
+				            strokeColor: "rgba(151,187,205,1)",
+				            pointColor: "rgba(151,187,205,1)",
+				            pointStrokeColor: "#fff",
+				            pointHighlightFill: "#fff",
+				            pointHighlightStroke: "rgba(151,187,205,1)",
+				            data: stats.salesChartData.homeUserData
+				        },
+				        {
+				            label: "Companies",
+				            fillColor: "rgba(242, 205, 241,0.2)",
+				            strokeColor: "rgba(242, 205, 241,1)",
+				            pointColor: "rgba(242, 205, 241,1)",
+				            pointStrokeColor: "#fff",
+				            pointHighlightFill: "#fff",
+				            pointHighlightStroke: "rgba(242, 205, 241,1)",
+				            data: stats.salesChartData.companyData
+				        }
+				    ]
+				}
+
+				var pieData = [
+				    {
+				        value: stats.customerTypesData.endUsersQty,
+				        color:"#F7464A",
+				        highlight: "#FF5A5E",
+				        label: "End User"
+				    },
+				    {
+				        value: stats.customerTypesData.homeUsersQty,
+				        color: "#46BFBD",
+				        highlight: "#5AD3D1",
+				        label: "Home User"
+				    },
+				    {
+				        value: stats.customerTypesData.companiesQty,
+				        color: "#FDB45C",
+				        highlight: "#FFC870",
+				        label: "Company"
+				    }
+				]
+
+				var salesChart = new Chart(ctx1).Line(linesData);
+				var customersPie = new Chart(ctx2).Pie(pieData);
 			}	
 		})
 	}
@@ -113,8 +185,13 @@
 		$('#startDate').find('input').val(dateFormat(today - 1000 * 60 * 60 * 24 * 30, 'mm/dd/yyyy')) // - 30 days
 		$('#endDate').find('input').val(dateFormat(today, 'mm/dd/yyyy')) // today
 
-		//update stats on load ( for 30 days period )
+		//update stats on load 
 		updateViews(today - 1000 * 60 * 60 * 24 * 30, today)
+		//Charts
+		Chart.defaults.global.responsive = true
+		Chart.defaults.global.animation = false
+		Chart.defaults.global.maintainAspectRatio = true
+
 
 
 		//handling date pick - updating the stats on that
