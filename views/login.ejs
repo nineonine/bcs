@@ -68,7 +68,7 @@
     		    theme: 'flat'
 			}
 			
-			if('<%= message %>') { Messenger().post('<%= message %>') } 
+			if('<%= message %>') { Messenger().post({message: '<%= message %>', type: 'error'}) } 
 
 		});
 	</script>

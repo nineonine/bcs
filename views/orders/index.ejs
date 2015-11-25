@@ -48,9 +48,9 @@
                         <a href="/orders/<%= o._id %>">#<%= o.orderNumber %></a>
                     </td>
                     <td><%= o.customer %></td>
-                    <td  class="order-date"><%= o.statusHistory.processing %></td>
+                    <td  class="order-date"><%= o.status === 'processing' ? o.statusHistory.processing : o.statusHistory.shipped %></td>
                     <td class=""><span class="label"><%= o.status %></span></td>
-                    <td class="center">$<%= o.total %></td>
+                    <td class="center">$<%= o.total.toFixed(2) %></td>
                 </tr>
             <% }); %>
        	</tbody>
@@ -91,7 +91,7 @@
         $('#datatable-example').dataTable({
             "sPaginationType": "full_numbers",
             "iDisplayLength": 10,
-			"aLengthMenu": [[20, 50, 100, -1], [10, 20, 50, 100, "All"]]
+			"aLengthMenu": [[5, 20, 50, 100, -1], [10, 20, 50, 100, "All"]]
         });
     });
 </script>

@@ -44,9 +44,9 @@
                     <a href="/orders/<%= o._id %>">#<%= o.orderNumber %></a><i data-toggle="tooltip" data-placement="top" title="delete order" style="margin-left: 10px" class="fa fa-times delete-order"></i>
                 </td>
                 <td class="customer-name"><%= o.customer %></td>
-                <td  class="order-date"><%= o.statusHistory.processing %></td>
+                <td  class="order-date"><%= o.status === 'completed' ? o.statusHistory.completed : o.statusHistory.cancelled %></td>
                 <td class=""><span class="label"><%= o.status %></span></td>
-                <td class="center">$<%= o.total %></td>
+                <td class="center">$<%= o.total.toFixed(2) %></td>
             </tr>
         <% }) %>    
        	</tbody>
@@ -60,7 +60,7 @@
 
         //format dates
         $('.order-date').each( function(e) {
-            $(this).html( dateFormat($(this).html()))
+            $(this).html( dateFormat($(this).html(), 'mmm d, yyyy'))
         })
 
         $('.label').each(function(e) {
@@ -111,7 +111,7 @@
         $('#datatable-example').dataTable({
             "sPaginationType": "full_numbers",
             "iDisplayLength": 20,
-			"aLengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]]
+			"aLengthMenu": [[20, 50, 100, -1], [10, 20, 50, 100, "All"]]
         });
     });
 </script>

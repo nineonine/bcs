@@ -339,6 +339,15 @@
         	e.preventDefault()
         	e.stopImmediatePropagation()
 
+        	if(!$('#comment-text').val()) {
+        		Messenger().post({
+				  	message: 'Note field should not be empty',
+				  	type: 'error',
+				  	showCloseButton: true
+				});
+				return
+        	}
+
         	var comm = {
         		author: '<%= customer._id %>',
         		text: $('#comment-text').val()
