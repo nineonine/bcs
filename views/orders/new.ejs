@@ -351,7 +351,7 @@
 
 			potentialProdInStock ? summedQty = qty + (+$(potentialProdInStock).find('.qty').html()) : summedQty = qty
 
-			var inStock = isInStock(prodName, summedQty)
+			var getinStock = isInStock(prodName, summedQty)
 
 			//product and quantity should not be empty
 			if(!prodName || !qty ) {
@@ -363,7 +363,7 @@
 				return;
 			}
 
-			inStock.then(function(stock) {
+			getinStock.then(function(stock) {
 				if(!stock) {
 					Messenger().post({
 					  	message: 'Not enough items in stock !',

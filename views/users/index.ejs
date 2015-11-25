@@ -27,21 +27,6 @@
 			<a href="#" id='show-delivery'>Delivery (<%= users.filter( u => u.role === 'delivery').length %>)</a>
 
 			<div class="show-options">
-				<div class="dropdown">
-				  	<a class="button" data-toggle="dropdown" href="#">
-				  		<span>
-				  			Sort by
-				  			<i class="fa fa-unsorted"></i>
-				  		</span>
-				  	</a>
-				  	<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-				    	<li><a href="#">Name</a></li>
-						<li><a href="#">Signed up</a></li>
-						<li><a href="#">Last seen</a></li>
-						<li><a href="#">Browser</a></li>
-						<li><a href="#">Country</a></li>
-				  	</ul>
-				</div>
 				<a href="#" data-grid=".users-list" class="grid-view active"><i class="fa fa-th-list"></i></a>
 				<a href="#" data-grid=".users-grid" class="grid-view"><i class="fa fa-th"></i></a>
 			</div>

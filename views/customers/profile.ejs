@@ -312,6 +312,10 @@
 	$( document ).ready(function() {
 		$("body").attr('id', "user-profile");
 
+		$('.order-date').each(function(e) {
+			$(this).html(dateFormat($(this).html(), 'mmm d, yyyy'))
+		})
+
 		$('#edit-customer').find('select').each(function() {
 			$(this).val("<%= customer.type %>")
 		})
