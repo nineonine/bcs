@@ -443,14 +443,39 @@ module.exports = function(passport) {
   })
 
   router.get('/:id/complete', function(req, res) {
-      mongoose.model('Order').findOneAndUpdate({_id: req.id}, { $set: {'status': 'completed', 'statusHistory.completed': new Date() }}, { 'new': true, 'upsert': true}, function(err, order) {
+
+    async.waterfall([
+      function(cb) {
+        mongoose.model('Order').findOneAndUpdate({_id: req.id}, { $set: {'status': 'completed', 'statusHistory.completed': new Date() }}, { 'new': true, 'upsert': true}, function(err, order) {
           if(err) {
             console.log("error completing order")
           } else {
+            cb(null, order)
+          }
+        })
+      },
+
+      // update stock quantity for each product
+      function(order, cb) {
+        async.map(order.cart, 
+          function(el, cb) {
+            mongoose.model('Product').findOneAndUpdate({name: el.name}, { $inc: {qty: (-1)*el.quantity} }, { 'new': true, 'upsert': true}, function(err, p) {
+              if(err) {
+                console.log("error updating product qty")
+                return cb(err)
+              } else { 
+                return cb(null, p)
+              }
+            })
+          },
+          function(err, results) {
+
             req.flash('action', 'Order '+ order.orderNumber +' Completed!')
             res.redirect('/orders')
           }
-      })
+        )
+      }
+    ])
   })
 
   router.get('/:id/ship', function(req, res) {
