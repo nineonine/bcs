@@ -47,7 +47,6 @@ module.exports = function(passport){
 	  res.render('docs', { title: 'BCS', user: req.user });
 	})
 
-
 	/* Handle Logout */
 	router.get('/logout', function(req, res) {
 		req.logout();
@@ -61,6 +60,7 @@ module.exports = function(passport){
 		var endDate = req.body.endDate
 
 		// helper function for unfolding the unix date into approximate 13 month borders
+		// we also need to reverse it so we start from early date
 		var getUNIXmonths = function(unixdate) {
 			var ary = [];
 			var date = unixdate
@@ -71,9 +71,21 @@ module.exports = function(passport){
 			return ary.reverse()
 		} 
 
-		//helper for returning last element of array
-		var last = function(c) {
-			return c.slice(-1)[0] 
+		// get monthly sales for a specific period of time
+		var getMonthlySales = function(endDate, collection) {
+
+			return getUNIXmonths(endDate).reduce(function(acc, el, index, array) {
+					var reducedValue
+					// if acc is not empty
+					if (index === 12) {
+						return acc
+					// its a first value of collection	
+					} else {
+						reducedValue = reduceTotal(collection, el, array[index+1])
+						acc.push(reducedValue)
+						return acc
+					}
+				}, [])
 		}
 
 		// filterReduce abstraction
@@ -90,6 +102,7 @@ module.exports = function(passport){
 				}, 0).toFixed(2)
 		}
 
+		// helper function 
 		var theOnewhichBelongsTo = function(type, name, collection) {
 
 			var customer = collection.filter(function(el) {
@@ -97,6 +110,14 @@ module.exports = function(passport){
 			})[0]
 
 			return customer.type === type
+		}
+
+		var mapToMonths = function(unixStamp) {
+			var monthNames = ["January", "February", "March", "April", "May", "June",
+			  "July", "August", "September", "October", "November", "December"
+			];
+
+			return monthNames[new Date(unixStamp).getMonth()]
 		}
 
 		//fetch customers and orders from DB
@@ -121,6 +142,7 @@ module.exports = function(passport){
 			} else {
 				
 				// prepare stats
+				// should be generalized to one function
 				var endUserOrders = resultObj.orders.filter(function(o) {
 					var name = o.customer
 					return theOnewhichBelongsTo('End User', name, resultObj.customers )	
@@ -134,27 +156,14 @@ module.exports = function(passport){
 					return theOnewhichBelongsTo('Company', name, resultObj.customers )	
 				})
 
-				var endUsersQty = resultObj.customers.filter( function(el) {
-					return el.type === 'End User'
-				}).length
-				var homeUsersQty = resultObj.customers.filter( function(el) {
-					return el.type === 'Home User'
-				}).length
-				var companiesQty = resultObj.customers.filter( function(el) {
-					return el.type === 'Company'
-				}).length
-
 				// get qty of customers
 				var totalCusts = resultObj.customers.length
-
 				// get new customers for specified period of time
 				var newCusts = resultObj.customers.filter( function(c) {
 						return Date.parse(c.registered) >= startDate && Date.parse(c.registered) < endDate
 					}).length
-
 				// get total amt of sales of sp p of time
 				var periodSales = reduceTotal(resultObj.orders, startDate, endDate)
-
 				// get lifetime sales	
 				var allTimeSales = resultObj.orders
 					.filter( function(e) {
@@ -164,45 +173,29 @@ module.exports = function(passport){
 						return acc + a.total
 					}, 0).toFixed(2)
 
-				// get end user sales for 12 months	
-				var endUserMonthlySales = getUNIXmonths(endDate).reduce(function(acc, el, index, array) {
-					var reducedValue
-					// if acc is not empty
-					if (index === 12) {
-						return acc
-					// its a first value of collection	
-					} else {
-						reducedValue = reduceTotal(endUserOrders, el, array[index+1])
-						acc.push(reducedValue)
-						return acc
-					}
-				}, [])
+				//shoud be generalized to 1 function
+				var endUsersQty = resultObj.customers.filter( function(el) {
 
-				var homeUserMonthlySales = getUNIXmonths(endDate).reduce(function(acc, el, index, array) {
-					var reducedValue
-					// if acc is not empty
-					if (index === 12) {
-						return acc
-					// its a first value of collection	
-					} else {
-						reducedValue = reduceTotal(homeUserOrders, el, array[index+1])
-						acc.push(reducedValue)
-						return acc
-					}
-				}, [])
+					return el.type === 'End User'
+				}).length
+				var homeUsersQty = resultObj.customers.filter( function(el) {
 
-				var companyMonthlySales = getUNIXmonths(endDate).reduce(function(acc, el, index, array) {
-					var reducedValue
-					// if acc is not empty
-					if (index === 12) {
-						return acc
-					// its a first value of collection	
-					} else {
-						reducedValue = reduceTotal(companyOrders, el, array[index+1])
-						acc.push(reducedValue)
-						return acc
-					}
-				}, [])
+					return el.type === 'Home User'
+				}).length
+				var companiesQty = resultObj.customers.filter( function(el) {
+
+					return el.type === 'Company'
+				}).length	
+
+				// get monthly sales for 12 months for each type of customer
+				var now = Date.parse(new Date())
+
+				var endUserMonthlySales = getMonthlySales(now, endUserOrders)
+				var homeUserMonthlySales = getMonthlySales(now, homeUserOrders)
+				var companyMonthlySales = getMonthlySales(now, companyOrders)
+
+				// prepare labels for chart
+				var preparedLabels = getUNIXmonths(Date.parse(new Date())).map(mapToMonths).splice(1) 
 
 				var stats = {
 					totalCustomers: totalCusts,
@@ -210,6 +203,7 @@ module.exports = function(passport){
 					periodSales: periodSales,
 					allTimeSales: allTimeSales,
 					salesChartData: {
+						labels: preparedLabels,
 						endUserData: endUserMonthlySales,
 						homeUserData: homeUserMonthlySales,
 						companyData: companyMonthlySales
@@ -221,7 +215,7 @@ module.exports = function(passport){
 					}
 				}
 
-				console.log(stats)
+				console.log(stats.salesChartData)
 				//send response back
 				res.json(stats)
 

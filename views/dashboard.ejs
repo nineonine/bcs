@@ -51,6 +51,7 @@
 	<div class="charts">
 		<div style="width: 60%; float: left">
 		<h3 class='text-center' style="margin-bottom: 30px">Sales for the last year</h3>
+			<div id="legendDiv"></div>
 			<canvas id="sales-line-chart"></canvas>
 		</div>
 		<div style="width: 38%; float: left">
@@ -60,6 +61,38 @@
 		
 	</div>
 </div>
+
+<style type="text/css">
+	.line-legend {
+		text-align: center;
+		list-style: none;
+		
+	}
+
+	.line-legend li {
+	  display: inline;
+	  padding-left: 30px;
+	  position: relative;
+	  margin-bottom: 4px;
+	  border-radius: 5px;
+	  padding: 2px 8px 2px 28px;
+	  font-size: 14px;
+	  cursor: default;
+	  -webkit-transition: background-color 200ms ease-in-out;
+	  -moz-transition: background-color 200ms ease-in-out;
+	  -o-transition: background-color 200ms ease-in-out;
+	  transition: background-color 200ms ease-in-out;
+	}
+	.line-legend span {
+	  display: block;
+	  position: absolute;
+	  left: 0;
+	  top: 0;
+	  width: 20px;
+	  height: 100%;
+	  border-radius: 5px;
+	}
+</style>
 
 <script type="text/javascript">
 
@@ -117,7 +150,7 @@
 				var ctx2 = document.getElementById("customers-pie-chart").getContext("2d");
 
 				var linesData = {
-				    labels: [1,2,3,4,5,6,7,8,9,10,11,12],
+				    labels: stats.salesChartData.labels,
 				    datasets: [
 				        {
 				            label: "End Users",
@@ -174,6 +207,7 @@
 				]
 
 				var salesChart = new Chart(ctx1).Line(linesData);
+				document.getElementById("legendDiv").innerHTML = salesChart.generateLegend();
 				var customersPie = new Chart(ctx2).Pie(pieData);
 			}	
 		})
