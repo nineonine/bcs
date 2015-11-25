@@ -110,7 +110,7 @@ module.exports = function(passport) {
           var role = req.body.role;
           var email = req.body.email;
           var password = createHash(req.body.password);
-          var image = req.file.s3.Location;
+          var image = req.file ? req.file.s3.Location : "https://bcs-store-assets.s3-us-west-2.amazonaws.com/placeholder.png";
           var reg = new Date()
           //call the create function for our database
           mongoose.model('User').create({

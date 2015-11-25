@@ -95,7 +95,7 @@ module.exports = function(passport) {
       var price = req.body.price;
       var qty = req.body.qty;
       var description = req.body.description;
-      var image = req.file.s3.Location;
+      var image = req.file ? req.file.s3.Location : "https://bcs-store-assets.s3-us-west-2.amazonaws.com/placeholder.png";
       var status = req.body.status;
 
       //console.log(req.file)
