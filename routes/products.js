@@ -274,8 +274,6 @@ module.exports = function(passport) {
           if (err) {
               return console.error(err);
           } else {
-              //Removing image
-              fs.unlinkSync(process.cwd() + '/uploads' + product.image)
               //Returning success messages saying it was deleted
               req.flash('action', 'Product deleted!')
               console.log('DELETE removing ID: ' + product._id);
