@@ -1,0 +1,89 @@
+<% layout('layout') -%>
+
+<div class="menubar">
+	<div class="sidebar-toggler visible-xs">
+		<i class="ion-navicon"></i>
+	</div>
+
+	<div class="page-title">
+		Recent Activity Feed
+	</div>
+</div>
+
+<div class="content-wrapper">
+	
+	<h3>
+		Today
+		<small id='today'></small>
+	</h3>
+	<% activities.forEach(function(act) { %>	
+	<div class="moment <%= act.actionType %>">
+		<div class="row event clearfix">
+			<div class="col-sm-1">
+				<div class="icon">
+					<i class="icn fa fa-comment"></i>
+				</div>
+			</div>
+			<div class="col-sm-11 message">
+				<img class="avatar" src="<%= act.userImg %>" />
+				<div class="content">
+					<strong><%= act.userName %></strong><span class='messageText'></span> <a href="<%= act.order ? '/orders/' + act.order : '/customers/' + act.customerId %>"><%= act.order ? '' :  act.customerName %></a>.
+				</div>
+			</div>
+		</div>
+	</div>
+	<% }) %>
+</div>
+
+<script type="text/javascript">
+	$( document ).ready(function() {
+		$("body").attr('id', "latest-activity");
+		$('#today').html(dateFormat(new Date(), 'mmmm d, yyyy'))
+		$('.moment').first().addClass('first')
+		$('.moment').last().addClass('last')
+
+		$('.moment').each(function(el) {
+
+			var activity = $(this)
+
+			if( activity.hasClass('placeOrder') ) {
+				activity.find('i').addClass('fa-ticket')
+				activity.find('.messageText').prepend(' placed ')
+				activity.find('a').html('Order')
+				activity.find('.icon').css('background', '#ffe100')
+
+			} else if ( activity.hasClass('updateOrder') ) {
+				activity.find('i').addClass('fa-files-o')
+				activity.find('.messageText').prepend(' updated ')
+				activity.find('a').html('Order')
+				activity.find('.icon').addClass('dark')
+
+			} else if ( activity.hasClass('shipOrder') ) {
+				activity.find('i').addClass('fa-truck')
+				activity.find('.messageText').prepend(' shipped ')
+				activity.find('a').html('Order')
+				activity.find('.icon').css('background', '#e77fff')
+
+			} else if ( activity.hasClass('completeOrder') ) {
+				activity.find('i').removeClass('fa-comment').addClass('fa-check')
+				activity.find('.messageText').prepend(' completed ')
+				activity.find('a').html('Order')
+				activity.find('.icon').css('background', '#52BF73')
+
+			} else if ( activity.hasClass('cancelOrder') ) {
+				activity.find('i').removeClass('fa-comment').addClass('fa-times').css('margin', '10px 0 0 12px')
+				activity.find('.messageText').prepend(' cancelled ')
+				activity.find('a').html('Order')
+				activity.find('.icon').css('background', '#F97A7A')
+
+			} else { // addNote
+				activity.find('.messageText').prepend(' left a comment about a ')
+				activity.find('a').html('Customer')
+
+			}
+
+
+		})
+
+	})		
+</script>

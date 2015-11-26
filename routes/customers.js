@@ -11,7 +11,8 @@ var express = require('express'),
     flash = require('connect-flash'),
     fs = require('fs'),
     async = require('async'),
-    s3 = require('multer-storage-s3')
+    s3 = require('multer-storage-s3'),
+    activity = require('../model/activities')
 
 module.exports = function(passport) {
 
@@ -240,6 +241,8 @@ module.exports = function(passport) {
           if(err) {
             console.log('GET Error: There was a problem adding comment to Customer: ' + err);
           } else {
+
+            activity.register('addNote', req.user, null, customer)
 
             res.json({
               authorID: req.body.author,

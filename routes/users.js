@@ -146,7 +146,7 @@ module.exports = function(passport) {
 
   router.get('/activity', function(req, res) {
 
-      res.render('users/activity', { title: 'Company Activity' });
+      res.render('users/activity', { title: 'Company Activity', user : req.user });
   })
 
   /* GET New User page. */

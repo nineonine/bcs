@@ -12,7 +12,8 @@ var express = require('express'),
     fs = require('fs'),
     async = require('async'),
     nodemailer = require('nodemailer'),
-    ejs = require('ejs')
+    ejs = require('ejs'),
+    activity = require('../model/activities')
 
 
 module.exports = function(passport) {
@@ -108,6 +109,10 @@ module.exports = function(passport) {
                 } else {
                     //Order has been created
                     console.log('POST creating new Order: ' + order);
+
+                    //log activity ( place order )
+                    activity.register('placeOrder', req.user, order, null)
+
                     res.format({
                       html: function(){
                           res.location("orders");
@@ -436,6 +441,10 @@ module.exports = function(passport) {
           if(err) {
             console.log("error cancelling order")
           } else {
+
+            // log activity (cancel order)
+            activity.register('cancelOrder', req.user, order, null)
+
             req.flash('action', 'Order '+ order.orderNumber +' Cancelled!')
             res.redirect('/orders')
           }
@@ -470,6 +479,9 @@ module.exports = function(passport) {
           },
           function(err, results) {
 
+            // log activity (complete order)
+            activity.register('completeOrder', req.user, order, null)
+
             req.flash('action', 'Order '+ order.orderNumber +' Completed!')
             res.redirect('/orders')
           }
@@ -483,6 +495,10 @@ module.exports = function(passport) {
           if(err) {
             console.log("error shipping order")
           } else {
+
+            // log activity (ship order)
+            activity.register('shipOrder', req.user, order, null)
+
             req.flash('action', 'Order '+ order.orderNumber +' marked shipped!')
             res.redirect('/orders')
           }
@@ -523,7 +539,10 @@ module.exports = function(passport) {
           if (err) {
             res.send("There was a problem updating the information to the database: " + err);
           } else {
-            //HTML responds by going back to the page or you can be fancy and create a new view that shows a success page.
+              
+            //log activity ( update order )
+            activity.register('updateOrder', req.user, order, null)  
+
             res.format({
                 html: function(){
                      res.redirect("/orders/" + order._id);

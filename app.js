@@ -14,7 +14,8 @@ var db = require('./model/db'),
     user = require('./model/users'),
     customer = require('./model/customers'),
     product = require('./model/products'),
-    order = require('./model/orders')
+    order = require('./model/orders'),
+    activity = require('./model/activities')
 
 var app = express();
 
@@ -64,12 +65,14 @@ var users = require('./routes/users')(passport);
 var customers = require('./routes/customers')(passport);
 var products = require('./routes/products')(passport);
 var orders = require('./routes/orders')(passport);
+var activities = require('./routes/activities')(passport);
 
 app.use('/', routes);
 app.use('/users', users);
 app.use('/customers', customers);
 app.use('/products', products);
 app.use('/orders', orders);
+app.use('/activities', activities);
 
 
 // catch 404 and forward to error handler
