@@ -27,27 +27,161 @@
 			<a href="index.html">BCS Manual</a>
 		</h1>
 		<ul class="menu nav">
-            <li>
-			  	<a href="#intro">Introduction</a>
-			</li>
-			<li>
-			  	<a href="#auth">Authentication</a>
-			</li>
-			<li>
-			  	<a href="#users">Users</a>
-			  	<ul class="nav">
-			    	<li><a href="#users">Retrieve a User</a></li>
-			    	<li><a href="#users">Create a User</a></li>
-			    	<li><a href="#users">Delete a User</a></li>
-			  	</ul>
-			</li>
-			<li>
-			  	<a href="#orders">Orders</a>
-			</li>
-			<li>
-			  	<a href="#errors">Errors</a>
-			</li>
+            <li><a href="#customers">Customers</a></li>
+			<li><a href="#products">Products</a></li>
+			<li><a href="#orders">Orders</a></li>
+			<li><a href="#users"> Users</a></li>
 		</ul>
+	</div>
+
+	<div id="content" style="padding-top: 0">
+		<h1>Documentation</h1>
+		<p> BCS-Store is a Web App belonging to the Best Communication Store developed by KSBRD Solutions. The main purpose of this software is to help Best Communication Store employees: </p>
+		<ul>
+			<li>Add/edit new users and customers.</li>
+			<li>Help in organizing the store sales and data.</li>
+			<li>Inventory Information.</li>
+			<li>Necessary output transactions.</li>
+			<li>Display, print and email invoices.</li>
+			<li> Display, print and email packing slips</li>
+		</ul>
+		<p>
+			This software has a lot of features that make it easier for all the bcs employees to manage all the store data. The following options guide users on how to get to certain data easily: 
+			<ul class="nav">
+				<li><a href="#customers">Customers</a></li>
+				<li><a href="#products">Products</a></li>
+				<li><a href="#orders">Orders</a></li>
+				<li><a href="#users"> Users</a></li>
+			</ul>
+		</p>
+		<a name="customers"></a>
+			<h2>Customers</h2>	
+			<hr>
+			<h3>Add a Customer </h3>
+			 <ul>
+			 	<li>On General Section Click on Customers, dropdown menu will appear that gives an option to add a New Customer.</li>
+			 	<li>Click New Customer.</li>
+			 	<li>Add customer detail such as Name, Type, Photo, Email Address, Phone Number, Discount, billing Address, Shipping Address, Extra notes. </li>
+			 </ul>	
+			 <h3>Assign a role to a customer</h3>
+			 <ul>
+			 	<li>	In the New Customer page, use Type to assign customer a role.</li>
+			 	<li>	One role can be assigned out of three: </li>
+			 		<ul>
+			 			<li>End-user</li>
+			 			<li>Home-user</li>
+			 			<li>Company</li>
+			 		</ul>
+			 </ul>
+			 <h3> To see all the customers in the system </h3>
+			 	<ul>
+			 		<li>Under dropdown menu of Customers, click on Customer List</li>
+			 		<li>You can see all the customers registered in the system.</li>
+			 	</ul>
+			 <h3> Filter customers by user-type</h3>
+			 <ul>
+			 	<li>At Customer list page Filter customers by clicking on All, Home-user, End-user and Company.</li>
+			 </ul>	
+			 <h3>Search a customer</h3>
+			 <ul>
+			 	<li>On the customer list page, customers can be search from Search option by customer or client name.</li>
+			 </ul>	
+			</a>
+		<a name="products"></a>
+		<h2>Products</h2>
+		<hr>
+		<h3>Add a product</h3>
+		<ul>
+			<li>	On General Area Click on Products, dropdown menu will appear that gives an option to add an Add Product.</li>
+			<li>	Click Add Product</li>
+			<li>	Add product name, SKU, Product Picture, Price, Quantity, Status and Product Description.</li>
+			<li>	Save Product.</li>
+		</ul>
+		<h3>How to see Product List</h3>
+			<ul>
+				<li>	Under dropdown menu of Products, click on Produce List</li>
+				<li>	You can see all the products there. </li>
+			</ul>
+		<h3>How to search a Product</h3>
+			<ul>
+				<li>Under dropdown menu of Products, click on Produce List</li>
+				<li>Find a product by name on the upper right using Search</li>
+			</ul>
+		<h3>Delete a Product</h3>
+			<ul>
+				<li>In Product List, click on product name of the product you want to delete</li>
+				<li>Detail page of that specific page will appear and Delete Product button on the top right corner can be used to delete the product.</li>
+			</ul>
+		</a>
+		<a name="orders"></a>
+			<h2>Orders</h2>
+		<hr>
+		<h3>Add an Order</h3>
+			<ul>
+				<li>On General Area Click on Orders, dropdown menu will appear that gives an option to add a New Order.</li>
+				<li>Click New Order</li>
+				<li>Create Order webpage will appear that will give option to Add Order Details and Add Products in Cart.</li>
+			</ul>
+		<h3>Check Active Orders</h3>
+				<ul>
+				<li>On General Area Click on Orders, dropdown menu will appear, click on Active orders to check list of all the orders that are active.</li>
+				<li>Click New Order.</li>
+			</ul>
+		<h3>Check Order Details</h3>
+				<ul>
+				<li>On clicking the order number in Active orders directory, Order Details can be accessed where the following features are displayed:</li>
+
+						<h4>Details</h4>
+							<ul>
+								<li>In Details Order Number, Customer, Shipping, Discount (%) and Extra notes can be seen and updated by the admin.</li>
+							</ul>
+						<h4>Product</h4>
+							<ul>
+								<li>Products purchased in a specific order can be seen in this section including Product, Quantity and Amount.</li>
+							</ul>
+					<h4>Invoice</h4>
+						<ul>
+							<li>Invoice can be Print and send in the email to the customer through Order Details.</li>
+						</ul>
+					<h4>Packing Slip</h4>
+						<ul>
+							<li>Packing Slip displays the Packing Slip No., Delivery Date, Customer and Order Details, Extra Notes, Description, Quantity and Amount of the Product. Packing Slip can be printed to track the order.</li>
+						</ul>	
+					<h4>Complete Order</h4>
+						<ul>
+							<li>Clicking on this option will complete this order and shift the order from Active Orders to Order History.</li>
+						</ul>	
+					<h4>Cancel Order</h4>
+						<ul>
+							<li>This option will cancel the order.</li>
+						</ul>
+				</ul>
+		<h4>Order History</h4>
+				<ul>
+					<li>On General Section Click on Orders, dropdown mean will appear that gives an option to check Order History</li>
+					<li>Click Order History.</li>
+					<li>All the completed and cancelled orders will appear on the screen including Order Number, Customer, Date, Status and Total.</li>
+				</ul>
+		</a>
+		<a name="users"></a>
+			<h2>Users</h2>
+		<hr>
+		<p>There are three types of users who can use this software and different features are provided to different user. </p>
+		<ol>
+			<h3>Admin</h3>
+				<p>Admin have access to all the features. The features that can only be accessed by admin are given below:</p>
+				<ul>
+					<li>Click on Metrics in Admin section, gives admin option to check metrics of orders and sales.</li>
+					<li>Click on Users will provide Admin options to Add User, All Users, and Company Activity</li>
+					<li>Company activity page displays all the actions taken by users in one month. </li>
+				</ul>
+			<h3>Sales</h3>
+				<p>Sales user have access to all the features in General section but only to my account in Admin section.</p>
+			<h3>Delivery</h3>
+				<p>Delivery user have only access to Customers List, Products List and Active Orders in General Section and to my account in Admin section. </p>
+		</ol>
+		</a>
+		
 	</div>
 
 	<script type="text/javascript">
